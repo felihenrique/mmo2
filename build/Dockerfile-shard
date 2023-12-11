@@ -1,0 +1,10 @@
+FROM golang:1.21-alpine as builder
+WORKDIR /home/app
+COPY . .
+RUN go build -ldflags "-s -w" ./cmd/shard/shard.go
+
+FROM scratch
+WORKDIR /home/app
+COPY --from=builder /home/app/shard /home/app/shard
+ENV GOMAXPROCS=1
+CMD ["./shard"]

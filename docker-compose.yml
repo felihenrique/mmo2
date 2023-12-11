@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  shard:
+    build:
+      context: .
+      dockerfile: build/Dockerfile-shard
+    network_mode: "host"
+    cpus: 1
+    mem_limit: "200Mb"
+    volumes:
+    - ./prof:/home/app/prof
+
+  sim:
+    build:
+      context: .
+      dockerfile: build/Dockerfile-sim
+    network_mode: "host"
+    cpus: 1
+    mem_limit: "200Mb"
+    depends_on:
+      - shard

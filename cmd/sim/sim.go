@@ -1,26 +1,61 @@
 package main
 
 import (
+	"encoding/binary"
 	"mmo2/pkg/events"
 	"net"
-	"sync/atomic"
 	"time"
 )
 
-func main() {
-	dialer := net.Dialer{}
-	conn, err := dialer.Dial("tcp4", "127.0.0.1:5555")
-	if err != nil {
-		panic(err)
+var readed int32
+var sent int32
+
+var writing bool = true
+var reading bool = true
+
+func read(conn net.Conn) {
+	for reading {
+		var evId uint16
+		binary.Read(conn, binary.BigEndian, &evId)
+		payload, err := events.ReadMove(conn)
+		if err != nil {
+			println(err.Error())
+			break
+		}
+		payload.Payload.Dx += payload.Payload.Dy
+		readed += 1
 	}
-	var counter atomic.Int32
-	timeNow := time.Now()
-	for time.Since(timeNow) < time.Second*10 {
-		events.WriteMove(conn, events.MovePayload{
+}
+
+func write(conn net.Conn) {
+	for writing {
+		err := events.WriteMove(conn, events.MovePayload{
 			Dx: 111,
 			Dy: 656,
 		})
-		counter.Add(1)
+		if err != nil {
+			println(err.Error())
+			continue
+		}
+		sent += 1
+
 	}
-	println("total ", counter.Load())
+}
+
+func main() {
+	for i := 0; i < 1; i++ {
+		dialer := net.Dialer{}
+		conn, err := dialer.Dial("tcp4", "192.168.0.9:5555")
+		if err != nil {
+			panic(err)
+		}
+		go read(conn)
+		go write(conn)
+	}
+	time.Sleep(time.Second * 5)
+	writing = false
+	time.Sleep(time.Second)
+	reading = false
+	println("total sent", sent)
+	println("total received", readed)
 }

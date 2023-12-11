@@ -18,6 +18,9 @@ func read(conn net.Conn) {
 		var evId uint16
 		binary.Read(conn, binary.BigEndian, &evId)
 		payload, err := events.ReadMove(conn)
+		if evId != events.TypeMove {
+			panic("wrong type!")
+		}
 		if err != nil {
 			println(err.Error())
 			break
@@ -38,12 +41,12 @@ func write(conn net.Conn) {
 			continue
 		}
 		sent += 1
-
+		time.Sleep(time.Millisecond * 100)
 	}
 }
 
 func main() {
-	for i := 0; i < 1; i++ {
+	for i := 0; i < 900; i++ {
 		dialer := net.Dialer{}
 		conn, err := dialer.Dial("tcp4", "192.168.0.9:5555")
 		if err != nil {
@@ -54,7 +57,7 @@ func main() {
 	}
 	time.Sleep(time.Second * 5)
 	writing = false
-	time.Sleep(time.Second)
+	time.Sleep(time.Second * 3)
 	reading = false
 	println("total sent", sent)
 	println("total received", readed)

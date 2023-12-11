@@ -7,7 +7,7 @@ import (
 	"net"
 )
 
-type EventHandler = func(peer TcpPeer)
+type EventHandler = func(peer *TcpPeer)
 
 type TcpServer struct {
 	listener           net.Listener
@@ -44,7 +44,7 @@ func (s *TcpServer) Listen(host string, port int) error {
 	if s.onPeerDisconnected == nil {
 		return errors.New("on peer disconnected is required")
 	}
-	s.connectionLoop()
+	go s.connectionLoop()
 	return nil
 }
 
@@ -84,15 +84,13 @@ func (s *TcpServer) connectionLoop() {
 			conn.Close()
 			continue
 		}
-		peer := TcpPeer{}
-		peer.conn = conn
-		peer.id = clientId
+		peer := NewPeer(conn, clientId)
 		s.onPeerConnected(peer)
 		go s.readEvents(peer)
 	}
 }
 
-func (s *TcpServer) readEvents(peer TcpPeer) {
+func (s *TcpServer) readEvents(peer *TcpPeer) {
 	for s.listening {
 		var evId int16
 		err := binary.Read(peer.conn, binary.BigEndian, &evId)
@@ -112,6 +110,13 @@ func (s *TcpServer) readEvents(peer TcpPeer) {
 			continue
 		}
 		handler(peer)
+		// if peer.writeBuffer.Len() > 0 {
+		// 	// peer.conn.SetWriteDeadline(time.Now().Add(time.Millisecond * 10))
+		// 	_, err := peer.writeBuffer.WriteTo(peer.conn)
+		// 	if err != nil {
+		// 		println(err.Error())
+		// 	}
+		// }
 	}
 	peer.Close()
 	s.numClients -= 1

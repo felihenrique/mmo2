@@ -1,6 +1,7 @@
 package events
 
 import (
+	"bytes"
 	"encoding/binary"
 	"io"
 )
@@ -20,27 +21,38 @@ type MovePayload struct {
 }
 
 func WriteMove(writer io.Writer, payload MovePayload) error {
-	err := binary.Write(writer, binary.BigEndian, TypeMove)
+	buffer := bytes.Buffer{}
+	err := binary.Write(&buffer, binary.BigEndian, TypeMove)
 	if err != nil {
 		return err
 	}
-	err = binary.Write(writer, binary.BigEndian, payload.Dx)
+	err = binary.Write(&buffer, binary.BigEndian, payload.Dx)
 	if err != nil {
 		return err
 	}
-	err = binary.Write(writer, binary.BigEndian, payload.Dy)
+	err = binary.Write(&buffer, binary.BigEndian, payload.Dy)
+	if err != nil {
+		return err
+	}
+	_, err = writer.Write(buffer.Bytes())
 	if err != nil {
 		return err
 	}
 	return nil
 }
 func ReadMove(reader io.Reader) (*moveEventPacket, error) {
-	payload := MovePayload{}
-	err := binary.Read(reader, binary.BigEndian, &payload.Dx)
+	buffer := make([]byte, 8)
+	_, err := reader.Read(buffer)
 	if err != nil {
 		return nil, err
 	}
-	err = binary.Read(reader, binary.BigEndian, &payload.Dy)
+	bufferReader := bytes.NewReader(buffer)
+	payload := MovePayload{}
+	err = binary.Read(bufferReader, binary.BigEndian, &payload.Dx)
+	if err != nil {
+		return nil, err
+	}
+	err = binary.Read(bufferReader, binary.BigEndian, &payload.Dy)
 	if err != nil {
 		return nil, err
 	}

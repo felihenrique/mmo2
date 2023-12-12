@@ -25,7 +25,7 @@ func (str *MoveEvent) ToBytes() ([]byte, error) {
 		return nil, err
 	}
 	finalBuffer := bytes.Buffer{}
-	err = binary.Write(&finalBuffer, binary.BigEndian, int16(bufferData.Len()))
+	err = binary.Write(&finalBuffer, binary.BigEndian, int16(bufferData.Len()+2))
 	if err != nil {
 		return nil, err
 	}

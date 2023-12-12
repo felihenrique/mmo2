@@ -1,0 +1,16 @@
+Como lidarei com o problema do broadcast para players em excesso
+scheduler:
+- responsável por criar novas salas de jogo
+- cada sala será um container docker
+- players numa mesma party só podem entrar na mesma sala
+- para salas do tipo shard (mapas do jogo), há um limite de jogadores (inicialmente 50)
+- quando um jogador tenta entrar no shard e ele atingiu o limite de jogadores, um novo shard
+é criado e o jogador é autorizado a entrar nesse
+
+shard: 
+- Haverá um novo serviço chamado scheduler
+- Ele será responsável pela troca de players entre regiões
+- O jogador pedirá entrar na região x
+- O scheduler verificará o tamanho da party. Caso a capacidade atual 
+
+FAZENDO: escrever e ler o tamanho da mensagem

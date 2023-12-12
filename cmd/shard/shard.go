@@ -1,62 +1,60 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"mmo2/pkg/events"
 	"mmo2/pkg/gsp"
-	"os"
-	"runtime/pprof"
-	"time"
+	"sync"
 )
 
 func main() {
-	f, err := os.Create("cpu.prof")
-	if err != nil {
-		log.Fatal("could not create CPU profile: ", err)
-	}
-	defer f.Close() // error handling omitted for example
-	if err := pprof.StartCPUProfile(f); err != nil {
-		log.Fatal("could not start CPU profile: ", err)
-	}
-	defer pprof.StopCPUProfile()
-
 	server := gsp.NewTcpServer(1000)
-	peers := make(map[int32]*gsp.TcpPeer)
+	peers := sync.Map{}
+	queue := gsp.Queue[ICommand]{}
 
 	server.OnPeerConnect(func(peer *gsp.TcpPeer) {
-		peers[peer.Id()] = peer
+		peers.Store(peer.Id(), peer)
 	})
 
 	server.OnPeerDisconnect(func(peer *gsp.TcpPeer) {
-		delete(peers, peer.Id())
+		peers.Delete(peer.Id())
 	})
 
-	received := 0
-	sent := 0
-	server.OnEvent(events.TypeMove, func(peer *gsp.TcpPeer) {
-		payload, err := events.ReadMove(peer.Reader())
+	server.OnEvent(events.TypeMove, func(peer *gsp.TcpPeer, eventBytes []byte) {
+		event := events.MoveEvent{}
+		err := event.FromBytes(eventBytes)
 		if err != nil {
 			println(err.Error())
 			return
 		}
-		for _, p := range peers {
-			sent += 1
-			err = events.WriteMove(p.Writer(), payload.Payload)
-			if err != nil {
-				println(err.Error())
-				return
-			}
-		}
-		received += 1
+		queue.Push(MoveCommand{
+			payload: event,
+		})
 	})
 
-	println("listening")
-	err = server.Listen("", 5555)
+	go func() {
+		for {
+			commands := queue.PopAll()
+			for _, command := range commands {
+				command.Execute()
+			}
+			// AQUI SERÁ CHAMADA A LóGICA PARA SIMULAR O MUNDO
+			// NO CASO DO ECS, EXECUTAR OS SYSTEMS
+			// E ENVIAR PARA OS JOGADORES OS EVENTOS RESULTANTES DA SIMULAÇÃO
+		}
+	}()
+
+	println("Listening on port 5555")
+	err := server.Listen("", 5555)
 	if err != nil {
 		panic(err)
 	}
-	time.Sleep(time.Second * 10)
-	fmt.Printf("sent: %d, received: %d", sent, received)
-
 }
+
+/*
+Haverá um commando para cada tipo de evento. Na instancia do command (no metodo OnEvent)
+serão colocados todas as referências que aquele comando precisa, como por exemplo o estado
+do jogo, jogador que executou, entre outras coisas.
+No comando de movimento, serão checados também as colisões com obstaculos e entidades.
+Primeiramente serão processados todos os inputs, depois será processada a lógica do jogo
+Por exemplo, checar se um monstro está próximo do jogador e caso esteja atacar ele.
+*/

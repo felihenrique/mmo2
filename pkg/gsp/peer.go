@@ -7,10 +7,10 @@ import (
 
 type TcpPeer struct {
 	conn net.Conn
-	id   int32
+	id   int64
 }
 
-func NewPeer(conn net.Conn, id int32) *TcpPeer {
+func NewPeer(conn net.Conn, id int64) *TcpPeer {
 	peer := TcpPeer{}
 	peer.id = id
 	peer.conn = conn
@@ -21,7 +21,7 @@ func (c *TcpPeer) Close() error {
 	return c.conn.Close()
 }
 
-func (c *TcpPeer) Id() int32 {
+func (c *TcpPeer) Id() int64 {
 	return c.id
 }
 

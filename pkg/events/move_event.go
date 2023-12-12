@@ -3,61 +3,51 @@ package events
 import (
 	"bytes"
 	"encoding/binary"
-	"io"
 )
 
-type moveEventPacket struct {
-	Type    uint16
-	Payload MovePayload
-}
-
-func (m *moveEventPacket) GetType() uint16 {
-	return m.Type
-}
-
-type MovePayload struct {
+type MoveEvent struct {
 	Dx int32
 	Dy int32
 }
 
-func WriteMove(writer io.Writer, payload MovePayload) error {
-	buffer := bytes.Buffer{}
-	err := binary.Write(&buffer, binary.BigEndian, TypeMove)
+func (str *MoveEvent) ToBytes() ([]byte, error) {
+	bufferData := bytes.Buffer{}
+	err := binary.Write(&bufferData, binary.BigEndian, TypeMove)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	err = binary.Write(&buffer, binary.BigEndian, payload.Dx)
+	err = binary.Write(&bufferData, binary.BigEndian, str.Dx)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	err = binary.Write(&buffer, binary.BigEndian, payload.Dy)
+	err = binary.Write(&bufferData, binary.BigEndian, str.Dy)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	_, err = writer.Write(buffer.Bytes())
+	finalBuffer := bytes.Buffer{}
+	err = binary.Write(&finalBuffer, binary.BigEndian, int16(bufferData.Len()))
 	if err != nil {
-		return err
+		return nil, err
+	}
+	n, err := finalBuffer.Write(bufferData.Bytes())
+	if n < len(bufferData.Bytes()) {
+		panic(err)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return finalBuffer.Bytes(), nil
+}
+
+func (str *MoveEvent) FromBytes(data []byte) error {
+	reader := bytes.NewReader(data[4:])
+	err := binary.Read(reader, binary.BigEndian, &str.Dx)
+	if err != nil {
+		return nil
+	}
+	err = binary.Read(reader, binary.BigEndian, &str.Dy)
+	if err != nil {
+		return nil
 	}
 	return nil
-}
-func ReadMove(reader io.Reader) (*moveEventPacket, error) {
-	buffer := make([]byte, 8)
-	_, err := reader.Read(buffer)
-	if err != nil {
-		return nil, err
-	}
-	bufferReader := bytes.NewReader(buffer)
-	payload := MovePayload{}
-	err = binary.Read(bufferReader, binary.BigEndian, &payload.Dx)
-	if err != nil {
-		return nil, err
-	}
-	err = binary.Read(bufferReader, binary.BigEndian, &payload.Dy)
-	if err != nil {
-		return nil, err
-	}
-	packet := moveEventPacket{}
-	packet.Type = TypeMove
-	packet.Payload = payload
-	return &packet, nil
 }

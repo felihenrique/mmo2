@@ -2,23 +2,29 @@ package events
 
 import (
 	"bytes"
+	"encoding/binary"
 	"testing"
 )
 
 func BenchmarkMoveEvent(b *testing.B) {
-	buffer := bytes.Buffer{}
-	payload := MovePayload{
+	payload := MoveEvent{
 		Dx: 111,
 		Dy: 123,
 	}
 	for i := 0; i < b.N; i++ {
-		err := WriteMove(&buffer, payload)
+		buffer := bytes.Buffer{}
+		data, err := payload.ToBytes()
 		if err != nil {
 			panic(err)
 		}
-		_, err = ReadMove(&buffer)
+		err = binary.Write(&buffer, binary.BigEndian, int16(len(data)))
 		if err != nil {
 			panic(err)
 		}
+		_, err = buffer.Write(data)
+		if err != nil {
+			panic(err)
+		}
+
 	}
 }

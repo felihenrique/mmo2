@@ -1,4 +1,6 @@
 shard:
 	GOMAXPROCS=1 go run cmd/shard/shard.go
-sim:
-	GOMAXPROCS=1 go run cmd/sim/sim.go
+simc:
+	GOMAXPROCS=1 go run cmd/sim/client/client.go
+sims
+	GOMAXPROCS=1 go run cmd/sim/server/server.go

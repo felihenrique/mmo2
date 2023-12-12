@@ -9,7 +9,7 @@ var ErrNotEnoughBytes = errors.New("not enough bytes in the buffer. please fill 
 
 type Reader struct {
 	buffer []byte
-	length int16
+	length int32
 }
 
 func NewReader() *Reader {
@@ -21,7 +21,7 @@ func NewReader() *Reader {
 
 func (r *Reader) FillFrom(reader io.Reader) error {
 	n, err := reader.Read(r.buffer[r.length:])
-	r.length += int16(n)
+	r.length += int32(n)
 	if err != nil {
 		return err
 	}
@@ -33,7 +33,7 @@ func (r *Reader) Next() ([]byte, error) {
 		return nil, ErrNotEnoughBytes
 	}
 	eventLength := GetEventSize(r.buffer)
-	if r.length < eventLength {
+	if r.length < int32(eventLength) {
 		return nil, ErrNotEnoughBytes
 	}
 	return r.buffer[0:eventLength], nil
@@ -41,7 +41,7 @@ func (r *Reader) Next() ([]byte, error) {
 
 func (r *Reader) Pop() {
 	eventLength := GetEventSize(r.buffer)
-	nextLength := r.length - eventLength
+	nextLength := r.length - int32(eventLength)
 	copy(r.buffer, r.buffer[eventLength:r.length])
 	r.length = nextLength
 }

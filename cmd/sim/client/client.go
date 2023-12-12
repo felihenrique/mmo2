@@ -29,7 +29,7 @@ func read(conn net.Conn) {
 		if evId != events.TypeMove {
 			panic("wrong type!")
 		}
-		event := events.MoveEvent{}
+		event := events.Move{}
 		event.FromBytes(eventBytes)
 		if event.Dx != 111 || event.Dy != 656 {
 			panic("wrong data")
@@ -42,7 +42,7 @@ func read(conn net.Conn) {
 
 func write(conn net.Conn) {
 	for writing {
-		event := events.MoveEvent{
+		event := events.Move{
 			Dx: 111,
 			Dy: 656,
 		}

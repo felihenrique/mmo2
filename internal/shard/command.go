@@ -7,7 +7,7 @@ type ICommand interface {
 }
 
 type MoveCommand struct {
-	payload events.MoveEvent
+	payload events.Move
 	// acesso a posicao do jogador
 	// acesso aos dados de colisao
 }

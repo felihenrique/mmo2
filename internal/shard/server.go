@@ -30,7 +30,7 @@ func New(host string, port int) *Server {
 	})
 
 	server.gspServer.OnEvent(events.TypeMove, func(peer *gsp.TcpPeer, eventBytes []byte) {
-		event := events.MoveEvent{}
+		event := events.Move{}
 		event.FromBytes(eventBytes)
 		server.queue.Push(&MoveCommand{
 			payload: event,

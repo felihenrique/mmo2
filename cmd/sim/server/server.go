@@ -36,7 +36,7 @@ func main() {
 		if len(eventBytes) > 12 {
 			panic("dfdsfdsfdsfdfsdfs")
 		}
-		event := events.MoveEvent{}
+		event := events.Move{}
 		event.FromBytes(eventBytes)
 		if event.Dx != 111 || event.Dy != 656 {
 			panic("DIVERGENT")

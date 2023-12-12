@@ -31,11 +31,7 @@ func New(host string, port int) *Server {
 
 	server.gspServer.OnEvent(events.TypeMove, func(peer *gsp.TcpPeer, eventBytes []byte) {
 		event := events.MoveEvent{}
-		err := event.FromBytes(eventBytes)
-		if err != nil {
-			println(err.Error())
-			return
-		}
+		event.FromBytes(eventBytes)
 		server.queue.Push(&MoveCommand{
 			payload: event,
 		})

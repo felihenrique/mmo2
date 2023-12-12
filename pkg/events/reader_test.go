@@ -3,55 +3,51 @@ package events
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"testing"
 )
 
-func TestEventReader(t *testing.T) {
-	eventReader := NewReader()
-	event := MoveEvent{
+func TestReader(t *testing.T) {
+	ev1 := MoveEvent{
 		Dx: 111,
+		Dy: 244,
+	}
+	ev1Bytes := ev1.ToBytes()
+	ev2 := MoveEvent{
+		Dx: 123,
 		Dy: 656,
 	}
-	eventBytes, err := event.ToBytes()
+	ev2Bytes := ev2.ToBytes()
+	byteReader := bytes.NewReader(append(ev1Bytes, ev2Bytes...))
+	eventReader := NewReader()
+	eventReader.FillFrom(byteReader)
+	readedBytes1, err := eventReader.Next()
 	if err != nil {
 		panic(err)
 	}
-	byteReader := bytes.NewReader(eventBytes)
-	eventReader.FillFrom(byteReader)
-	readedEventBytes, err := eventReader.NextEvent()
-	if err != nil {
-		panic(err)
+	if GetEventType(readedBytes1) != TypeMove {
+		panic("wrong type")
 	}
 	readedEvent := MoveEvent{}
-	err = readedEvent.FromBytes(readedEventBytes)
+	readedEvent.FromBytes(readedBytes1)
+	if readedEvent.Dx != 111 || readedEvent.Dy != 244 {
+		panic("wrong data")
+	}
+	eventReader.Pop()
+	readedBytes2, err := eventReader.Next()
 	if err != nil {
 		panic(err)
 	}
-	if readedEvent.Dx != 111 || readedEvent.Dy != 543 {
-		panic(fmt.Sprintf("different values: %d, %d", readedEvent.Dx, readedEvent.Dy))
+	if GetEventType(readedBytes2) != TypeMove {
+		panic("wrong type")
 	}
-	_, err = eventReader.NextEvent()
+	readedEvent2 := MoveEvent{}
+	readedEvent2.FromBytes(readedBytes1)
+	if readedEvent2.Dx != 123 || readedEvent2.Dy != 656 {
+		panic("wrong data")
+	}
+	eventReader.Pop()
+	_, err = eventReader.Next()
 	if !errors.Is(err, ErrNotEnoughBytes) {
-		panic("err should occur")
-	}
-}
-
-func TestEventFuncs(t *testing.T) {
-	event := MoveEvent{
-		Dx: 111,
-		Dy: 543,
-	}
-	eventBytes, err := event.ToBytes()
-	if err != nil {
-		panic(err)
-	}
-	size := GetEventSize(eventBytes)
-	if size != 10 {
-		panic("mismatched")
-	}
-	evType := GetEventType(eventBytes)
-	if evType != TypeMove {
-		panic("mismatch")
+		panic("wrong result")
 	}
 }

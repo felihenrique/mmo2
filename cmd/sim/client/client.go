@@ -20,7 +20,7 @@ func read(conn net.Conn) {
 			println(err.Error())
 			continue
 		}
-		eventBytes, err := reader.NextEvent()
+		eventBytes, err := reader.Next()
 		if err != nil {
 			println(err.Error())
 			continue
@@ -30,14 +30,11 @@ func read(conn net.Conn) {
 			panic("wrong type!")
 		}
 		event := events.MoveEvent{}
-		err = event.FromBytes(eventBytes)
-		if err != nil {
-			println(err.Error())
-			continue
-		}
+		event.FromBytes(eventBytes)
 		if event.Dx != 111 || event.Dy != 656 {
 			panic("wrong data")
 		}
+		reader.Pop()
 
 		readed += 1
 	}
@@ -49,11 +46,7 @@ func write(conn net.Conn) {
 			Dx: 111,
 			Dy: 656,
 		}
-		data, err := event.ToBytes()
-		if err != nil {
-			println(err.Error())
-			continue
-		}
+		data := event.ToBytes()
 		offset := 0
 		written := 0
 		for retries := 0; retries < 3; retries++ {

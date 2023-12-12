@@ -1,8 +1,6 @@
 package events
 
 import (
-	"bytes"
-	"encoding/binary"
 	"errors"
 	"io"
 )
@@ -30,22 +28,20 @@ func (r *Reader) FillFrom(reader io.Reader) error {
 	return nil
 }
 
-func (r *Reader) NextEvent() ([]byte, error) {
-	reader := bytes.NewReader(r.buffer)
-	var packetSize int16
-	err := binary.Read(reader, binary.BigEndian, &packetSize)
-	if err != nil {
-		return nil, err
-	}
-	if r.length < packetSize {
+func (r *Reader) Next() ([]byte, error) {
+	if r.length < 5 {
 		return nil, ErrNotEnoughBytes
 	}
-	nextLength := r.length - packetSize
-	toReturn := make([]byte, packetSize)
-	copy(toReturn, r.buffer[0:packetSize])
-	if nextLength > 0 {
-		copy(r.buffer, r.buffer[packetSize:r.length])
+	eventLength := GetEventSize(r.buffer)
+	if r.length < eventLength {
+		return nil, ErrNotEnoughBytes
 	}
+	return r.buffer[0:eventLength], nil
+}
+
+func (r *Reader) Pop() {
+	eventLength := GetEventSize(r.buffer)
+	nextLength := r.length - eventLength
+	copy(r.buffer, r.buffer[eventLength:r.length])
 	r.length = nextLength
-	return toReturn, nil
 }

@@ -3,7 +3,6 @@ package gsp
 import (
 	"errors"
 	"fmt"
-	"log"
 	"mmo2/pkg/events"
 	"net"
 )
@@ -92,20 +91,25 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 			println(err.Error())
 			continue
 		}
-		eventBytes, err := reader.NextEvent()
-		if err != nil {
-			if errors.Is(err, events.ErrNotEnoughBytes) {
+		for {
+			eventBytes, err := reader.Next()
+			if err != nil {
+				if errors.Is(err, events.ErrNotEnoughBytes) {
+					break
+				}
+				println(err.Error())
+				reader.Pop()
 				continue
 			}
-			log.Println(err.Error())
+			evType := events.GetEventType(eventBytes)
+			handler := s.handlers[evType]
+			if handler == nil {
+				println("no handler found for id ", evType)
+				continue
+			}
+			handler(peer, eventBytes)
+			reader.Pop()
 		}
-		evType := events.GetEventType(eventBytes)
-		handler := s.handlers[evType]
-		if handler == nil {
-			println("no handler found for id ", evType)
-			continue
-		}
-		handler(peer, eventBytes)
 	}
 	peer.Close()
 }

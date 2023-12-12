@@ -19,7 +19,7 @@ type TcpServer struct {
 	onPeerDisconnected PeerHandler
 }
 
-func NewTcpServer(maxClients int32) TcpServer {
+func NewTcpServer() TcpServer {
 	server := TcpServer{}
 	server.handlers = make([]EventHandler, 1000)
 	server.listening = false
@@ -39,7 +39,7 @@ func (s *TcpServer) Listen(host string, port int) error {
 	if s.onPeerDisconnected == nil {
 		return errors.New("on peer disconnected is required")
 	}
-	s.connectionLoop()
+	go s.connectionLoop()
 	return nil
 }
 

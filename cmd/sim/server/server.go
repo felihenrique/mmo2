@@ -4,10 +4,11 @@ import (
 	"mmo2/pkg/events"
 	"mmo2/pkg/gsp"
 	"sync"
+	"time"
 )
 
 func main() {
-	server := gsp.NewTcpServer(1000)
+	server := gsp.NewTcpServer()
 	peers := sync.Map{}
 
 	server.OnPeerConnect(func(peer *gsp.TcpPeer) {
@@ -44,4 +45,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	time.Sleep(time.Second * 20)
 }

@@ -1,4 +1,4 @@
-package main
+package shard
 
 import "mmo2/pkg/events"
 

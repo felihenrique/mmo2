@@ -109,6 +109,10 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 			}
 			handler(peer, eventBytes)
 			reader.Pop()
+			_, err = peer.writer.WriteTo(peer.conn)
+			if err != nil {
+				println(err.Error())
+			}
 		}
 	}
 	peer.Close()

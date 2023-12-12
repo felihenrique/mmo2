@@ -43,10 +43,9 @@ func main() {
 		}
 		peers.Range(func(key, value any) bool {
 			peer := value.(*gsp.TcpPeer)
-			peer.Writer().Write(eventBytes)
+			peer.SendEvent(eventBytes)
 			return true
 		})
-		peer.Writer().Write(eventBytes)
 	})
 
 	println("Listening on port 5555")

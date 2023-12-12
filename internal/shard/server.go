@@ -4,6 +4,7 @@ import (
 	"mmo2/pkg/events"
 	"mmo2/pkg/gsp"
 	"sync"
+	"time"
 )
 
 type Server struct {
@@ -35,7 +36,7 @@ func New(host string, port int) *Server {
 			println(err.Error())
 			return
 		}
-		server.queue.Push(MoveCommand{
+		server.queue.Push(&MoveCommand{
 			payload: event,
 		})
 	})
@@ -53,6 +54,7 @@ func (s *Server) Start() error {
 		for _, command := range commands {
 			command.Execute()
 		}
+		time.Sleep(time.Millisecond * 50)
 		// AQUI SERÁ CHAMADA A LóGICA PARA SIMULAR O MUNDO
 		// NO CASO DO ECS, EXECUTAR OS SYSTEMS
 		// E ENVIAR PARA OS JOGADORES OS EVENTOS RESULTANTES DA SIMULAÇÃO

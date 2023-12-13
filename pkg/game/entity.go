@@ -23,7 +23,8 @@ func (e *Entity) Get(componentId uint8) IComponent {
 }
 
 func (e *Entity) Has(componentId uint8) bool {
-	return e.Get(componentId) != nil
+	_, ok := e.components[componentId]
+	return ok
 }
 
 func (e *Entity) Update() {

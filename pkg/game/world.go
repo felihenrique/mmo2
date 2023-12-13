@@ -1,35 +1,52 @@
 package game
 
+import "mmo2/pkg/ds"
+
 type World struct {
-	entities   [10000]*Entity
-	currentPos int
+	entities     []*Entity
+	maxEntites   int16
+	currentPos   int16
+	availablePos ds.Queue[int16]
 }
 
-func NewWorld() *World {
+func NewWorld(maxEntites int16) *World {
 	w := World{}
-	w.entities = [10000]*Entity{}
+	w.entities = make([]*Entity, maxEntites)
 	w.currentPos = 0
+	w.maxEntites = maxEntites
 	return &w
 }
 
 func (w *World) nextPos() int16 {
-	for i, entity := range w.entities {
-		if entity == nil {
-			return int16(i)
-		}
+	if w.availablePos.Len() > 0 {
+		return w.availablePos.Pop()
 	}
-	return -1
+	pos := w.currentPos
+	w.currentPos += 1
+
+	return pos
 }
 
 func (w *World) NewEntity() *Entity {
+	if w.currentPos == w.maxEntites && w.availablePos.Len() == 0 {
+		return nil
+	}
 	entity := Entity{}
 	entity.components = make(map[uint8]IComponent)
 	entity.world = w
-	id := w.nextPos()
-	if id == -1 {
-		return nil
-	}
-	entity.id = id
+	entity.id = w.nextPos()
 	w.entities[entity.id] = &entity
 	return &entity
+}
+
+func (w *World) GetEntity(id int16) *Entity {
+	if id >= w.maxEntites {
+		return nil
+	}
+	return w.entities[id]
+}
+
+func (w *World) RemoveEntity(entity *Entity) {
+	w.entities[entity.id] = nil
+	w.availablePos.Push(entity.id)
 }

@@ -8,14 +8,14 @@ import (
 type TcpPeer struct {
 	conn   net.Conn
 	writer *events.Writer
-	id     int64
+	addr   string
 }
 
-func NewPeer(conn net.Conn, id int64) *TcpPeer {
+func NewPeer(conn net.Conn) *TcpPeer {
 	peer := TcpPeer{}
-	peer.id = id
 	peer.conn = conn
 	peer.writer = events.NewWriter()
+	peer.addr = conn.RemoteAddr().String()
 	return &peer
 }
 
@@ -23,10 +23,10 @@ func (c *TcpPeer) Close() error {
 	return c.conn.Close()
 }
 
-func (c *TcpPeer) Id() int64 {
-	return c.id
-}
-
 func (c *TcpPeer) SendEvent(data []byte) {
 	c.writer.Append(data)
+}
+
+func (c *TcpPeer) Addr() string {
+	return c.addr
 }

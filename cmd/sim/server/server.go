@@ -25,11 +25,11 @@ func main() {
 	peers := sync.Map{}
 
 	server.OnPeerConnect(func(peer *gsp.TcpPeer) {
-		peers.Store(peer.Id(), peer)
+		peers.Store(peer.Addr(), peer)
 	})
 
 	server.OnPeerDisconnect(func(peer *gsp.TcpPeer) {
-		peers.Delete(peer.Id())
+		peers.Delete(peer.Addr())
 	})
 
 	server.OnEvent(events.TypeMove, func(peer *gsp.TcpPeer, eventBytes []byte) {

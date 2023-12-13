@@ -1,13 +1,21 @@
 package shard
 
-import "mmo2/pkg/events"
+import (
+	"log"
+	"mmo2/pkg/events"
+	"mmo2/pkg/game"
+)
 
 type ICommand interface {
 	Execute()
 }
+type BroadcastFunc = func(event []byte)
 
 type MoveCommand struct {
-	payload events.Move
+	payload   events.Move
+	world     *game.World
+	player    Player
+	broadcast BroadcastFunc
 	// acesso a posicao do jogador
 	// acesso aos dados de colisao
 }
@@ -22,7 +30,18 @@ próximo do jogador
 (a tela do jogador 4 x 4 seções)
 */
 func (c *MoveCommand) Execute() {
-
+	entity := c.world.GetEntity(c.player.entityId)
+	if !entity.Has(game.TypeTransform) {
+		log.Printf("move command error: entity %d doesn't have transform", entity.ID())
+		return
+	}
+	transform := entity.Get(game.TypeTransform).(game.Transform)
+	transform.X += c.payload.Dx
+	transform.Y += c.payload.Dy
+	entity.Add(transform)
+	c.payload.Dx = transform.X
+	c.payload.Dy = transform.Y
+	c.broadcast(c.payload.ToBytes())
 }
 
 /*

@@ -5,7 +5,7 @@ import (
 )
 
 func TestWorld(t *testing.T) {
-	world := NewWorld()
+	world := NewWorld(1000)
 	entity := world.NewEntity()
 	if world.entities[0] == nil {
 		panic("wrong")

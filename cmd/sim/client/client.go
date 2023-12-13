@@ -15,6 +15,7 @@ var reading bool = true
 func read(conn net.Conn) {
 	reader := events.NewReader()
 	for reading {
+		readed += 1
 		err := reader.FillFrom(conn)
 		if err != nil {
 			println(err.Error())
@@ -31,20 +32,19 @@ func read(conn net.Conn) {
 		}
 		event := events.Move{}
 		event.FromBytes(eventBytes)
-		if event.Dx != 111 || event.Dy != 656 {
+		if event.Dx != readed*5 || event.Dy != readed*2 {
+			println(event.Dx, event.Dy, readed)
 			panic("wrong data")
 		}
 		reader.Pop()
-
-		readed += 1
 	}
 }
 
 func write(conn net.Conn) {
 	for writing {
 		event := events.Move{
-			Dx: 111,
-			Dy: 656,
+			Dx: 5,
+			Dy: 2,
 		}
 		data := event.ToBytes()
 		offset := 0
@@ -68,7 +68,7 @@ func write(conn net.Conn) {
 }
 
 func main() {
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 1; i++ {
 		dialer := net.Dialer{}
 		conn, err := dialer.Dial("tcp4", "192.168.0.9:5555")
 		if err != nil {

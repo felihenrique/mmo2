@@ -64,15 +64,13 @@ func (s *TcpServer) OnEvent(evId int16, handler EventHandler) {
 }
 
 func (s *TcpServer) connectionLoop() {
-	var clientId int64
 	for s.listening {
-		clientId += 1
 		conn, err := s.listener.Accept()
 		if err != nil {
 			println(err.Error())
 			continue
 		}
-		peer := NewPeer(conn, clientId)
+		peer := NewPeer(conn)
 		s.onPeerConnected(peer)
 		go s.readEvents(peer)
 	}

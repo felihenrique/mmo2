@@ -9,12 +9,6 @@ type ConcurrentQueue[T any] struct {
 	locker sync.Mutex
 }
 
-func New[T any]() *ConcurrentQueue[T] {
-	return &ConcurrentQueue[T]{
-		list: []T{},
-	}
-}
-
 func (iq *ConcurrentQueue[T]) Len() int {
 	iq.locker.Lock()
 	n := len(iq.list)

@@ -13,35 +13,70 @@ type Server struct {
 	gspServer    gsp.TcpServer
 	commandQueue ds.ConcurrentQueue[ICommand]
 	world        *game.World
-	peers        sync.Map
+	players      sync.Map
 	host         string
 	port         int
+}
+
+type Player struct {
+	entityId int16
+	peer     *gsp.TcpPeer
 }
 
 func New(host string, port int) *Server {
 	server := Server{}
 	server.host = host
 	server.port = port
-	server.world = game.NewWorld()
+	server.world = game.NewWorld(1000)
 	server.gspServer = gsp.NewTcpServer()
 
 	server.gspServer.OnPeerConnect(func(peer *gsp.TcpPeer) {
-		server.peers.Store(peer.Id(), peer)
+		entity := server.world.NewEntity()
+		entity.Add(game.Transform{
+			X:        0,
+			Y:        0,
+			Rotation: 0,
+		})
+		if entity == nil {
+			peer.Close()
+			return
+		}
+		player := Player{
+			entityId: entity.ID(),
+			peer:     peer,
+		}
+		server.players.Store(peer.Addr(), player)
 	})
 
 	server.gspServer.OnPeerDisconnect(func(peer *gsp.TcpPeer) {
-		server.peers.Delete(peer.Id())
+		server.players.Delete(peer.Addr())
 	})
 
 	server.gspServer.OnEvent(events.TypeMove, func(peer *gsp.TcpPeer, eventBytes []byte) {
+		entry, ok := server.players.Load(peer.Addr())
+		if !ok {
+			return
+		}
 		event := events.Move{}
 		event.FromBytes(eventBytes)
+		player := entry.(Player)
 		server.commandQueue.Push(&MoveCommand{
-			payload: event,
+			payload:   event,
+			player:    player,
+			world:     server.world,
+			broadcast: server.Broadcast,
 		})
 	})
 
 	return &server
+}
+
+func (s *Server) Broadcast(event []byte) {
+	s.players.Range(func(key, value any) bool {
+		player := value.(Player)
+		player.peer.SendEvent(event)
+		return true
+	})
 }
 
 func (s *Server) Start() error {

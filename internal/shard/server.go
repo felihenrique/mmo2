@@ -1,24 +1,28 @@
 package shard
 
 import (
+	"mmo2/pkg/ds"
 	"mmo2/pkg/events"
+	"mmo2/pkg/game"
 	"mmo2/pkg/gsp"
 	"sync"
 	"time"
 )
 
 type Server struct {
-	gspServer gsp.TcpServer
-	queue     gsp.Queue[ICommand]
-	peers     sync.Map
-	host      string
-	port      int
+	gspServer    gsp.TcpServer
+	commandQueue ds.ConcurrentQueue[ICommand]
+	world        *game.World
+	peers        sync.Map
+	host         string
+	port         int
 }
 
 func New(host string, port int) *Server {
 	server := Server{}
 	server.host = host
 	server.port = port
+	server.world = game.NewWorld()
 	server.gspServer = gsp.NewTcpServer()
 
 	server.gspServer.OnPeerConnect(func(peer *gsp.TcpPeer) {
@@ -32,7 +36,7 @@ func New(host string, port int) *Server {
 	server.gspServer.OnEvent(events.TypeMove, func(peer *gsp.TcpPeer, eventBytes []byte) {
 		event := events.Move{}
 		event.FromBytes(eventBytes)
-		server.queue.Push(&MoveCommand{
+		server.commandQueue.Push(&MoveCommand{
 			payload: event,
 		})
 	})
@@ -46,14 +50,14 @@ func (s *Server) Start() error {
 		return err
 	}
 	for {
-		commands := s.queue.PopAll()
+		commands := s.commandQueue.PopAll()
 		for _, command := range commands {
 			command.Execute()
 		}
-		time.Sleep(time.Millisecond * 50)
 		// AQUI SERÁ CHAMADA A LóGICA PARA SIMULAR O MUNDO
 		// NO CASO DO ECS, EXECUTAR OS SYSTEMS
 		// E ENVIAR PARA OS JOGADORES OS EVENTOS RESULTANTES DA SIMULAÇÃO
+		time.Sleep(time.Millisecond * 50)
 	}
 }
 

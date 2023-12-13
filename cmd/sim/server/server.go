@@ -32,18 +32,18 @@ func main() {
 		peers.Delete(peer.Addr())
 	})
 
-	server.OnEvent(events.TypeMove, func(peer *gsp.TcpPeer, eventBytes []byte) {
-		if len(eventBytes) > 12 {
-			panic("dfdsfdsfdsfdfsdfs")
+	server.OnEvent(events.TypeMove, func(peer *gsp.TcpPeer, rawEvent events.RawEvent) {
+		if len(rawEvent) != 14 {
+			panic("WRONG")
 		}
 		event := events.Move{}
-		event.FromBytes(eventBytes)
-		if event.Dx != 111 || event.Dy != 656 {
+		events.Unserialize(rawEvent, &event)
+		if event.Dx != 5 || event.Dy != 2 {
 			panic("DIVERGENT")
 		}
 		peers.Range(func(key, value any) bool {
 			peer := value.(*gsp.TcpPeer)
-			peer.SendEvent(eventBytes)
+			peer.SendEvent(&event, events.GetId(rawEvent))
 			return true
 		})
 	})

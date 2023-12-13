@@ -9,15 +9,14 @@ import (
 type ICommand interface {
 	Execute()
 }
-type BroadcastFunc = func(event []byte)
+type BroadcastFunc = func(event events.ISerializable, eventId int16)
 
 type MoveCommand struct {
-	payload   events.Move
+	event     events.Move
+	eventId   int16
 	world     *game.World
 	player    Player
 	broadcast BroadcastFunc
-	// acesso a posicao do jogador
-	// acesso aos dados de colisao
 }
 
 /*
@@ -36,12 +35,12 @@ func (c *MoveCommand) Execute() {
 		return
 	}
 	transform := entity.Get(game.TypeTransform).(game.Transform)
-	transform.X += c.payload.Dx
-	transform.Y += c.payload.Dy
+	transform.X += c.event.Dx
+	transform.Y += c.event.Dy
 	entity.Add(transform)
-	c.payload.Dx = transform.X
-	c.payload.Dy = transform.Y
-	c.broadcast(c.payload.ToBytes())
+	c.event.Dx = transform.X
+	c.event.Dy = transform.Y
+	c.broadcast(&c.event, c.eventId)
 }
 
 /*

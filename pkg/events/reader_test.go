@@ -7,28 +7,26 @@ import (
 )
 
 func TestReader(t *testing.T) {
-	ev1 := Move{
+	ev1 := Serialize(&Move{
 		Dx: 111,
 		Dy: 244,
-	}
-	ev1Bytes := ev1.ToBytes()
-	ev2 := Move{
+	}, 123)
+	ev2 := Serialize(&Move{
 		Dx: 123,
 		Dy: 656,
-	}
-	ev2Bytes := ev2.ToBytes()
-	byteReader := bytes.NewReader(append(ev1Bytes, ev2Bytes...))
+	}, 123)
+	byteReader := bytes.NewReader(append(ev1, ev2...))
 	eventReader := NewReader()
 	eventReader.FillFrom(byteReader)
 	readedBytes1, err := eventReader.Next()
 	if err != nil {
 		panic(err)
 	}
-	if GetEventType(readedBytes1) != TypeMove {
+	if GetType(readedBytes1) != TypeMove {
 		panic("wrong type")
 	}
 	readedEvent := Move{}
-	readedEvent.FromBytes(readedBytes1)
+	Unserialize(readedBytes1, &readedEvent)
 	if readedEvent.Dx != 111 || readedEvent.Dy != 244 {
 		panic("wrong data")
 	}
@@ -37,11 +35,11 @@ func TestReader(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if GetEventType(readedBytes2) != TypeMove {
+	if GetType(readedBytes2) != TypeMove {
 		panic("wrong type")
 	}
 	readedEvent2 := Move{}
-	readedEvent2.FromBytes(readedBytes1)
+	Unserialize(readedBytes1, &readedEvent2)
 	if readedEvent2.Dx != 123 || readedEvent2.Dy != 656 {
 		panic("wrong data")
 	}

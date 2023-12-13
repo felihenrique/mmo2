@@ -23,8 +23,9 @@ func (c *TcpPeer) Close() error {
 	return c.conn.Close()
 }
 
-func (c *TcpPeer) SendEvent(data []byte) {
-	c.writer.Append(data)
+func (c *TcpPeer) SendEvent(event events.ISerializable, id int16) {
+	packet := events.Serialize(event, id)
+	c.writer.Append(packet)
 }
 
 func (c *TcpPeer) Addr() string {

@@ -7,7 +7,7 @@ import (
 	"net"
 )
 
-type EventHandler = func(peer *TcpPeer, eventBytes []byte)
+type EventHandler = func(peer *TcpPeer, rawEvent events.RawEvent)
 type PeerHandler = func(peer *TcpPeer)
 
 type TcpServer struct {
@@ -90,7 +90,7 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 			continue
 		}
 		for {
-			eventBytes, err := reader.Next()
+			rawEvent, err := reader.Next()
 			if err != nil {
 				if errors.Is(err, events.ErrNotEnoughBytes) {
 					break
@@ -99,13 +99,13 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 				reader.Pop()
 				continue
 			}
-			evType := events.GetEventType(eventBytes)
+			evType := events.GetType(rawEvent)
 			handler := s.handlers[evType]
 			if handler == nil {
 				println("no handler found for id ", evType)
 				continue
 			}
-			handler(peer, eventBytes)
+			handler(peer, rawEvent)
 			reader.Pop()
 			_, err = peer.writer.WriteTo(peer.conn)
 			if err != nil {

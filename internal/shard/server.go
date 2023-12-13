@@ -52,16 +52,17 @@ func New(host string, port int) *Server {
 		server.players.Delete(peer.Addr())
 	})
 
-	server.gspServer.OnEvent(events.TypeMove, func(peer *gsp.TcpPeer, eventBytes []byte) {
+	server.gspServer.OnEvent(events.TypeMove, func(peer *gsp.TcpPeer, rawEvent events.RawEvent) {
 		entry, ok := server.players.Load(peer.Addr())
 		if !ok {
 			return
 		}
-		event := events.Move{}
-		event.FromBytes(eventBytes)
+		move := events.Move{}
+		events.Unserialize(rawEvent, &move)
 		player := entry.(Player)
 		server.commandQueue.Push(&MoveCommand{
-			payload:   event,
+			event:     move,
+			eventId:   events.GetId(rawEvent),
 			player:    player,
 			world:     server.world,
 			broadcast: server.Broadcast,
@@ -71,10 +72,10 @@ func New(host string, port int) *Server {
 	return &server
 }
 
-func (s *Server) Broadcast(event []byte) {
+func (s *Server) Broadcast(event events.ISerializable, id int16) {
 	s.players.Range(func(key, value any) bool {
 		player := value.(Player)
-		player.peer.SendEvent(event)
+		player.peer.SendEvent(event, id)
 		return true
 	})
 }

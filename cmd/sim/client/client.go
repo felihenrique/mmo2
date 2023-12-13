@@ -26,16 +26,19 @@ func read(conn net.Conn) {
 			println(err.Error())
 			continue
 		}
-		evId := events.GetEventType(eventBytes)
+		evId := events.GetType(eventBytes)
 		if evId != events.TypeMove {
 			panic("wrong type!")
 		}
 		event := events.Move{}
-		event.FromBytes(eventBytes)
+		events.Unserialize(eventBytes, &event)
 		if event.Dx != readed*5 || event.Dy != readed*2 {
 			println(event.Dx, event.Dy, readed)
 			panic("wrong data")
 		}
+		// if event.Dx != 5 && event.Dy != 2 {
+		// 	panic("wrong data")
+		// }
 		reader.Pop()
 	}
 }
@@ -46,7 +49,7 @@ func write(conn net.Conn) {
 			Dx: 5,
 			Dy: 2,
 		}
-		data := event.ToBytes()
+		data := events.Serialize(&event, 123)
 		offset := 0
 		written := 0
 		for retries := 0; retries < 3; retries++ {

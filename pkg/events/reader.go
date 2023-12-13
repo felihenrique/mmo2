@@ -29,10 +29,10 @@ func (r *Reader) FillFrom(reader io.Reader) error {
 }
 
 func (r *Reader) Next() ([]byte, error) {
-	if r.length < 5 {
+	if r.length < 7 {
 		return nil, ErrNotEnoughBytes
 	}
-	eventLength := GetEventSize(r.buffer)
+	eventLength := GetSize(r.buffer)
 	if r.length < int32(eventLength) {
 		return nil, ErrNotEnoughBytes
 	}
@@ -40,7 +40,7 @@ func (r *Reader) Next() ([]byte, error) {
 }
 
 func (r *Reader) Pop() {
-	eventLength := GetEventSize(r.buffer)
+	eventLength := GetSize(r.buffer)
 	nextLength := r.length - int32(eventLength)
 	copy(r.buffer, r.buffer[eventLength:r.length])
 	r.length = nextLength

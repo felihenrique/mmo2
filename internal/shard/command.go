@@ -14,7 +14,7 @@ type BroadcastFunc = func(event events.ISerializable, eventId int16)
 type BroadcastFilteredFunc = func(event events.ISerializable, eventId int16, filterPeer *gsp.TcpPeer)
 
 type MoveCommand struct {
-	event             events.Move
+	event             events.MoveRequest
 	eventId           int16
 	world             *game.World
 	player            Player
@@ -32,21 +32,14 @@ próximo do jogador
 */
 func (c *MoveCommand) Execute() {
 	entity := c.world.GetEntity(c.player.entityId)
-	if !entity.Has(game.TypeTransform) || !entity.Has(game.TypeMovable) {
-		log.Printf("move command error: entity %d doesn't have transform or movable", entity.ID())
+	tc, tok := entity.Get(game.TypeTransform)
+	if !tok {
+		log.Printf("move command error: entity %d doesn't have transform", entity.ID())
 		return
 	}
-	transform := entity.Get(game.TypeTransform).(*game.Transform)
-	movable := entity.Get(game.TypeMovable).(*game.Movable)
+	transform := tc.(*game.Transform)
 	transform.X += c.event.Dx
 	transform.Y += c.event.Dy
-	movedEvent := events.EntityMoved{
-		NewX:     transform.X,
-		NewY:     transform.Y,
-		EntityId: c.player.entityId,
-		Velocity: movable.Velocity,
-	}
-	c.broadcastFiltered(&movedEvent, 0, c.player.peer)
 	c.player.peer.AckEvent(c.eventId)
 }
 

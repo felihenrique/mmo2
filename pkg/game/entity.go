@@ -18,8 +18,9 @@ func (e *Entity) Remove(componentId uint8) {
 	delete(e.components, componentId)
 }
 
-func (e *Entity) Get(componentId uint8) IComponent {
-	return e.components[componentId]
+func (e *Entity) Get(componentId uint8) (IComponent, bool) {
+	c, ok := e.components[componentId]
+	return c, ok
 }
 
 func (e *Entity) Has(componentId uint8) bool {

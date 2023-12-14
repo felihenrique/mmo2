@@ -77,6 +77,12 @@ func (s *TcpServer) connectionLoop() {
 }
 
 func (s *TcpServer) readEvents(peer *TcpPeer) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("error in peer %s: %s \n", peer.Addr(), r)
+		}
+		peer.Close()
+	}()
 	reader := events.NewReader()
 	for s.listening {
 		err := reader.FillFrom(peer.conn)
@@ -113,5 +119,4 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 			}
 		}
 	}
-	peer.Close()
 }

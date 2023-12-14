@@ -32,11 +32,11 @@ func main() {
 		peers.Delete(peer.Addr())
 	})
 
-	server.OnEvent(events.TypeMove, func(peer *gsp.TcpPeer, rawEvent events.RawEvent) {
+	server.OnEvent(events.TypeMoveRequest, func(peer *gsp.TcpPeer, rawEvent events.RawEvent) {
 		if len(rawEvent) != 14 {
 			panic("WRONG")
 		}
-		event := events.Move{}
+		event := events.MoveRequest{}
 		events.Unserialize(rawEvent, &event)
 		if event.Dx != 5 || event.Dy != 2 {
 			panic("DIVERGENT")
@@ -54,5 +54,5 @@ func main() {
 		panic(err)
 	}
 
-	time.Sleep(time.Second * 20)
+	time.Sleep(time.Second * 3333)
 }

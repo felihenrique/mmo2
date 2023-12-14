@@ -52,12 +52,12 @@ func New(host string, port int) *Server {
 		server.players.Delete(peer.Addr())
 	})
 
-	server.gspServer.OnEvent(events.TypeMove, func(peer *gsp.TcpPeer, rawEvent events.RawEvent) {
+	server.gspServer.OnEvent(events.TypeMoveRequest, func(peer *gsp.TcpPeer, rawEvent events.RawEvent) {
 		entry, ok := server.players.Load(peer.Addr())
 		if !ok {
 			return
 		}
-		move := events.Move{}
+		move := events.MoveRequest{}
 		events.Unserialize(rawEvent, &move)
 		player := entry.(Player)
 		server.commandQueue.Push(&MoveCommand{

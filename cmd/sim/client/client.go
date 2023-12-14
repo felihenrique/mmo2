@@ -27,10 +27,10 @@ func read(conn net.Conn) {
 			continue
 		}
 		evId := events.GetType(eventBytes)
-		if evId != events.TypeMove {
+		if evId != events.TypeMoveRequest {
 			panic("wrong type!")
 		}
-		event := events.Move{}
+		event := events.MoveRequest{}
 		events.Unserialize(eventBytes, &event)
 		if event.Dx != 5 && event.Dy != 2 {
 			panic("wrong data")
@@ -41,7 +41,7 @@ func read(conn net.Conn) {
 
 func write(conn net.Conn) {
 	for writing {
-		event := events.Move{
+		event := events.MoveRequest{
 			Dx: 5,
 			Dy: 2,
 		}
@@ -67,7 +67,7 @@ func write(conn net.Conn) {
 }
 
 func main() {
-	for i := 0; i < 1; i++ {
+	for i := 0; i < 500; i++ {
 		dialer := net.Dialer{}
 		conn, err := dialer.Dial("tcp4", "192.168.0.9:5555")
 		if err != nil {
@@ -78,7 +78,7 @@ func main() {
 	}
 	time.Sleep(time.Second * 10)
 	writing = false
-	time.Sleep(time.Second * 3)
+	time.Sleep(time.Second * 2)
 	reading = false
 	println("total sent", sent)
 	println("total received", readed)

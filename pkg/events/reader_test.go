@@ -7,11 +7,11 @@ import (
 )
 
 func TestReader(t *testing.T) {
-	ev1 := Serialize(&Move{
+	ev1 := Serialize(&MoveRequest{
 		Dx: 111,
 		Dy: 244,
 	}, 123)
-	ev2 := Serialize(&Move{
+	ev2 := Serialize(&MoveRequest{
 		Dx: 123,
 		Dy: 656,
 	}, 123)
@@ -22,10 +22,10 @@ func TestReader(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if GetType(readedBytes1) != TypeMove {
+	if GetType(readedBytes1) != TypeMoveRequest {
 		panic("wrong type")
 	}
-	readedEvent := Move{}
+	readedEvent := MoveRequest{}
 	Unserialize(readedBytes1, &readedEvent)
 	if readedEvent.Dx != 111 || readedEvent.Dy != 244 {
 		panic("wrong data")
@@ -35,10 +35,10 @@ func TestReader(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if GetType(readedBytes2) != TypeMove {
+	if GetType(readedBytes2) != TypeMoveRequest {
 		panic("wrong type")
 	}
-	readedEvent2 := Move{}
+	readedEvent2 := MoveRequest{}
 	Unserialize(readedBytes1, &readedEvent2)
 	if readedEvent2.Dx != 123 || readedEvent2.Dy != 656 {
 		panic("wrong data")

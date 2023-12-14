@@ -1,19 +1,31 @@
 package events
 
+// ACK REQUESTS
 type Ack struct{}
 
 func (Ack) toBytes() []byte       { return []byte{} }
 func (Ack) fromBytes(data []byte) {}
 func (Ack) evType() int16         { return TypeAck }
 
-type Move struct {
+// REQUEST
+type MoveRequest struct {
 	Dx int32
 	Dy int32
 }
+type RotateRequest struct {
+	Quantity float32
+}
+type JoinShardRequest struct {
+	Portal uint8
+}
 
-type EntityMoved struct {
-	NewX     int32
-	NewY     int32
+// EVENTS
+type EntityCreated struct {
+	Data []byte
+}
+type EntityUpdated struct {
+	Data []byte
+}
+type EntityRemoved struct {
 	EntityId int16
-	Velocity float32
 }

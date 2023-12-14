@@ -4,3 +4,5 @@ simc:
 	GOMAXPROCS=4 go run cmd/sim/client/client.go
 sims:
 	GOMAXPROCS=4 go run cmd/sim/server/server.go
+test:
+	go test ./...

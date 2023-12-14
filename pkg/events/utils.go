@@ -6,7 +6,7 @@ type RawEvent = []byte
 
 type ISerializable interface {
 	toBytes() []byte
-	fromBytes(data []byte)
+	fromBytes(data []byte) int16
 	evType() int16
 }
 

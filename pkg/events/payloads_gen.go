@@ -1,9 +1,5 @@
 package events
 
-import (
-	"encoding/binary"
-)
-
 const (
 	TypeAck = int16(iota + 1)
 	TypeMoveRequest
@@ -15,16 +11,16 @@ const (
 
 func (str *MoveRequest) toBytes() []byte {
 	buffer := make([]byte, 0)
-	buffer = binary.BigEndian.AppendUint32(buffer, uint32(str.Dx))
-	buffer = binary.BigEndian.AppendUint32(buffer, uint32(str.Dy))
+	buffer = WriteBinary(buffer, str.Dx)
+	buffer = WriteBinary(buffer, str.Dy)
 	return buffer
 }
 
-func (str *MoveRequest) fromBytes(data []byte) {
-	position := 0
-	str.Dx = int32(binary.BigEndian.Uint32(data[position:]))
-	position += 4
-	str.Dy = int32(binary.BigEndian.Uint32(data[position:]))
+func (str *MoveRequest) fromBytes(data []byte) int16 {
+	var n int16 = 0
+	n += ReadBinary(data[n:], &str.Dx)
+	n += ReadBinary(data[n:], &str.Dy)
+	return n
 }
 
 func (str *MoveRequest) evType() int16 {

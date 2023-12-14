@@ -3,9 +3,9 @@ package events
 // ACK REQUESTS
 type Ack struct{}
 
-func (Ack) toBytes() []byte       { return []byte{} }
-func (Ack) fromBytes(data []byte) {}
-func (Ack) evType() int16         { return TypeAck }
+func (Ack) toBytes() []byte             { return []byte{} }
+func (Ack) fromBytes(data []byte) int16 { return 0 }
+func (Ack) evType() int16               { return TypeAck }
 
 // REQUEST
 type MoveRequest struct {

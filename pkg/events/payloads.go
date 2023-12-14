@@ -1,5 +1,7 @@
 package events
 
+//go:generate ../../bin/generator
+
 // ACK REQUESTS
 type Ack struct{}
 

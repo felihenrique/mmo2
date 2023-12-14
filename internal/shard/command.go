@@ -4,19 +4,21 @@ import (
 	"log"
 	"mmo2/pkg/events"
 	"mmo2/pkg/game"
+	"mmo2/pkg/gsp"
 )
 
 type ICommand interface {
 	Execute()
 }
 type BroadcastFunc = func(event events.ISerializable, eventId int16)
+type BroadcastFilteredFunc = func(event events.ISerializable, eventId int16, filterPeer *gsp.TcpPeer)
 
 type MoveCommand struct {
-	event     events.Move
-	eventId   int16
-	world     *game.World
-	player    Player
-	broadcast BroadcastFunc
+	event             events.Move
+	eventId           int16
+	world             *game.World
+	player            Player
+	broadcastFiltered BroadcastFilteredFunc
 }
 
 /*
@@ -30,17 +32,22 @@ próximo do jogador
 */
 func (c *MoveCommand) Execute() {
 	entity := c.world.GetEntity(c.player.entityId)
-	if !entity.Has(game.TypeTransform) {
-		log.Printf("move command error: entity %d doesn't have transform", entity.ID())
+	if !entity.Has(game.TypeTransform) || !entity.Has(game.TypeMovable) {
+		log.Printf("move command error: entity %d doesn't have transform or movable", entity.ID())
 		return
 	}
-	transform := entity.Get(game.TypeTransform).(game.Transform)
+	transform := entity.Get(game.TypeTransform).(*game.Transform)
+	movable := entity.Get(game.TypeMovable).(*game.Movable)
 	transform.X += c.event.Dx
 	transform.Y += c.event.Dy
-	entity.Add(transform)
-	c.event.Dx = transform.X
-	c.event.Dy = transform.Y
-	c.broadcast(&c.event, c.eventId)
+	movedEvent := events.EntityMoved{
+		NewX:     transform.X,
+		NewY:     transform.Y,
+		EntityId: c.player.entityId,
+		Velocity: movable.Velocity,
+	}
+	c.broadcastFiltered(&movedEvent, 0, c.player.peer)
+	c.player.peer.AckEvent(c.eventId)
 }
 
 /*

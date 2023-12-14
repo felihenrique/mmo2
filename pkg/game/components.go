@@ -5,3 +5,7 @@ type Transform struct {
 	Y        int32
 	Rotation float32
 }
+
+type Movable struct {
+	Velocity float32
+}

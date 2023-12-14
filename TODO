@@ -44,3 +44,5 @@ TODO: decidir o que fazer quando o packet tem outra struct dentro
 
 tipos suportados:
 bool, int8, uint8, int16, uint16, int32, uint32, int64, uint64, float32, float64
+
+ONDE PAREI: Estava escrevendo o client-shard para simular movimento de multiplos jogadores.

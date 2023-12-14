@@ -28,6 +28,11 @@ func (c *TcpPeer) SendEvent(event events.ISerializable, id int16) {
 	c.writer.Append(packet)
 }
 
+func (c *TcpPeer) AckEvent(eventId int16) {
+	packet := events.Serialize(events.Ack{}, eventId)
+	c.writer.Append(packet)
+}
+
 func (c *TcpPeer) Addr() string {
 	return c.addr
 }

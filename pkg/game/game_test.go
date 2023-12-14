@@ -13,7 +13,7 @@ func TestWorld(t *testing.T) {
 	if entity.id != 0 {
 		panic("wrong")
 	}
-	entity.Add(Transform{
+	entity.Add(&Transform{
 		X:        123,
 		Y:        111,
 		Rotation: 1,

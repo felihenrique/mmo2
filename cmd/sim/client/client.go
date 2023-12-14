@@ -32,13 +32,9 @@ func read(conn net.Conn) {
 		}
 		event := events.Move{}
 		events.Unserialize(eventBytes, &event)
-		if event.Dx != readed*5 || event.Dy != readed*2 {
-			println(event.Dx, event.Dy, readed)
+		if event.Dx != 5 && event.Dy != 2 {
 			panic("wrong data")
 		}
-		// if event.Dx != 5 && event.Dy != 2 {
-		// 	panic("wrong data")
-		// }
 		reader.Pop()
 	}
 }

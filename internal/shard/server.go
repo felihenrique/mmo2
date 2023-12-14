@@ -32,7 +32,7 @@ func New(host string, port int) *Server {
 
 	server.gspServer.OnPeerConnect(func(peer *gsp.TcpPeer) {
 		entity := server.world.NewEntity()
-		entity.Add(game.Transform{
+		entity.Add(&game.Transform{
 			X:        0,
 			Y:        0,
 			Rotation: 0,
@@ -61,11 +61,11 @@ func New(host string, port int) *Server {
 		events.Unserialize(rawEvent, &move)
 		player := entry.(Player)
 		server.commandQueue.Push(&MoveCommand{
-			event:     move,
-			eventId:   events.GetId(rawEvent),
-			player:    player,
-			world:     server.world,
-			broadcast: server.Broadcast,
+			event:             move,
+			eventId:           events.GetId(rawEvent),
+			player:            player,
+			world:             server.world,
+			broadcastFiltered: server.BroadcastFiltered,
 		})
 	})
 
@@ -76,6 +76,17 @@ func (s *Server) Broadcast(event events.ISerializable, id int16) {
 	s.players.Range(func(key, value any) bool {
 		player := value.(Player)
 		player.peer.SendEvent(event, id)
+		return true
+	})
+}
+
+func (s *Server) BroadcastFiltered(event events.ISerializable, eventId int16, filterPeer *gsp.TcpPeer) {
+	s.players.Range(func(key, value any) bool {
+		player := value.(Player)
+		if player.peer.Addr() == filterPeer.Addr() {
+			return true
+		}
+		player.peer.SendEvent(event, eventId)
 		return true
 	})
 }

@@ -2,10 +2,16 @@ package game
 
 const (
 	TypeTransform = uint8(iota + 1)
+	TypeMovable
 )
 
-func (Transform) ID() uint8 {
+func (c *Transform) ID() uint8 {
 	return TypeTransform
 }
 
-func (Transform) Update(world *World) {}
+func (c *Movable) ID() uint8 {
+	return TypeMovable
+}
+
+func (c *Transform) Update(world *World) {}
+func (c *Movable) Update(world *World)   {}

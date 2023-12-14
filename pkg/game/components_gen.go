@@ -12,6 +12,3 @@ func (c *Transform) ID() uint8 {
 func (c *Movable) ID() uint8 {
 	return TypeMovable
 }
-
-func (c *Transform) Update(world *World) {}
-func (c *Movable) Update(world *World)   {}

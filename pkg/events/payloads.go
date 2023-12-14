@@ -1,6 +1,6 @@
 package events
 
-//go:generate ../../bin/generator
+//go:generate ../../bin/serialize-generator
 
 // ACK REQUESTS
 type Ack struct{}

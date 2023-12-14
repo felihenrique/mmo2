@@ -2,7 +2,7 @@ package game
 
 type Entity struct {
 	id         int16
-	components map[uint8]IComponent
+	components map[uint8]any
 	world      *World
 }
 
@@ -20,7 +20,7 @@ func (e *Entity) Remove(componentId uint8) {
 
 func (e *Entity) Get(componentId uint8) (IComponent, bool) {
 	c, ok := e.components[componentId]
-	return c, ok
+	return c.(IComponent), ok
 }
 
 func (e *Entity) Has(componentId uint8) bool {
@@ -29,7 +29,8 @@ func (e *Entity) Has(componentId uint8) bool {
 }
 
 func (e *Entity) Update() {
-	for _, component := range e.components {
-		component.Update(e.world)
+	for _, item := range e.components {
+		updatable := item.(IUpdatable)
+		updatable.Update(e.world)
 	}
 }

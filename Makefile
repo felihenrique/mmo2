@@ -6,7 +6,7 @@ sims:
 	GOMAXPROCS=4 go run cmd/sim/server/server.go
 test:
 	go test ./...
-build-gen:
-	go build -o bin/generator cmd/generator/main.go cmd/generator/utils.go
+build-serialize:
+	go build -o bin/serialize-generator cmd/generator/serialize/main.go
 generate:
 	go generate ./...

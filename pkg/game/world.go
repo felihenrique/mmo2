@@ -32,7 +32,7 @@ func (w *World) NewEntity() *Entity {
 		return nil
 	}
 	entity := Entity{}
-	entity.components = make(map[uint8]IComponent)
+	entity.components = make(map[uint8]any)
 	entity.world = w
 	entity.id = w.nextPos()
 	w.entities[entity.id] = &entity

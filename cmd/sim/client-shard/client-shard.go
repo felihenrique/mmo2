@@ -17,26 +17,26 @@ type Player struct {
 
 func read(conn net.Conn) {
 	reader := events.NewReader()
-	players := make([]Player, 0)
+	// players := make([]Player, 0)
 	for reading {
 		err := reader.FillFrom(conn)
 		if err != nil {
 			println(err.Error())
 			break
 		}
-		eventBytes, err := reader.Next()
+		// eventBytes, err := reader.Next()
 		if err != nil {
 			println(err.Error())
 			break
 		}
-		evId := events.GetType(eventBytes)
+		// evId := events.GetType(eventBytes)
 
 		reader.Pop()
 	}
 }
 
 func write(conn net.Conn) {
-	writer := events.NewWriter()
+	// writer := events.NewWriter()
 	for writing {
 
 		time.Sleep(time.Second)

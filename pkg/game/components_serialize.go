@@ -6,6 +6,7 @@ const (
 	TypeNone = int16(iota)
 	TypeTransform
 	TypeRotation
+	TypeMovable
 )
 
 func (str *Transform) ToBytes() []byte {
@@ -44,4 +45,22 @@ func (str *Rotation) FromBytes(data []byte) int16 {
 
 func (str *Rotation) EvType() int16 {
 	return TypeRotation
+}
+
+func (str *Movable) ToBytes() []byte {
+	buffer := make([]byte, 0)
+	buffer = serialization.WriteBinary(buffer, str.Velocity)
+
+	return buffer
+}
+
+func (str *Movable) FromBytes(data []byte) int16 {
+	var n int16 = 0
+	n += serialization.ReadBinary(data[n:], &str.Velocity)
+
+	return n
+}
+
+func (str *Movable) EvType() int16 {
+	return TypeMovable
 }

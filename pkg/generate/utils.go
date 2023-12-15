@@ -115,11 +115,13 @@ func GetData() Data {
 	readed := 0
 	for {
 		str, n := ReadNextStruct(tokens[readed:])
+		if str.Name != "" {
+			strs = append(strs, str)
+		}
 		readed += n
 		if readed+1 >= len(tokens) {
 			break
 		}
-		strs = append(strs, str)
 	}
 
 	return Data{

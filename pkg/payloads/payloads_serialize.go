@@ -10,6 +10,7 @@ const (
 	TypeJoinShardRequest
 	TypeEntityCreated
 	TypeEntityUpdated
+	TypeEntityRemoved
 )
 
 func (str *Ack) ToBytes() []byte {
@@ -120,4 +121,22 @@ func (str *EntityUpdated) FromBytes(data []byte) int16 {
 
 func (str *EntityUpdated) EvType() int16 {
 	return TypeEntityUpdated
+}
+
+func (str *EntityRemoved) ToBytes() []byte {
+	buffer := make([]byte, 0)
+	buffer = serialization.WriteBinary(buffer, str.EntityId)
+
+	return buffer
+}
+
+func (str *EntityRemoved) FromBytes(data []byte) int16 {
+	var n int16 = 0
+	n += serialization.ReadBinary(data[n:], &str.EntityId)
+
+	return n
+}
+
+func (str *EntityRemoved) EvType() int16 {
+	return TypeEntityRemoved
 }

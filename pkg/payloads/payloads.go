@@ -1,4 +1,4 @@
-package events
+package payloads
 
 //go:generate ../../bin/serialize-generator
 

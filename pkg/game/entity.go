@@ -2,7 +2,7 @@ package game
 
 type Entity struct {
 	id         int16
-	components map[uint8]any
+	components map[int16]any
 	world      *World
 }
 
@@ -14,16 +14,16 @@ func (e *Entity) Add(component IComponent) {
 	e.components[component.ID()] = component
 }
 
-func (e *Entity) Remove(componentId uint8) {
+func (e *Entity) Remove(componentId int16) {
 	delete(e.components, componentId)
 }
 
-func (e *Entity) Get(componentId uint8) (IComponent, bool) {
+func (e *Entity) Get(componentId int16) (IComponent, bool) {
 	c, ok := e.components[componentId]
 	return c.(IComponent), ok
 }
 
-func (e *Entity) Has(componentId uint8) bool {
+func (e *Entity) Has(componentId int16) bool {
 	_, ok := e.components[componentId]
 	return ok
 }

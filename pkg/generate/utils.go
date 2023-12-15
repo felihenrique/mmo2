@@ -81,12 +81,11 @@ func ReadNextStruct(tokens []string) (Struct, int) {
 	return str, pos
 }
 
-func WriteFile(tplSrc string, data Data) {
+func WriteFile(tplSrc string, newFile string, data Data) {
 	tpl, err := template.New("render").Parse(tplSrc)
 	if err != nil {
 		panic(err)
 	}
-	newFile := strings.Replace(data.Filename, ".go", "_gen.go", 1)
 	file, err := os.Create(newFile)
 	tpl.Execute(file, data)
 	if err != nil {
@@ -94,6 +93,7 @@ func WriteFile(tplSrc string, data Data) {
 	}
 	_, err = formatFile(newFile)
 	if err != nil {
+		fmt.Println(err.Error())
 		panic(err)
 	}
 }

@@ -2,24 +2,18 @@ package shard
 
 import (
 	"log"
-	"mmo2/pkg/events"
 	"mmo2/pkg/game"
 	"mmo2/pkg/gsp"
+	"mmo2/pkg/payloads"
+	"mmo2/pkg/serialization"
 )
 
 type ICommand interface {
 	Execute()
 }
-type Broadcast = func(event events.ISerializable)
-type BroadcastFiltered = func(event events.ISerializable, filterPeer *gsp.TcpPeer)
+type Broadcast = func(event serialization.ISerializable)
+type BroadcastFiltered = func(event serialization.ISerializable, filterPeer *gsp.TcpPeer)
 type AckRequest = func(eventId int16)
-
-type MoveCommand struct {
-	event     events.MoveRequest
-	eventId   int16
-	player    Player
-	broadcast BroadcastFiltered
-}
 
 /*
 TODO:
@@ -30,6 +24,13 @@ próximo do jogador
 - Envia o evento EntityMoved para todos os jogadores em um radio de 6 seções
 (a tela do jogador 4 x 4 seções)
 */
+type MoveCommand struct {
+	event     payloads.MoveRequest
+	eventId   int16
+	player    *Player
+	broadcast BroadcastFiltered
+}
+
 func (c *MoveCommand) Execute() {
 	tc, tok := c.player.entity.Get(game.TypeTransform)
 	if !tok {
@@ -42,10 +43,35 @@ func (c *MoveCommand) Execute() {
 	c.player.peer.AckEvent(c.eventId)
 }
 
-/*
-TODO: Implementar escrita assincrona para o peer, para evitar que bloqueie a thread principal
-do servidor
-*/
+type JoinShardCommand struct {
+	event     payloads.JoinShardRequest
+	eventId   int16
+	player    *Player
+	world     *game.World
+	broadcast BroadcastFiltered
+}
+
+func (c *JoinShardCommand) Execute() {
+	entity := c.world.NewEntity()
+	c.player.entity = entity
+	transform := game.Transform{}
+	switch c.event.Portal {
+	case 0:
+		transform.X = 0
+		transform.Y = 0
+	case 1:
+		transform.X = 100
+		transform.Y = 100
+	case 2:
+		transform.X = 200
+		transform.Y = 200
+	default:
+		transform.X = 0
+		transform.Y = 0
+	}
+	entity.Add(&transform)
+	c.player.peer.AckEvent(c.eventId)
+}
 
 /*
 TODO: Haverá um evento para pedir a lista de entidades ao redor de uma seção x (raio default 6)

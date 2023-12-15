@@ -32,7 +32,7 @@ func (w *World) NewEntity() *Entity {
 		return nil
 	}
 	entity := Entity{}
-	entity.components = make(map[uint8]any)
+	entity.components = make(map[int16]any)
 	entity.world = w
 	entity.id = w.nextPos()
 	w.entities[entity.id] = &entity
@@ -49,4 +49,8 @@ func (w *World) GetEntity(id int16) *Entity {
 func (w *World) RemoveEntity(entity *Entity) {
 	w.entities[entity.id] = nil
 	w.availablePos.Push(entity.id)
+}
+
+func (w *World) SerializeEntity(entityId int16) {
+
 }

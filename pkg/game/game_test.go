@@ -14,9 +14,8 @@ func TestWorld(t *testing.T) {
 		panic("wrong")
 	}
 	entity.Add(&Transform{
-		X:        123,
-		Y:        111,
-		Rotation: 1,
+		X: 123,
+		Y: 111,
 	})
 	if entity.components[TypeTransform] == nil {
 		panic("wrong")

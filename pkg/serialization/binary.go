@@ -1,4 +1,4 @@
-package events
+package serialization
 
 import (
 	"encoding/binary"

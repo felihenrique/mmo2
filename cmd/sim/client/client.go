@@ -2,6 +2,7 @@ package main
 
 import (
 	"mmo2/pkg/events"
+	"mmo2/pkg/payloads"
 	"net"
 	"time"
 )
@@ -27,10 +28,10 @@ func read(conn net.Conn) {
 			continue
 		}
 		evId := events.GetType(eventBytes)
-		if evId != events.TypeMoveRequest {
+		if evId != payloads.TypeMoveRequest {
 			panic("wrong type!")
 		}
-		event := events.MoveRequest{}
+		event := payloads.MoveRequest{}
 		events.Unserialize(eventBytes, &event)
 		if event.Dx != 5 && event.Dy != 2 {
 			panic("wrong data")
@@ -41,7 +42,7 @@ func read(conn net.Conn) {
 
 func write(conn net.Conn) {
 	for writing {
-		event := events.MoveRequest{
+		event := payloads.MoveRequest{
 			Dx: 5,
 			Dy: 2,
 		}

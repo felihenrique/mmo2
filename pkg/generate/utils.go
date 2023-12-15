@@ -69,7 +69,7 @@ func ReadNextStruct(tokens []string) (Struct, int) {
 	pos := 0
 	str := Struct{}
 	for i := 0; i < len(tokens); i++ {
-		if tokens[i] != "type" || tokens[i+1] == "Ack" {
+		if tokens[i] != "type" {
 			continue
 		}
 		str.Name = tokens[i+1]

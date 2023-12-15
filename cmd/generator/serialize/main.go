@@ -8,7 +8,7 @@ var tpl = `
 package {{ .Package }}
 
 const (
-	TypeAck = int16(iota + 1)
+	TypeNone = int16(iota)
 	{{ range .Structs }}Type{{ .Name }}
 	{{ end }}
 )

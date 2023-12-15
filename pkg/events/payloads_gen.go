@@ -1,13 +1,32 @@
 package events
 
 const (
-	TypeAck = int16(iota + 1)
+	TypeNone = int16(iota)
+	TypeAck
 	TypeMoveRequest
 	TypeRotateRequest
 	TypeJoinShardRequest
 	TypeEntityCreated
 	TypeEntityUpdated
 )
+
+func (str *Ack) toBytes() []byte {
+	buffer := make([]byte, 0)
+	buffer = WriteBinary(buffer, str.EventId)
+
+	return buffer
+}
+
+func (str *Ack) fromBytes(data []byte) int16 {
+	var n int16 = 0
+	n += ReadBinary(data[n:], &str.EventId)
+
+	return n
+}
+
+func (str *Ack) evType() int16 {
+	return TypeAck
+}
 
 func (str *MoveRequest) toBytes() []byte {
 	buffer := make([]byte, 0)

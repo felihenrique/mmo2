@@ -3,11 +3,9 @@ package events
 //go:generate ../../bin/serialize-generator
 
 // ACK REQUESTS
-type Ack struct{}
-
-func (Ack) toBytes() []byte             { return []byte{} }
-func (Ack) fromBytes(data []byte) int16 { return 0 }
-func (Ack) evType() int16               { return TypeAck }
+type Ack struct {
+	EventId int16
+}
 
 // REQUEST
 type MoveRequest struct {

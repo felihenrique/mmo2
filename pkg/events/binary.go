@@ -91,14 +91,6 @@ func WriteBinary(buffer []byte, data any) []byte {
 		for _, x := range v {
 			return binary.BigEndian.AppendUint64(buffer, math.Float64bits(x))
 		}
-	case ISerializable:
-		return v.toBytes()
-	case []ISerializable:
-		buffer = binary.BigEndian.AppendUint16(buffer, uint16(len(v)))
-		for _, v := range v {
-			buffer = append(buffer, v.toBytes()...)
-		}
-		return buffer
 	default:
 		panic(fmt.Sprintf("wrong data type %s", v))
 	}
@@ -228,6 +220,7 @@ func ReadBinary(buffer []byte, data any) int16 {
 		}
 		*data = tempData
 		return 2 + int16(8*len(tempData))
+	default:
+		panic(fmt.Sprintf("wrong data type %s", data))
 	}
-	return 0
 }

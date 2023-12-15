@@ -84,6 +84,7 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 		peer.Close()
 	}()
 	reader := events.NewReader()
+main:
 	for s.listening {
 		err := reader.FillFrom(peer.conn)
 		if err != nil {
@@ -93,7 +94,7 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 				break
 			}
 			println(err.Error())
-			continue
+			break
 		}
 		for {
 			rawEvent, err := reader.Next()
@@ -102,8 +103,7 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 					break
 				}
 				println(err.Error())
-				reader.Pop()
-				continue
+				break main
 			}
 			evType := events.GetType(rawEvent)
 			handler := s.handlers[evType]

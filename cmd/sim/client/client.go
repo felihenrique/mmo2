@@ -67,7 +67,7 @@ func write(conn net.Conn) {
 }
 
 func main() {
-	for i := 0; i < 500; i++ {
+	for i := 0; i < 1000; i++ {
 		dialer := net.Dialer{}
 		conn, err := dialer.Dial("tcp4", "192.168.0.9:5555")
 		if err != nil {
@@ -78,7 +78,7 @@ func main() {
 	}
 	time.Sleep(time.Second * 10)
 	writing = false
-	time.Sleep(time.Second * 2)
+	time.Sleep(time.Second * 3)
 	reading = false
 	println("total sent", sent)
 	println("total received", readed)

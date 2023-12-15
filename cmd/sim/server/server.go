@@ -6,7 +6,6 @@ import (
 	"mmo2/pkg/gsp"
 	"os"
 	"runtime/pprof"
-	"sync"
 	"time"
 )
 
@@ -22,31 +21,7 @@ func main() {
 	defer pprof.StopCPUProfile()
 
 	server := gsp.NewTcpServer()
-	peers := sync.Map{}
-
-	server.OnPeerConnect(func(peer *gsp.TcpPeer) {
-		peers.Store(peer.Addr(), peer)
-	})
-
-	server.OnPeerDisconnect(func(peer *gsp.TcpPeer) {
-		peers.Delete(peer.Addr())
-	})
-
-	server.OnEvent(events.TypeMoveRequest, func(peer *gsp.TcpPeer, rawEvent events.RawEvent) {
-		if len(rawEvent) != 14 {
-			panic("WRONG")
-		}
-		event := events.MoveRequest{}
-		events.Unserialize(rawEvent, &event)
-		if event.Dx != 5 || event.Dy != 2 {
-			panic("DIVERGENT")
-		}
-		peers.Range(func(key, value any) bool {
-			peer := value.(*gsp.TcpPeer)
-			peer.SendEvent(&event, events.GetId(rawEvent))
-			return true
-		})
-	})
+	go handleChans(server)
 
 	println("Listening on port 5555")
 	err = server.Listen("", 5555)
@@ -54,5 +29,36 @@ func main() {
 		panic(err)
 	}
 
-	time.Sleep(time.Second * 20)
+	time.Sleep(time.Second * 60)
+}
+
+func handleChans(server gsp.TcpServer) {
+	peers := make(map[string]*gsp.TcpPeer)
+	peerConnected := server.PeerConnChan()
+	peerDisconnected := server.PeerDisChan()
+	newEvents := server.NewEventsChan()
+	for {
+		select {
+		case peer := <-peerConnected:
+			peers[peer.Addr()] = peer
+		case peer := <-peerDisconnected:
+			delete(peers, peer.Addr())
+		case peerEvent := <-newEvents:
+			handleEvent(peerEvent.Event, peers)
+		}
+	}
+}
+
+func handleEvent(rawEvent events.RawEvent, peers map[string]*gsp.TcpPeer) {
+	if len(rawEvent) != 14 {
+		panic("WRONG")
+	}
+	event := events.MoveRequest{}
+	events.Unserialize(rawEvent, &event)
+	if event.Dx != 5 || event.Dy != 2 {
+		panic("DIVERGENT")
+	}
+	for _, peer := range peers {
+		peer.SendEvent(&event)
+	}
 }

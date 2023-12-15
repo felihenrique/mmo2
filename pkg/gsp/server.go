@@ -1,28 +1,49 @@
 package gsp
 
 import (
-	"errors"
 	"fmt"
 	"mmo2/pkg/events"
 	"net"
+	"os"
+	"time"
 )
 
-type EventHandler = func(peer *TcpPeer, rawEvent events.RawEvent)
-type PeerHandler = func(peer *TcpPeer)
+type PeerEvent struct {
+	Peer  *TcpPeer
+	Event events.RawEvent
+}
 
 type TcpServer struct {
-	listener           net.Listener
-	listening          bool
-	handlers           []EventHandler
-	onPeerConnected    PeerHandler
-	onPeerDisconnected PeerHandler
+	listener         net.Listener
+	listening        bool
+	peerConnected    chan *TcpPeer
+	peerDisconnected chan *TcpPeer
+	newEventsChan    chan PeerEvent
 }
 
 func NewTcpServer() TcpServer {
 	server := TcpServer{}
-	server.handlers = make([]EventHandler, 1000)
 	server.listening = false
+	server.peerConnected = make(chan *TcpPeer, 10)
+	server.peerDisconnected = make(chan *TcpPeer, 10)
+	server.newEventsChan = make(chan PeerEvent, 2048)
 	return server
+}
+
+func (s *TcpServer) Listening() bool {
+	return s.listening
+}
+
+func (s *TcpServer) PeerConnChan() <-chan *TcpPeer {
+	return s.peerConnected
+}
+
+func (s *TcpServer) PeerDisChan() <-chan *TcpPeer {
+	return s.peerDisconnected
+}
+
+func (s *TcpServer) NewEventsChan() <-chan PeerEvent {
+	return s.newEventsChan
 }
 
 func (s *TcpServer) Listen(host string, port int) error {
@@ -32,12 +53,6 @@ func (s *TcpServer) Listen(host string, port int) error {
 	}
 	s.listener = listener
 	s.listening = true
-	if s.onPeerConnected == nil {
-		return errors.New("on peer connected is required")
-	}
-	if s.onPeerDisconnected == nil {
-		return errors.New("on peer disconnected is required")
-	}
 	go s.connectionLoop()
 	return nil
 }
@@ -51,18 +66,6 @@ func (s *TcpServer) Close() error {
 	return nil
 }
 
-func (s *TcpServer) OnPeerConnect(handler PeerHandler) {
-	s.onPeerConnected = handler
-}
-
-func (s *TcpServer) OnPeerDisconnect(handler PeerHandler) {
-	s.onPeerDisconnected = handler
-}
-
-func (s *TcpServer) OnEvent(evId int16, handler EventHandler) {
-	s.handlers[evId] = handler
-}
-
 func (s *TcpServer) connectionLoop() {
 	for s.listening {
 		conn, err := s.listener.Accept()
@@ -71,7 +74,7 @@ func (s *TcpServer) connectionLoop() {
 			continue
 		}
 		peer := NewPeer(conn)
-		s.onPeerConnected(peer)
+		s.peerConnected <- peer
 		go s.readEvents(peer)
 	}
 }
@@ -84,39 +87,33 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 		peer.Close()
 	}()
 	reader := events.NewReader()
-main:
 	for s.listening {
-		err := reader.FillFrom(peer.conn)
-		if err != nil {
-			err = handleError(err)
-			if errors.Is(err, ErrDisconnected) {
-				s.onPeerDisconnected(peer)
-				break
-			}
+		// READ
+		err := handleError(reader.FillFrom(peer.conn))
+		if err != nil && err != os.ErrDeadlineExceeded {
 			println(err.Error())
+			s.peerDisconnected <- peer
 			break
 		}
 		for {
 			rawEvent, err := reader.Next()
 			if err != nil {
-				if errors.Is(err, events.ErrNotEnoughBytes) {
-					break
-				}
-				println(err.Error())
-				break main
+				break
 			}
-			evType := events.GetType(rawEvent)
-			handler := s.handlers[evType]
-			if handler == nil {
-				println("no handler found for id ", evType)
-				continue
+			s.newEventsChan <- PeerEvent{
+				Peer:  peer,
+				Event: rawEvent,
 			}
-			handler(peer, rawEvent)
 			reader.Pop()
-			_, err = peer.writer.WriteTo(peer.conn)
-			if err != nil {
-				println(err.Error())
-			}
+		}
+		// WRITE
+		peer.conn.SetWriteDeadline(time.Now().Add(time.Millisecond * 100))
+		_, err = peer.writer.WriteTo(peer.conn)
+		err = handleError(err)
+		if err != nil && err != os.ErrDeadlineExceeded {
+			println(err.Error())
+			s.peerDisconnected <- peer
+			break
 		}
 	}
 }

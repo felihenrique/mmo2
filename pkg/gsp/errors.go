@@ -3,7 +3,6 @@ package gsp
 import (
 	"errors"
 	"io"
-	"os"
 	"syscall"
 )
 
@@ -11,13 +10,9 @@ var ErrDisconnected = errors.New("client disconnected")
 
 func handleError(err error) error {
 	switch err {
-	case os.ErrDeadlineExceeded:
-	case syscall.ECONNRESET:
-	case syscall.ECONNABORTED:
-	case syscall.EPIPE:
-	case io.ErrClosedPipe:
-	case io.EOF:
+	case syscall.ECONNRESET, syscall.ECONNABORTED, syscall.EPIPE, io.ErrClosedPipe, io.EOF:
 		return ErrDisconnected
+	default:
+		return err
 	}
-	return err
 }

@@ -10,15 +10,15 @@ import (
 type ICommand interface {
 	Execute()
 }
-type BroadcastFunc = func(event events.ISerializable, eventId int16)
-type BroadcastFilteredFunc = func(event events.ISerializable, eventId int16, filterPeer *gsp.TcpPeer)
+type Broadcast = func(event events.ISerializable)
+type BroadcastFiltered = func(event events.ISerializable, filterPeer *gsp.TcpPeer)
+type AckRequest = func(eventId int16)
 
 type MoveCommand struct {
-	event             events.MoveRequest
-	eventId           int16
-	world             *game.World
-	player            Player
-	broadcastFiltered BroadcastFilteredFunc
+	event     events.MoveRequest
+	eventId   int16
+	player    Player
+	broadcast BroadcastFiltered
 }
 
 /*
@@ -31,10 +31,9 @@ próximo do jogador
 (a tela do jogador 4 x 4 seções)
 */
 func (c *MoveCommand) Execute() {
-	entity := c.world.GetEntity(c.player.entityId)
-	tc, tok := entity.Get(game.TypeTransform)
+	tc, tok := c.player.entity.Get(game.TypeTransform)
 	if !tok {
-		log.Printf("move command error: entity %d doesn't have transform", entity.ID())
+		log.Printf("move command error: entity %d doesn't have transform", c.player.entity.ID())
 		return
 	}
 	transform := tc.(*game.Transform)
@@ -52,4 +51,13 @@ do servidor
 TODO: Haverá um evento para pedir a lista de entidades ao redor de uma seção x (raio default 6)
 O jogador enviará esse comando a cada 1 segundo e o servidor olhará no spatial map e enviará
 para o jogador
+*/
+
+/*
+Haverá um commando para cada tipo de evento. Na instancia do command (no metodo OnEvent)
+serão colocados todas as referências que aquele comando precisa, como por exemplo o estado
+do jogo, jogador que executou, entre outras coisas.
+No comando de movimento, serão checados também as colisões com obstaculos e entidades.
+Primeiramente serão processados todos os inputs, depois será processada a lógica do jogo
+Por exemplo, checar se um monstro está próximo do jogador e caso esteja atacar ele.
 */

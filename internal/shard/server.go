@@ -61,6 +61,7 @@ func (s *Server) handleChans() {
 			// DO TICK
 		}
 	}
+	ticker.Stop()
 }
 
 func New(host string, port int) *Server {

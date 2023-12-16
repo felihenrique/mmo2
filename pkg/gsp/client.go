@@ -1,10 +1,10 @@
 package gsp
 
 import (
+	"errors"
 	"fmt"
 	"mmo2/pkg/events"
 	"net"
-	"os"
 	"time"
 )
 
@@ -63,7 +63,7 @@ func (c *TcpClient) readEvents() {
 		// READ
 		c.conn.SetReadDeadline(time.Now().Add(time.Millisecond * 200))
 		err := handleError(reader.FillFrom(c.conn))
-		if err != nil && err != os.ErrDeadlineExceeded {
+		if err != nil && !errors.Is(err, ErrTimeout) {
 			println(err.Error())
 			break
 		}
@@ -77,9 +77,9 @@ func (c *TcpClient) readEvents() {
 		}
 		// WRITE
 		c.conn.SetWriteDeadline(time.Now().Add(time.Millisecond * 200))
-		_, err = c.writer.WriteTo(c.conn)
+		_, err = c.writer.Send(c.conn)
 		err = handleError(err)
-		if err != nil && err != os.ErrDeadlineExceeded {
+		if err != nil && !errors.Is(err, ErrTimeout) {
 			println(err.Error())
 			break
 		}

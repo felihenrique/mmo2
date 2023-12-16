@@ -30,7 +30,7 @@ func main() {
 		panic(err)
 	}
 
-	time.Sleep(time.Second * 60)
+	time.Sleep(time.Second * 20)
 }
 
 func handleChans(server gsp.TcpServer) {

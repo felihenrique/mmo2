@@ -2,8 +2,8 @@ package main
 
 import (
 	"mmo2/pkg/events"
+	"mmo2/pkg/gsp"
 	"mmo2/pkg/payloads"
-	"net"
 	"sync/atomic"
 	"time"
 )
@@ -14,75 +14,53 @@ var sent atomic.Int32
 var writing atomic.Bool
 var reading atomic.Bool
 
-func read(conn net.Conn) {
-	reader := events.NewReader()
-	for reading.Load() {
-		readed.Add(1)
-		err := reader.FillFrom(conn)
-		if err != nil {
-			println(err.Error())
-			continue
-		}
-		eventBytes, err := reader.Next()
-		if err != nil {
-			println(err.Error())
-			continue
-		}
-		evId := events.GetID(eventBytes)
-		if evId != payloads.TypeMoveRequest {
-			panic("wrong type!")
-		}
-		event := payloads.MoveRequest{}
-		events.Unserialize(eventBytes, &event)
-		if event.Dx != 5 && event.Dy != 2 {
-			panic("wrong data")
-		}
-		reader.Pop()
-	}
-}
-
-func write(conn net.Conn) {
-	for writing.Load() {
-		event := payloads.MoveRequest{
-			Dx: 5,
-			Dy: 2,
-		}
-		data := events.Serialize(&event)
-		offset := 0
-		written := 0
-		for retries := 0; retries < 3; retries++ {
-			n, err := conn.Write(data[offset:])
-			written += n
-			if err != nil {
-				panic(err)
+func manageClient(client *gsp.TcpClient) {
+	eventsChan := client.EventsChan()
+	disconChan := client.DisconnectedChan()
+	ticker := time.NewTicker(time.Millisecond * 100)
+main:
+	for {
+		select {
+		case eventBytes := <-eventsChan:
+			evId := events.GetID(eventBytes)
+			if evId != payloads.TypeMoveRequest {
+				panic("wrong type!")
 			}
-			if n < len(data) {
-				offset = n
-			} else {
-				break
+			event := payloads.MoveRequest{}
+			events.Unserialize(eventBytes, &event)
+			if event.Dx != 5 && event.Dy != 2 {
+				panic("wrong data")
 			}
-			retries += 1
+			readed.Add(1)
+		case <-ticker.C:
+			event := payloads.MoveRequest{
+				Dx: 5,
+				Dy: 2,
+			}
+			data := events.Serialize(&event)
+			client.SendEvent(data)
+			sent.Add(1)
+		case <-disconChan:
+			break main
 		}
-		sent.Add(1)
-		time.Sleep(time.Millisecond * 100)
 	}
+	ticker.Stop()
 }
 
 func main() {
 	writing.Store(true)
 	reading.Store(true)
-	for i := 0; i < 900; i++ {
-		dialer := net.Dialer{}
-		conn, err := dialer.Dial("tcp4", "192.168.0.9:5555")
+	for i := 0; i < 1000; i++ {
+		client := gsp.NewTcpClient()
+		err := client.Connect("", 5555)
 		if err != nil {
 			panic(err)
 		}
-		go read(conn)
-		go write(conn)
+		go manageClient(client)
 	}
 	time.Sleep(time.Second * 10)
 	writing.Store(false)
-	time.Sleep(time.Second * 3)
+	time.Sleep(time.Second * 5)
 	reading.Store(false)
 	println("total sent", sent.Load())
 	println("total received", readed.Load())

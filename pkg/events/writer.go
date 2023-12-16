@@ -22,7 +22,7 @@ func (w *Writer) Append(data []byte) {
 	w.bufferLock.Unlock()
 }
 
-func (w *Writer) WriteTo(writer io.Writer) (int64, error) {
+func (w *Writer) Send(writer io.Writer) (int64, error) {
 	w.bufferLock.Lock()
 	oldBuffer := w.buffer
 	w.buffer = make([]byte, 0)

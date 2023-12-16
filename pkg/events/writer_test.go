@@ -11,7 +11,7 @@ func TestWriter(t *testing.T) {
 	writer.Append([]byte("aaaaa"))
 	writer.Append([]byte("uity"))
 	buffer := bytes.Buffer{}
-	n, err := writer.WriteTo(&buffer)
+	n, err := writer.Send(&buffer)
 	if n < 18 || err != nil {
 		panic(err)
 	}
@@ -20,14 +20,14 @@ func TestWriter(t *testing.T) {
 	}
 	writer.Append([]byte("abcde"))
 	buffer.Reset()
-	n, err = writer.WriteTo(&buffer)
+	n, err = writer.Send(&buffer)
 	if n < 5 || err != nil {
 		panic(err)
 	}
 	if buffer.String() != "abcde" {
 		panic("wrong result")
 	}
-	n, err = writer.WriteTo(&buffer)
+	n, err = writer.Send(&buffer)
 	if n != 0 || err != nil {
 		panic(err)
 	}

@@ -1,10 +1,10 @@
 package gsp
 
 import (
+	"errors"
 	"fmt"
 	"mmo2/pkg/events"
 	"net"
-	"os"
 	"time"
 )
 
@@ -91,7 +91,7 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 		// READ
 		peer.conn.SetReadDeadline(time.Now().Add(time.Millisecond * 200))
 		err := handleError(reader.FillFrom(peer.conn))
-		if err != nil && err != os.ErrDeadlineExceeded {
+		if err != nil && !errors.Is(err, ErrTimeout) {
 			println(err.Error())
 			s.peerDisconnected <- peer
 			break
@@ -109,9 +109,10 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 		}
 		// WRITE
 		peer.conn.SetWriteDeadline(time.Now().Add(time.Millisecond * 200))
-		_, err = peer.writer.WriteTo(peer.conn)
+		_, err = peer.writer.Send(peer.conn)
 		err = handleError(err)
-		if err != nil && err != os.ErrDeadlineExceeded {
+		if err != nil && !errors.Is(err, ErrTimeout) {
+
 			println(err.Error())
 			s.peerDisconnected <- peer
 			break

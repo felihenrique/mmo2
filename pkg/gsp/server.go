@@ -108,7 +108,7 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 			reader.Pop()
 		}
 		// WRITE
-		peer.conn.SetWriteDeadline(time.Now().Add(time.Millisecond * 200))
+		peer.conn.SetWriteDeadline(time.Now().Add(time.Millisecond * 500))
 		_, err = peer.writer.Send(peer.conn)
 		err = handleError(err)
 		if err != nil && !errors.Is(err, ErrTimeout) {

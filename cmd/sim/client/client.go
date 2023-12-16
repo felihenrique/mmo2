@@ -1,9 +1,12 @@
 package main
 
 import (
+	"log"
 	"mmo2/pkg/events"
 	"mmo2/pkg/gsp"
 	"mmo2/pkg/payloads"
+	"os"
+	"runtime/pprof"
 	"sync/atomic"
 	"time"
 )
@@ -48,9 +51,19 @@ main:
 }
 
 func main() {
+	f, err := os.Create("cpu_client.prof")
+	if err != nil {
+		log.Fatal("could not create CPU profile: ", err)
+	}
+	defer f.Close() // error handling omitted for example
+	if err := pprof.StartCPUProfile(f); err != nil {
+		log.Fatal("could not start CPU profile: ", err)
+	}
+	defer pprof.StopCPUProfile()
+
 	writing.Store(true)
 	reading.Store(true)
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 100; i++ {
 		client := gsp.NewTcpClient()
 		err := client.Connect("", 5555)
 		if err != nil {

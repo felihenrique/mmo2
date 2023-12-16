@@ -1,14 +1,12 @@
 package gsp
 
 import (
-	"mmo2/pkg/ds"
 	"mmo2/pkg/events"
 	"net"
 )
 
 type TcpPeer struct {
 	conn   net.Conn
-	idGen  ds.SequentialID
 	writer *events.Writer
 	addr   string
 }

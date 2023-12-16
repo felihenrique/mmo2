@@ -16,7 +16,7 @@ func GetId(data RawEvent) int16 {
 	return int16(binary.BigEndian.Uint16(data[2:]))
 }
 
-func GetType(data RawEvent) int16 {
+func GetID(data RawEvent) int16 {
 	return int16(binary.BigEndian.Uint16(data[4:]))
 }
 
@@ -31,6 +31,6 @@ func Serialize(event serialization.ISerializable) RawEvent {
 	eventBytes := event.ToBytes()
 	binary.BigEndian.PutUint16(headers, uint16(len(eventBytes)+len(headers)))
 	binary.BigEndian.PutUint16(headers[2:], uint16(idGen.Next()))
-	binary.BigEndian.PutUint16(headers[4:], uint16(event.EvType()))
+	binary.BigEndian.PutUint16(headers[4:], uint16(event.ID()))
 	return append(headers, eventBytes...)
 }

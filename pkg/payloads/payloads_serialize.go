@@ -27,7 +27,7 @@ func (str *Ack) FromBytes(data []byte) int16 {
 	return n
 }
 
-func (str *Ack) EvType() int16 {
+func (str *Ack) ID() int16 {
 	return TypeAck
 }
 
@@ -47,7 +47,7 @@ func (str *MoveRequest) FromBytes(data []byte) int16 {
 	return n
 }
 
-func (str *MoveRequest) EvType() int16 {
+func (str *MoveRequest) ID() int16 {
 	return TypeMoveRequest
 }
 
@@ -65,7 +65,7 @@ func (str *RotateRequest) FromBytes(data []byte) int16 {
 	return n
 }
 
-func (str *RotateRequest) EvType() int16 {
+func (str *RotateRequest) ID() int16 {
 	return TypeRotateRequest
 }
 
@@ -83,7 +83,7 @@ func (str *JoinShardRequest) FromBytes(data []byte) int16 {
 	return n
 }
 
-func (str *JoinShardRequest) EvType() int16 {
+func (str *JoinShardRequest) ID() int16 {
 	return TypeJoinShardRequest
 }
 
@@ -101,7 +101,7 @@ func (str *EntityCreated) FromBytes(data []byte) int16 {
 	return n
 }
 
-func (str *EntityCreated) EvType() int16 {
+func (str *EntityCreated) ID() int16 {
 	return TypeEntityCreated
 }
 
@@ -119,7 +119,7 @@ func (str *EntityUpdated) FromBytes(data []byte) int16 {
 	return n
 }
 
-func (str *EntityUpdated) EvType() int16 {
+func (str *EntityUpdated) ID() int16 {
 	return TypeEntityUpdated
 }
 
@@ -137,6 +137,6 @@ func (str *EntityRemoved) FromBytes(data []byte) int16 {
 	return n
 }
 
-func (str *EntityRemoved) EvType() int16 {
+func (str *EntityRemoved) ID() int16 {
 	return TypeEntityRemoved
 }

@@ -28,7 +28,7 @@ func read(conn net.Conn) {
 			println(err.Error())
 			continue
 		}
-		evId := events.GetType(eventBytes)
+		evId := events.GetID(eventBytes)
 		if evId != payloads.TypeMoveRequest {
 			panic("wrong type!")
 		}

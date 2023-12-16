@@ -9,7 +9,7 @@ const (
 	TypeMovable
 )
 
-func (str *Transform) ToBytes() []byte {
+func (str *Position) ToBytes() []byte {
 	buffer := make([]byte, 0)
 	buffer = serialization.WriteBinary(buffer, str.X)
 	buffer = serialization.WriteBinary(buffer, str.Y)
@@ -17,7 +17,7 @@ func (str *Transform) ToBytes() []byte {
 	return buffer
 }
 
-func (str *Transform) FromBytes(data []byte) int16 {
+func (str *Position) FromBytes(data []byte) int16 {
 	var n int16 = 0
 	n += serialization.ReadBinary(data[n:], &str.X)
 	n += serialization.ReadBinary(data[n:], &str.Y)
@@ -25,7 +25,7 @@ func (str *Transform) FromBytes(data []byte) int16 {
 	return n
 }
 
-func (str *Transform) EvType() int16 {
+func (str *Position) ID() int16 {
 	return TypeTransform
 }
 
@@ -43,7 +43,7 @@ func (str *Rotation) FromBytes(data []byte) int16 {
 	return n
 }
 
-func (str *Rotation) EvType() int16 {
+func (str *Rotation) ID() int16 {
 	return TypeRotation
 }
 
@@ -61,6 +61,6 @@ func (str *Movable) FromBytes(data []byte) int16 {
 	return n
 }
 
-func (str *Movable) EvType() int16 {
+func (str *Movable) ID() int16 {
 	return TypeMovable
 }

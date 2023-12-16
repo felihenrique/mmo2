@@ -23,7 +23,7 @@ func TestReader(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if GetType(readedBytes1) != payloads.TypeMoveRequest {
+	if GetID(readedBytes1) != payloads.TypeMoveRequest {
 		panic("wrong type")
 	}
 	readedEvent := payloads.MoveRequest{}
@@ -36,7 +36,7 @@ func TestReader(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if GetType(readedBytes2) != payloads.TypeMoveRequest {
+	if GetID(readedBytes2) != payloads.TypeMoveRequest {
 		panic("wrong type")
 	}
 	readedEvent2 := payloads.MoveRequest{}

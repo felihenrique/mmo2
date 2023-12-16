@@ -13,7 +13,7 @@ func TestWorld(t *testing.T) {
 	if entity.id != 0 {
 		panic("wrong")
 	}
-	entity.Add(&Transform{
+	entity.Add(&Position{
 		X: 123,
 		Y: 111,
 	})

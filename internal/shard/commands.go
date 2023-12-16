@@ -26,7 +26,7 @@ func (s *Server) moveRequest(player *Player, pe gsp.PeerEvent) {
 		log.Printf("move command error: entity %d doesn't have transform", player.entity.ID())
 		return
 	}
-	transform := tc.(*game.Transform)
+	transform := tc.(*game.Position)
 	transform.X += move.Dx
 	transform.Y += move.Dy
 	s.ackEvent(pe.Event, pe.Peer)
@@ -37,7 +37,7 @@ func (s *Server) joinShardRequest(player *Player, pe gsp.PeerEvent) {
 	events.Unserialize(pe.Event, &event)
 	entity := s.world.NewEntity()
 	player.entity = entity
-	transform := game.Transform{}
+	transform := game.Position{}
 	switch event.Portal {
 	case 0:
 		transform.X = 0

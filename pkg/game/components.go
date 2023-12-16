@@ -2,7 +2,7 @@ package game
 
 //go:generate ../../bin/serialize-generator
 
-type Transform struct {
+type Position struct {
 	X int32
 	Y int32
 }

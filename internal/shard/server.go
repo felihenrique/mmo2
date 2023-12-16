@@ -29,7 +29,7 @@ func (s *Server) handleEvent(pe gsp.PeerEvent) {
 		fmt.Printf("wrong: player %s not found \n", player.peer.Addr())
 		return
 	}
-	evType := events.GetType(pe.Event)
+	evType := events.GetID(pe.Event)
 	switch evType {
 	case payloads.TypeMoveRequest:
 		s.moveRequest(player, pe)

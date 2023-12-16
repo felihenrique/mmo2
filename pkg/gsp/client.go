@@ -48,6 +48,10 @@ func (c *TcpClient) SendEvent(event events.RawEvent) {
 	c.writer.Append(event)
 }
 
+func (c *TcpClient) Close() {
+	c.conn.Close()
+}
+
 func (c *TcpClient) readEvents() {
 	defer func() {
 		if r := recover(); r != nil {

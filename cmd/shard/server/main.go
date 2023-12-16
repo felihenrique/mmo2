@@ -1,7 +1,7 @@
 package main
 
 import (
-	"mmo2/internal/shard"
+	"mmo2/internal/shard-server"
 )
 
 func main() {

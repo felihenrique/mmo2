@@ -2,18 +2,11 @@ package shard
 
 import (
 	"log"
+	"mmo2/pkg/events"
 	"mmo2/pkg/game"
 	"mmo2/pkg/gsp"
 	"mmo2/pkg/payloads"
-	"mmo2/pkg/serialization"
 )
-
-type ICommand interface {
-	Execute()
-}
-type Broadcast = func(event serialization.ISerializable)
-type BroadcastFiltered = func(event serialization.ISerializable, filterPeer *gsp.TcpPeer)
-type AckRequest = func(eventId int16)
 
 /*
 TODO:
@@ -24,38 +17,28 @@ próximo do jogador
 - Envia o evento EntityMoved para todos os jogadores em um radio de 6 seções
 (a tela do jogador 4 x 4 seções)
 */
-type MoveCommand struct {
-	event     payloads.MoveRequest
-	eventId   int16
-	player    *Player
-	broadcast BroadcastFiltered
-}
 
-func (c *MoveCommand) Execute() {
-	tc, tok := c.player.entity.Get(game.TypeTransform)
+func (s *Server) moveRequest(player *Player, pe gsp.PeerEvent) {
+	move := payloads.MoveRequest{}
+	events.Unserialize(pe.Event, &move)
+	tc, tok := player.entity.Get(game.TypeTransform)
 	if !tok {
-		log.Printf("move command error: entity %d doesn't have transform", c.player.entity.ID())
+		log.Printf("move command error: entity %d doesn't have transform", player.entity.ID())
 		return
 	}
 	transform := tc.(*game.Transform)
-	transform.X += c.event.Dx
-	transform.Y += c.event.Dy
-	c.player.peer.AckEvent(c.eventId)
+	transform.X += move.Dx
+	transform.Y += move.Dy
+	player.peer.AckEvent(events.GetId(pe.Event))
 }
 
-type JoinShardCommand struct {
-	event     payloads.JoinShardRequest
-	eventId   int16
-	player    *Player
-	world     *game.World
-	broadcast BroadcastFiltered
-}
-
-func (c *JoinShardCommand) Execute() {
-	entity := c.world.NewEntity()
-	c.player.entity = entity
+func (s *Server) joinShardRequest(player *Player, pe gsp.PeerEvent) {
+	event := payloads.JoinShardRequest{}
+	events.Unserialize(pe.Event, &event)
+	entity := s.world.NewEntity()
+	player.entity = entity
 	transform := game.Transform{}
-	switch c.event.Portal {
+	switch event.Portal {
 	case 0:
 		transform.X = 0
 		transform.Y = 0
@@ -70,7 +53,7 @@ func (c *JoinShardCommand) Execute() {
 		transform.Y = 0
 	}
 	entity.Add(&transform)
-	c.player.peer.AckEvent(c.eventId)
+	player.peer.AckEvent(events.GetId(pe.Event))
 }
 
 /*

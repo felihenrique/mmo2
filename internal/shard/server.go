@@ -30,21 +30,15 @@ func (s *Server) handleEvent(pe gsp.PeerEvent) {
 		return
 	}
 	evType := events.GetType(pe.Event)
-	var command ICommand
 	switch evType {
 	case payloads.TypeMoveRequest:
-		move := payloads.MoveRequest{}
-		events.Unserialize(pe.Event, &move)
-		command = &MoveCommand{
-			event:     move,
-			eventId:   events.GetId(pe.Event),
-			player:    player,
-			broadcast: s.BroadcastFiltered,
-		}
+		s.moveRequest(player, pe)
+	case payloads.TypeJoinShardRequest:
+		s.joinShardRequest(player, pe)
 	default:
+		fmt.Printf("wrong request: %d", evType)
 		return
 	}
-	command.Execute()
 }
 
 func (s *Server) handleChans() {

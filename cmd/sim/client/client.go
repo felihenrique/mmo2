@@ -4,19 +4,20 @@ import (
 	"mmo2/pkg/events"
 	"mmo2/pkg/payloads"
 	"net"
+	"sync/atomic"
 	"time"
 )
 
-var readed int32
-var sent int32
+var readed atomic.Int32
+var sent atomic.Int32
 
-var writing bool = true
-var reading bool = true
+var writing atomic.Bool
+var reading atomic.Bool
 
 func read(conn net.Conn) {
 	reader := events.NewReader()
-	for reading {
-		readed += 1
+	for reading.Load() {
+		readed.Add(1)
 		err := reader.FillFrom(conn)
 		if err != nil {
 			println(err.Error())
@@ -41,12 +42,12 @@ func read(conn net.Conn) {
 }
 
 func write(conn net.Conn) {
-	for writing {
+	for writing.Load() {
 		event := payloads.MoveRequest{
 			Dx: 5,
 			Dy: 2,
 		}
-		data := events.Serialize(&event, 123)
+		data := events.Serialize(&event)
 		offset := 0
 		written := 0
 		for retries := 0; retries < 3; retries++ {
@@ -62,13 +63,15 @@ func write(conn net.Conn) {
 			}
 			retries += 1
 		}
-		sent += 1
+		sent.Add(1)
 		time.Sleep(time.Millisecond * 100)
 	}
 }
 
 func main() {
-	for i := 0; i < 500; i++ {
+	writing.Store(true)
+	reading.Store(true)
+	for i := 0; i < 900; i++ {
 		dialer := net.Dialer{}
 		conn, err := dialer.Dial("tcp4", "192.168.0.9:5555")
 		if err != nil {
@@ -78,9 +81,9 @@ func main() {
 		go write(conn)
 	}
 	time.Sleep(time.Second * 10)
-	writing = false
+	writing.Store(false)
 	time.Sleep(time.Second * 3)
-	reading = false
-	println("total sent", sent)
-	println("total received", readed)
+	reading.Store(false)
+	println("total sent", sent.Load())
+	println("total received", readed.Load())
 }

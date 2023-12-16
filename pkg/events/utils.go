@@ -2,6 +2,7 @@ package events
 
 import (
 	"encoding/binary"
+	"mmo2/pkg/ds"
 	"mmo2/pkg/serialization"
 )
 
@@ -23,11 +24,13 @@ func Unserialize(data RawEvent, container serialization.ISerializable) {
 	container.FromBytes(data[6:])
 }
 
-func Serialize(event serialization.ISerializable, id int16) RawEvent {
+var idGen ds.SequentialID
+
+func Serialize(event serialization.ISerializable) RawEvent {
 	headers := make([]byte, 6)
 	eventBytes := event.ToBytes()
 	binary.BigEndian.PutUint16(headers, uint16(len(eventBytes)+len(headers)))
-	binary.BigEndian.PutUint16(headers[2:], uint16(id))
+	binary.BigEndian.PutUint16(headers[2:], uint16(idGen.Next()))
 	binary.BigEndian.PutUint16(headers[4:], uint16(event.EvType()))
 	return append(headers, eventBytes...)
 }

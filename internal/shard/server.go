@@ -73,21 +73,30 @@ func New(host string, port int) *Server {
 	return &server
 }
 
+func (s *Server) ackEvent(event events.RawEvent, peer *gsp.TcpPeer) {
+	data := events.Serialize(&payloads.Ack{
+		EventId: events.GetId(event),
+	})
+	peer.SendEvent(data)
+}
+
 func (s *Server) Broadcast(event serialization.ISerializable) {
+	data := events.Serialize(event)
 	for _, player := range s.players {
 		if player.entity == nil {
 			continue
 		}
-		player.peer.SendEvent(event)
+		player.peer.SendEvent(data)
 	}
 }
 
 func (s *Server) BroadcastFiltered(event serialization.ISerializable, filterPeer *gsp.TcpPeer) {
+	data := events.Serialize(event)
 	for _, player := range s.players {
 		if player.entity == nil {
 			continue
 		}
-		player.peer.SendEvent(event)
+		player.peer.SendEvent(data)
 	}
 }
 

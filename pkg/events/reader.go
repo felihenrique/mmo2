@@ -36,7 +36,9 @@ func (r *Reader) Next() ([]byte, error) {
 	if r.length < int32(eventLength) {
 		return nil, ErrNotEnoughBytes
 	}
-	return r.buffer[0:eventLength], nil
+	event := make([]byte, eventLength)
+	copy(event, r.buffer[0:eventLength])
+	return event, nil
 }
 
 func (r *Reader) Pop() {

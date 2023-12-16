@@ -11,11 +11,11 @@ func TestReader(t *testing.T) {
 	ev1 := Serialize(&payloads.MoveRequest{
 		Dx: 111,
 		Dy: 244,
-	}, 123)
+	})
 	ev2 := Serialize(&payloads.MoveRequest{
 		Dx: 123,
 		Dy: 656,
-	}, 123)
+	})
 	byteReader := bytes.NewReader(append(ev1, ev2...))
 	eventReader := NewReader()
 	eventReader.FillFrom(byteReader)

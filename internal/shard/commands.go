@@ -29,7 +29,7 @@ func (s *Server) moveRequest(player *Player, pe gsp.PeerEvent) {
 	transform := tc.(*game.Transform)
 	transform.X += move.Dx
 	transform.Y += move.Dy
-	player.peer.AckEvent(events.GetId(pe.Event))
+	s.ackEvent(pe.Event, pe.Peer)
 }
 
 func (s *Server) joinShardRequest(player *Player, pe gsp.PeerEvent) {
@@ -53,7 +53,7 @@ func (s *Server) joinShardRequest(player *Player, pe gsp.PeerEvent) {
 		transform.Y = 0
 	}
 	entity.Add(&transform)
-	player.peer.AckEvent(events.GetId(pe.Event))
+	s.ackEvent(pe.Event, pe.Peer)
 }
 
 /*

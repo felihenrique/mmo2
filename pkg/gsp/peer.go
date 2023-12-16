@@ -3,8 +3,6 @@ package gsp
 import (
 	"mmo2/pkg/ds"
 	"mmo2/pkg/events"
-	"mmo2/pkg/payloads"
-	"mmo2/pkg/serialization"
 	"net"
 )
 
@@ -27,14 +25,8 @@ func (c *TcpPeer) Close() error {
 	return c.conn.Close()
 }
 
-func (c *TcpPeer) SendEvent(event serialization.ISerializable) {
-	packet := events.Serialize(event, c.idGen.Next())
-	c.writer.Append(packet)
-}
-
-func (c *TcpPeer) AckEvent(eventId int16) {
-	packet := events.Serialize(&payloads.Ack{EventId: eventId}, c.idGen.Next())
-	c.writer.Append(packet)
+func (c *TcpPeer) SendEvent(event events.RawEvent) {
+	c.writer.Append(event)
 }
 
 func (c *TcpPeer) Addr() string {

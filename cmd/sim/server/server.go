@@ -60,6 +60,6 @@ func handleEvent(rawEvent events.RawEvent, peers map[string]*gsp.TcpPeer) {
 		panic("DIVERGENT")
 	}
 	for _, peer := range peers {
-		peer.SendEvent(&event)
+		peer.SendEvent(rawEvent)
 	}
 }

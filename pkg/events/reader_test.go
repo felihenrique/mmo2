@@ -40,7 +40,7 @@ func TestReader(t *testing.T) {
 		panic("wrong type")
 	}
 	readedEvent2 := payloads.MoveRequest{}
-	Unserialize(readedBytes1, &readedEvent2)
+	Unserialize(readedBytes2, &readedEvent2)
 	if readedEvent2.Dx != 123 || readedEvent2.Dy != 656 {
 		panic("wrong data")
 	}

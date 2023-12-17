@@ -16,7 +16,7 @@ func (e *Entity) ID() int16 {
 }
 
 func (e *Entity) Add(component IComponent) {
-	e.components[component.ID()] = component
+	e.components[component.Type()] = component
 }
 
 func (e *Entity) Remove(componentId int16) {
@@ -48,7 +48,7 @@ func (e *Entity) Serialize() []byte {
 		if !ok {
 			continue
 		}
-		data = serialization.Write(data, item.ID())
+		data = serialization.Write(data, item.Type())
 		data = append(data, item.ToBytes()...)
 	}
 	binary.BigEndian.PutUint16(data, uint16(len(data)))

@@ -1,9 +1,9 @@
 shard:
-	GOMAXPROCS=1 go run cmd/shard/shard.go
+	go run cmd/shard/server/main.go
 simc:
 	go run cmd/sim/client/client.go
 sims:
-	GOMAXPROCS=2 go run cmd/sim/server/server.go
+	go run cmd/sim/server/server.go
 test:
 	go test ./...
 build-serialize:

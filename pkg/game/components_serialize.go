@@ -25,7 +25,7 @@ func (str *Position) FromBytes(data []byte) int16 {
 	return n
 }
 
-func (str *Position) ID() int16 {
+func (str *Position) Type() int16 {
 	return TypePosition
 }
 
@@ -43,7 +43,7 @@ func (str *Rotation) FromBytes(data []byte) int16 {
 	return n
 }
 
-func (str *Rotation) ID() int16 {
+func (str *Rotation) Type() int16 {
 	return TypeRotation
 }
 
@@ -61,6 +61,6 @@ func (str *Movable) FromBytes(data []byte) int16 {
 	return n
 }
 
-func (str *Movable) ID() int16 {
+func (str *Movable) Type() int16 {
 	return TypeMovable
 }

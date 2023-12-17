@@ -29,7 +29,7 @@ func (s *Server) handleEvent(pe gsp.PeerEvent) {
 		fmt.Printf("wrong: player %s not found \n", player.peer.Addr())
 		return
 	}
-	evType := events.GetID(pe.Event)
+	evType := events.GetType(pe.Event)
 	switch evType {
 	case payloads.TypeMoveRequest:
 		s.moveRequest(player, pe)
@@ -76,7 +76,7 @@ func New(host string, port int) *Server {
 
 func (s *Server) ackEvent(event events.RawEvent, peer *gsp.TcpPeer) {
 	data := events.Serialize(&payloads.Ack{
-		EventId: events.GetId(event),
+		EventId: events.GetID(event),
 	})
 	peer.SendEvent(data)
 }

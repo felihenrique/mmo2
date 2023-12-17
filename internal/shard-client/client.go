@@ -1,8 +1,10 @@
 package shard
 
 import (
+	"mmo2/pkg/events"
 	"mmo2/pkg/game"
 	"mmo2/pkg/gsp"
+	"mmo2/pkg/payloads"
 )
 
 type Client struct {
@@ -33,7 +35,15 @@ main:
 	for {
 		select {
 		case eventBytes := <-eventsChan:
-
+			evType := events.GetType(eventBytes)
+			switch evType {
+			case payloads.TypeEntityCreated:
+				c.entityCreated(eventBytes)
+			case payloads.TypeEntityUpdated:
+				c.entityUpdated(eventBytes)
+			case payloads.TypeEntityRemoved:
+				c.entityRemoved(eventBytes)
+			}
 		case <-disconChan:
 			break main
 		}

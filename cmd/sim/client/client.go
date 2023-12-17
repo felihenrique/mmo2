@@ -25,7 +25,7 @@ main:
 	for {
 		select {
 		case eventBytes := <-eventsChan:
-			evId := events.GetID(eventBytes)
+			evId := events.GetType(eventBytes)
 			if evId != payloads.TypeMoveRequest {
 				panic("wrong type!")
 			}

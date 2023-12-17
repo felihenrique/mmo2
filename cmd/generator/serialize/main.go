@@ -32,7 +32,7 @@ func (str *{{ .Name }}) FromBytes(data []byte) int16 {
 	return n
 }
 
-func (str *{{ .Name }}) ID() int16 {
+func (str *{{ .Name }}) Type() int16 {
 	return Type{{ .Name }}
 }
 {{ end }}

@@ -1,7 +1,7 @@
 package game
 
 type IComponent interface {
-	ID() int16
+	Type() int16
 }
 
 type IUpdatable interface {

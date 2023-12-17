@@ -54,7 +54,7 @@ func handleEvent(rawEvent events.RawEvent, peers map[string]*gsp.TcpPeer) {
 	if len(rawEvent) != 14 {
 		panic("WRONG")
 	}
-	event := payloads.MoveRequest{}
+	event := payloads.MoveInput{}
 	events.Unserialize(rawEvent, &event)
 	if event.Dx != 5 || event.Dy != 2 {
 		panic("DIVERGENT")

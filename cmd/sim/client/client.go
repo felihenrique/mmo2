@@ -29,14 +29,14 @@ main:
 			if evId != payloads.TypeMoveRequest {
 				panic("wrong type!")
 			}
-			event := payloads.MoveRequest{}
+			event := payloads.MoveInput{}
 			events.Unserialize(eventBytes, &event)
 			if event.Dx != 5 && event.Dy != 2 {
 				panic("wrong data")
 			}
 			readed.Add(1)
 		case <-ticker.C:
-			event := payloads.MoveRequest{
+			event := payloads.MoveInput{
 				Dx: 5,
 				Dy: 2,
 			}

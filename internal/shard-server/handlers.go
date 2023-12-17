@@ -19,7 +19,7 @@ próximo do jogador
 */
 
 func (s *Server) moveRequest(player *Player, pe gsp.PeerEvent) {
-	move := payloads.MoveRequest{}
+	move := payloads.MoveInput{}
 	events.Unserialize(pe.Event, &move)
 	tc, tok := player.entity.Get(game.TypePosition)
 	if !tok {

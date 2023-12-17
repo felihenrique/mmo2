@@ -2,29 +2,33 @@ package payloads
 
 //go:generate ../../bin/serialize-generator
 
-// ACK REQUESTS
-type Ack struct {
+// INPUTS
+type AckInput struct {
 	EventId int16
 }
-
-// REQUEST
-type MoveRequest struct {
+type MoveInput struct {
 	Dx int32
 	Dy int32
 }
-type RotateRequest struct {
+type RotateInput struct {
 	Quantity float32
 }
+
+// REQUESTS
 type JoinShardRequest struct {
+	Name   string
 	Portal uint8
+}
+type JoinShardResponse struct {
+	Entity []byte
 }
 
 // EVENTS
 type EntityCreated struct {
-	Data []byte
+	Entity []byte
 }
 type EntityUpdated struct {
-	Data []byte
+	Entity []byte
 }
 type EntityRemoved struct {
 	EntityId int16

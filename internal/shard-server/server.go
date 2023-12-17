@@ -75,7 +75,7 @@ func New(host string, port int) *Server {
 }
 
 func (s *Server) ackEvent(event events.RawEvent, peer *gsp.TcpPeer) {
-	data := events.Serialize(&payloads.Ack{
+	data := events.Serialize(&payloads.AckInput{
 		EventId: events.GetID(event),
 	})
 	peer.SendEvent(data)

@@ -7,15 +7,14 @@ import (
 
 type Entity struct {
 	id         int16
-	components map[int16]any
-	world      *World
+	components map[int16]serialization.ISerializable
 }
 
 func (e *Entity) ID() int16 {
 	return e.id
 }
 
-func (e *Entity) Add(component IComponent) {
+func (e *Entity) Add(component serialization.ISerializable) {
 	e.components[component.Type()] = component
 }
 
@@ -23,38 +22,44 @@ func (e *Entity) Remove(componentId int16) {
 	delete(e.components, componentId)
 }
 
-func (e *Entity) Get(componentId int16) (IComponent, bool) {
-	c, ok := e.components[componentId]
-	return c.(IComponent), ok
-}
-
 func (e *Entity) Has(componentId int16) bool {
 	_, ok := e.components[componentId]
 	return ok
 }
 
-func (e *Entity) Update() {
-	for _, item := range e.components {
-		updatable := item.(IUpdatable)
-		updatable.Update(e.world)
-	}
+func (e *Entity) Get(componentId int16) (serialization.ISerializable, bool) {
+	c, ok := e.components[componentId]
+	return c, ok
 }
 
-func (e *Entity) Serialize() []byte {
+func (e *Entity) ToBytes() []byte {
 	data := make([]byte, 4)
 	binary.BigEndian.PutUint16(data, uint16(e.id))
+	binary.BigEndian.PutUint16(data, uint16(len(e.components)))
 	for _, value := range e.components {
-		item, ok := value.(serialization.ISerializable)
-		if !ok {
-			continue
-		}
-		data = serialization.Write(data, item.Type())
-		data = append(data, item.ToBytes()...)
+		data = serialization.Write(data, value.Type())
+		data = append(data, value.ToBytes()...)
 	}
-	binary.BigEndian.PutUint16(data, uint16(len(data)))
 	return data
 }
 
-func (e *Entity) Unserialize(data []byte) {
-
+func (e *Entity) FromBytes(data []byte) int16 {
+	n := serialization.Read(data, &e.id)
+	var cNumber int16
+	n += serialization.Read(data, &cNumber)
+	for i := int16(0); i < cNumber; i++ {
+		var cType int16
+		n += serialization.Read(data[n:], cType)
+		switch cType {
+		case TypePosition:
+			component := Position{}
+			n += component.FromBytes(data[n:])
+			e.components[component.Type()] = &component
+		case TypeRotation:
+			component := Rotation{}
+			n += component.FromBytes(data[n:])
+			e.components[component.Type()] = &component
+		}
+	}
+	return n
 }

@@ -1,6 +1,9 @@
 package game
 
-import "mmo2/pkg/ds"
+import (
+	"mmo2/pkg/ds"
+	"mmo2/pkg/serialization"
+)
 
 type World struct {
 	entities     []*Entity
@@ -32,8 +35,7 @@ func (w *World) NewEntity() *Entity {
 		return nil
 	}
 	entity := Entity{}
-	entity.components = make(map[int16]any)
-	entity.world = w
+	entity.components = make(map[int16]serialization.ISerializable)
 	entity.id = w.nextPos()
 	w.entities[entity.id] = &entity
 	return &entity

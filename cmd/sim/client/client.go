@@ -4,7 +4,7 @@ import (
 	"log"
 	"mmo2/pkg/events"
 	"mmo2/pkg/gsp"
-	"mmo2/pkg/payloads"
+	"mmo2/pkg/packets"
 	"os"
 	"runtime/pprof"
 	"sync/atomic"
@@ -26,17 +26,17 @@ main:
 		select {
 		case eventBytes := <-eventsChan:
 			evId := events.GetType(eventBytes)
-			if evId != payloads.TypeMoveRequest {
+			if evId != packets.TypeMoveInput {
 				panic("wrong type!")
 			}
-			event := payloads.MoveInput{}
+			event := packets.MoveInput{}
 			events.Unserialize(eventBytes, &event)
 			if event.Dx != 5 && event.Dy != 2 {
 				panic("wrong data")
 			}
 			readed.Add(1)
 		case <-ticker.C:
-			event := payloads.MoveInput{
+			event := packets.MoveInput{
 				Dx: 5,
 				Dy: 2,
 			}

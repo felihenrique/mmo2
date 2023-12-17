@@ -6,27 +6,27 @@ import (
 	"mmo2/pkg/serialization"
 )
 
-type RawEvent = []byte
+type Raw = []byte
 
-func GetSize(data RawEvent) int16 {
+func GetSize(data Raw) int16 {
 	return int16(binary.BigEndian.Uint16(data))
 }
 
-func GetID(data RawEvent) int16 {
+func GetID(data Raw) int16 {
 	return int16(binary.BigEndian.Uint16(data[2:]))
 }
 
-func GetType(data RawEvent) int16 {
+func GetType(data Raw) int16 {
 	return int16(binary.BigEndian.Uint16(data[4:]))
 }
 
-func Unserialize(data RawEvent, container serialization.ISerializable) {
+func Unserialize(data Raw, container serialization.ISerializable) {
 	container.FromBytes(data[6:])
 }
 
 var idGen ds.SequentialID
 
-func Serialize(event serialization.ISerializable) RawEvent {
+func Serialize(event serialization.ISerializable) Raw {
 	headers := make([]byte, 6)
 	eventBytes := event.ToBytes()
 	binary.BigEndian.PutUint16(headers, uint16(len(eventBytes)+len(headers)))

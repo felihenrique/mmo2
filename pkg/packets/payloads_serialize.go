@@ -1,40 +1,91 @@
-package payloads
+package packets
 
 import "mmo2/pkg/serialization"
 
 const (
 	TypeNone = int16(iota)
-	TypeAck
-	TypeMoveRequest
-	TypeRotateRequest
+	TypeAckInput
+	TypeMoveInput
+	TypeRotateInput
 	TypeJoinShardRequest
+	TypeJoinShardResponse
 	TypeEntityCreated
 	TypeEntityUpdated
 	TypeEntityRemoved
 )
 
+func Read(data []byte) (serialization.ISerializable, int16) {
+	var strType int16
+	n := serialization.Read(data, &strType)
+	switch strType {
+
+	case TypeAckInput:
+		var str AckInput
+		n += str.FromBytes(data[n:])
+		return &str, n
+
+	case TypeMoveInput:
+		var str MoveInput
+		n += str.FromBytes(data[n:])
+		return &str, n
+
+	case TypeRotateInput:
+		var str RotateInput
+		n += str.FromBytes(data[n:])
+		return &str, n
+
+	case TypeJoinShardRequest:
+		var str JoinShardRequest
+		n += str.FromBytes(data[n:])
+		return &str, n
+
+	case TypeJoinShardResponse:
+		var str JoinShardResponse
+		n += str.FromBytes(data[n:])
+		return &str, n
+
+	case TypeEntityCreated:
+		var str EntityCreated
+		n += str.FromBytes(data[n:])
+		return &str, n
+
+	case TypeEntityUpdated:
+		var str EntityUpdated
+		n += str.FromBytes(data[n:])
+		return &str, n
+
+	case TypeEntityRemoved:
+		var str EntityRemoved
+		n += str.FromBytes(data[n:])
+		return &str, n
+
+	default:
+		panic("wrong type")
+	}
+}
+
 func (str *AckInput) ToBytes() []byte {
 	buffer := make([]byte, 0)
-	buffer = serialization.Write(buffer, str.EventId)
+	buffer = serialization.Append(buffer, str.InputId)
 
 	return buffer
 }
 
 func (str *AckInput) FromBytes(data []byte) int16 {
 	var n int16 = 0
-	n += serialization.Read(data[n:], &str.EventId)
+	n += serialization.Read(data[n:], &str.InputId)
 
 	return n
 }
 
 func (str *AckInput) Type() int16 {
-	return TypeAck
+	return TypeAckInput
 }
 
 func (str *MoveInput) ToBytes() []byte {
 	buffer := make([]byte, 0)
-	buffer = serialization.Write(buffer, str.Dx)
-	buffer = serialization.Write(buffer, str.Dy)
+	buffer = serialization.Append(buffer, str.Dx)
+	buffer = serialization.Append(buffer, str.Dy)
 
 	return buffer
 }
@@ -48,12 +99,12 @@ func (str *MoveInput) FromBytes(data []byte) int16 {
 }
 
 func (str *MoveInput) Type() int16 {
-	return TypeMoveRequest
+	return TypeMoveInput
 }
 
 func (str *RotateInput) ToBytes() []byte {
 	buffer := make([]byte, 0)
-	buffer = serialization.Write(buffer, str.Quantity)
+	buffer = serialization.Append(buffer, str.Quantity)
 
 	return buffer
 }
@@ -66,18 +117,20 @@ func (str *RotateInput) FromBytes(data []byte) int16 {
 }
 
 func (str *RotateInput) Type() int16 {
-	return TypeRotateRequest
+	return TypeRotateInput
 }
 
 func (str *JoinShardRequest) ToBytes() []byte {
 	buffer := make([]byte, 0)
-	buffer = serialization.Write(buffer, str.Portal)
+	buffer = serialization.Append(buffer, str.Name)
+	buffer = serialization.Append(buffer, str.Portal)
 
 	return buffer
 }
 
 func (str *JoinShardRequest) FromBytes(data []byte) int16 {
 	var n int16 = 0
+	n += serialization.Read(data[n:], &str.Name)
 	n += serialization.Read(data[n:], &str.Portal)
 
 	return n
@@ -87,9 +140,27 @@ func (str *JoinShardRequest) Type() int16 {
 	return TypeJoinShardRequest
 }
 
+func (str *JoinShardResponse) ToBytes() []byte {
+	buffer := make([]byte, 0)
+	buffer = serialization.Append(buffer, str.Entity)
+
+	return buffer
+}
+
+func (str *JoinShardResponse) FromBytes(data []byte) int16 {
+	var n int16 = 0
+	n += serialization.Read(data[n:], &str.Entity)
+
+	return n
+}
+
+func (str *JoinShardResponse) Type() int16 {
+	return TypeJoinShardResponse
+}
+
 func (str *EntityCreated) ToBytes() []byte {
 	buffer := make([]byte, 0)
-	buffer = serialization.Write(buffer, str.Entity)
+	buffer = serialization.Append(buffer, str.Entity)
 
 	return buffer
 }
@@ -107,7 +178,7 @@ func (str *EntityCreated) Type() int16 {
 
 func (str *EntityUpdated) ToBytes() []byte {
 	buffer := make([]byte, 0)
-	buffer = serialization.Write(buffer, str.Entity)
+	buffer = serialization.Append(buffer, str.Entity)
 
 	return buffer
 }
@@ -125,7 +196,7 @@ func (str *EntityUpdated) Type() int16 {
 
 func (str *EntityRemoved) ToBytes() []byte {
 	buffer := make([]byte, 0)
-	buffer = serialization.Write(buffer, str.EntityId)
+	buffer = serialization.Append(buffer, str.EntityId)
 
 	return buffer
 }

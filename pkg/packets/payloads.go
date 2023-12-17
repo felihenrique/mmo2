@@ -1,10 +1,10 @@
-package payloads
+package packets
 
 //go:generate ../../bin/serialize-generator
 
 // INPUTS
 type AckInput struct {
-	EventId int16
+	InputId int16
 }
 type MoveInput struct {
 	Dx int32

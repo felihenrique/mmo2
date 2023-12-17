@@ -9,10 +9,35 @@ const (
 	TypeMovable
 )
 
+func Read(data []byte) (serialization.ISerializable, int16) {
+	var strType int16
+	n := serialization.Read(data, &strType)
+	switch strType {
+
+	case TypePosition:
+		var str Position
+		n += str.FromBytes(data[n:])
+		return &str, n
+
+	case TypeRotation:
+		var str Rotation
+		n += str.FromBytes(data[n:])
+		return &str, n
+
+	case TypeMovable:
+		var str Movable
+		n += str.FromBytes(data[n:])
+		return &str, n
+
+	default:
+		panic("wrong type")
+	}
+}
+
 func (str *Position) ToBytes() []byte {
 	buffer := make([]byte, 0)
-	buffer = serialization.Write(buffer, str.X)
-	buffer = serialization.Write(buffer, str.Y)
+	buffer = serialization.Append(buffer, str.X)
+	buffer = serialization.Append(buffer, str.Y)
 
 	return buffer
 }
@@ -31,7 +56,7 @@ func (str *Position) Type() int16 {
 
 func (str *Rotation) ToBytes() []byte {
 	buffer := make([]byte, 0)
-	buffer = serialization.Write(buffer, str.Rot)
+	buffer = serialization.Append(buffer, str.Rot)
 
 	return buffer
 }
@@ -49,7 +74,7 @@ func (str *Rotation) Type() int16 {
 
 func (str *Movable) ToBytes() []byte {
 	buffer := make([]byte, 0)
-	buffer = serialization.Write(buffer, str.Velocity)
+	buffer = serialization.Append(buffer, str.Velocity)
 
 	return buffer
 }

@@ -23,7 +23,7 @@ func (c *TcpPeer) Close() error {
 	return c.conn.Close()
 }
 
-func (c *TcpPeer) SendEvent(event events.RawEvent) {
+func (c *TcpPeer) SendEvent(event events.Raw) {
 	c.writer.Append(event)
 }
 

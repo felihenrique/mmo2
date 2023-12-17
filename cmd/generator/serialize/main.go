@@ -17,10 +17,25 @@ const (
 	{{ end }}
 )
 
+func Read(data []byte) (serialization.ISerializable, int16) {
+	var strType int16
+	n := serialization.Read(data, &strType)
+	switch strType {
+{{ range .Structs }}
+	case Type{{ .Name }}:
+		var str {{ .Name }}
+		n += str.FromBytes(data[n:])
+		return &str, n
+{{ end }}
+	default:
+		panic("wrong type")
+	}
+}
+
 {{ range .Structs }}
 func (str *{{ .Name }}) ToBytes() []byte {
 	buffer := make([]byte, 0)
-	{{ range .Fields }}buffer = serialization.Write(buffer, str.{{ .Name }})
+	{{ range .Fields }}buffer = serialization.Append(buffer, str.{{ .Name }})
 	{{ end }}
 	return buffer
 }

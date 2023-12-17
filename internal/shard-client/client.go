@@ -1,10 +1,11 @@
 package shard
 
 import (
+	"fmt"
 	"mmo2/pkg/events"
 	"mmo2/pkg/game"
 	"mmo2/pkg/gsp"
-	"mmo2/pkg/payloads"
+	"mmo2/pkg/packets"
 )
 
 type Client struct {
@@ -37,12 +38,14 @@ main:
 		case eventBytes := <-eventsChan:
 			evType := events.GetType(eventBytes)
 			switch evType {
-			case payloads.TypeEntityCreated:
+			case packets.TypeEntityCreated:
 				c.entityCreated(eventBytes)
-			case payloads.TypeEntityUpdated:
+			case packets.TypeEntityUpdated:
 				c.entityUpdated(eventBytes)
-			case payloads.TypeEntityRemoved:
+			case packets.TypeEntityRemoved:
 				c.entityRemoved(eventBytes)
+			default:
+				panic(fmt.Sprintf("unrecognized type %d", evType))
 			}
 		case <-disconChan:
 			break main

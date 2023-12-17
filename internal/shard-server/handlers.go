@@ -5,7 +5,7 @@ import (
 	"mmo2/pkg/events"
 	"mmo2/pkg/game"
 	"mmo2/pkg/gsp"
-	"mmo2/pkg/payloads"
+	"mmo2/pkg/packets"
 )
 
 /*
@@ -19,7 +19,7 @@ próximo do jogador
 */
 
 func (s *Server) moveRequest(player *Player, pe gsp.PeerEvent) {
-	move := payloads.MoveInput{}
+	move := packets.MoveInput{}
 	events.Unserialize(pe.Event, &move)
 	tc, tok := player.entity.Get(game.TypePosition)
 	if !tok {
@@ -29,11 +29,11 @@ func (s *Server) moveRequest(player *Player, pe gsp.PeerEvent) {
 	position := tc.(*game.Position)
 	position.X += move.Dx
 	position.Y += move.Dy
-	s.ackEvent(pe.Event, pe.Peer)
+	s.ackInput(pe.Event, pe.Peer)
 }
 
 func (s *Server) joinShardRequest(player *Player, pe gsp.PeerEvent) {
-	event := payloads.JoinShardRequest{}
+	event := packets.JoinShardRequest{}
 	events.Unserialize(pe.Event, &event)
 	entity := s.world.NewEntity()
 	player.entity = entity
@@ -53,7 +53,7 @@ func (s *Server) joinShardRequest(player *Player, pe gsp.PeerEvent) {
 		position.Y = 0
 	}
 	entity.Add(&position)
-	s.ackEvent(pe.Event, pe.Peer)
+	s.ackInput(pe.Event, pe.Peer)
 }
 
 /*

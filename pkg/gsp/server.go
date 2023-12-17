@@ -10,7 +10,7 @@ import (
 
 type PeerEvent struct {
 	Peer  *TcpPeer
-	Event events.RawEvent
+	Event events.Raw
 }
 
 type TcpServer struct {
@@ -112,7 +112,6 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 		_, err = peer.writer.Send(peer.conn)
 		err = handleError(err)
 		if err != nil && !errors.Is(err, ErrTimeout) {
-
 			println(err.Error())
 			s.peerDisconnected <- peer
 			break

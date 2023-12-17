@@ -10,7 +10,7 @@ import (
 
 type TcpClient struct {
 	conn             net.Conn
-	eventsChan       chan events.RawEvent
+	eventsChan       chan events.Raw
 	disconnectedChan chan byte
 	writer           *events.Writer
 	connected        bool
@@ -24,7 +24,7 @@ func NewTcpClient() *TcpClient {
 	return &client
 }
 
-func (c *TcpClient) EventsChan() <-chan events.RawEvent {
+func (c *TcpClient) EventsChan() <-chan events.Raw {
 	return c.eventsChan
 }
 
@@ -44,7 +44,7 @@ func (c *TcpClient) Connect(host string, port int) error {
 	return nil
 }
 
-func (c *TcpClient) SendEvent(event events.RawEvent) {
+func (c *TcpClient) SendEvent(event events.Raw) {
 	c.writer.Append(event)
 }
 

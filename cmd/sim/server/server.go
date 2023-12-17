@@ -4,7 +4,7 @@ import (
 	"log"
 	"mmo2/pkg/events"
 	"mmo2/pkg/gsp"
-	"mmo2/pkg/payloads"
+	"mmo2/pkg/packets"
 	"os"
 	"runtime/pprof"
 	"time"
@@ -50,11 +50,11 @@ func handleChans(server gsp.TcpServer) {
 	}
 }
 
-func handleEvent(rawEvent events.RawEvent, peers map[string]*gsp.TcpPeer) {
+func handleEvent(rawEvent events.Raw, peers map[string]*gsp.TcpPeer) {
 	if len(rawEvent) != 14 {
 		panic("WRONG")
 	}
-	event := payloads.MoveInput{}
+	event := packets.MoveInput{}
 	events.Unserialize(rawEvent, &event)
 	if event.Dx != 5 || event.Dy != 2 {
 		panic("DIVERGENT")

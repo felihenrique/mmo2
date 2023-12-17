@@ -5,7 +5,7 @@ import (
 	"mmo2/pkg/events"
 	"mmo2/pkg/game"
 	"mmo2/pkg/gsp"
-	"mmo2/pkg/payloads"
+	"mmo2/pkg/packets"
 	"mmo2/pkg/serialization"
 	"time"
 )
@@ -31,9 +31,9 @@ func (s *Server) handleEvent(pe gsp.PeerEvent) {
 	}
 	evType := events.GetType(pe.Event)
 	switch evType {
-	case payloads.TypeMoveRequest:
+	case packets.TypeMoveInput:
 		s.moveRequest(player, pe)
-	case payloads.TypeJoinShardRequest:
+	case packets.TypeJoinShardRequest:
 		s.joinShardRequest(player, pe)
 	default:
 		fmt.Printf("wrong request: %d", evType)
@@ -74,9 +74,9 @@ func New(host string, port int) *Server {
 	return &server
 }
 
-func (s *Server) ackEvent(event events.RawEvent, peer *gsp.TcpPeer) {
-	data := events.Serialize(&payloads.AckInput{
-		EventId: events.GetID(event),
+func (s *Server) ackInput(input events.Raw, peer *gsp.TcpPeer) {
+	data := events.Serialize(&packets.AckInput{
+		InputId: events.GetID(input),
 	})
 	peer.SendEvent(data)
 }

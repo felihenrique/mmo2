@@ -37,7 +37,7 @@ func (e *Entity) ToBytes() []byte {
 	binary.BigEndian.PutUint16(data, uint16(e.id))
 	binary.BigEndian.PutUint16(data, uint16(len(e.components)))
 	for _, value := range e.components {
-		data = serialization.Write(data, value.Type())
+		data = serialization.Append(data, value.Type())
 		data = append(data, value.ToBytes()...)
 	}
 	return data

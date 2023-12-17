@@ -1,6 +1,9 @@
 package game
 
-import "mmo2/pkg/serialization"
+import (
+	"fmt"
+	"mmo2/pkg/serialization"
+)
 
 const (
 	TypeNone = int16(iota)
@@ -55,6 +58,10 @@ func (str *Position) Type() int16 {
 	return TypePosition
 }
 
+func (str *Position) String() string {
+	return fmt.Sprintf("Position: X: %s, Y: %s, ", str.X, str.Y)
+}
+
 func (str *Rotation) ToBytes() []byte {
 	buffer := make([]byte, 0)
 	buffer = serialization.Append(buffer, TypeRotation)
@@ -74,6 +81,10 @@ func (str *Rotation) Type() int16 {
 	return TypeRotation
 }
 
+func (str *Rotation) String() string {
+	return fmt.Sprintf("Rotation: Rot: %s, ", str.Rot)
+}
+
 func (str *Movable) ToBytes() []byte {
 	buffer := make([]byte, 0)
 	buffer = serialization.Append(buffer, TypeMovable)
@@ -91,4 +102,8 @@ func (str *Movable) FromBytes(data []byte) int16 {
 
 func (str *Movable) Type() int16 {
 	return TypeMovable
+}
+
+func (str *Movable) String() string {
+	return fmt.Sprintf("Movable: Velocity: %s, ", str.Velocity)
 }

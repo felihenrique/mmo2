@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"mmo2/pkg/ds"
 	"mmo2/pkg/serialization"
 )
@@ -48,7 +49,11 @@ func (w *World) GetEntity(id int16) *Entity {
 	return w.entities[id]
 }
 
-func (w *World) RemoveEntity(entity *Entity) {
-	w.entities[entity.id] = nil
-	w.availablePos.Push(entity.id)
+func (w *World) RemoveEntity(entityId int16) {
+	if w.entities[entityId] == nil {
+		fmt.Printf("WRONG situation, removing entity with id: %d \n", entityId)
+		return
+	}
+	w.entities[entityId] = nil
+	w.availablePos.Push(entityId)
 }

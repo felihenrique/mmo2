@@ -9,7 +9,10 @@ import (
 var tpl = `
 package {{ .Package }}
 
-import "mmo2/pkg/serialization"
+import (
+	"mmo2/pkg/serialization"
+	"fmt"
+)
 
 const (
 	TypeNone = int16(iota)
@@ -50,6 +53,10 @@ func (str *{{ .Name }}) FromBytes(data []byte) int16 {
 
 func (str *{{ .Name }}) Type() int16 {
 	return Type{{ .Name }}
+}
+
+func (str *{{ .Name }}) String() string {
+	return fmt.Sprintf("{{ .Name }}: {{ range .Fields }}{{ .Name }}: %s, {{ end }}", {{ range .Fields }}str.{{ .Name }},{{ end }})
 }
 {{ end }}
 `

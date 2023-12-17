@@ -33,7 +33,7 @@ func (s *Server) moveRequest(player *Player, event events.Raw) {
 	})
 	s.BroadcastFiltered(&packets.EntityUpdated{
 		EntityId:   player.entity.ID(),
-		Components: [][]byte{position.ToBytes()},
+		Components: position.ToBytes(),
 	}, player.peer)
 }
 

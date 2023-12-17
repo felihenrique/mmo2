@@ -1,6 +1,9 @@
 package packets
 
-import "mmo2/pkg/serialization"
+import (
+	"fmt"
+	"mmo2/pkg/serialization"
+)
 
 const (
 	TypeNone = int16(iota)
@@ -83,6 +86,10 @@ func (str *AckInput) Type() int16 {
 	return TypeAckInput
 }
 
+func (str *AckInput) String() string {
+	return fmt.Sprintf("AckInput: InputId: %s, ", str.InputId)
+}
+
 func (str *MoveInput) ToBytes() []byte {
 	buffer := make([]byte, 0)
 	buffer = serialization.Append(buffer, TypeMoveInput)
@@ -106,6 +113,10 @@ func (str *MoveInput) Type() int16 {
 	return TypeMoveInput
 }
 
+func (str *MoveInput) String() string {
+	return fmt.Sprintf("MoveInput: InputId: %s, Dx: %s, Dy: %s, ", str.InputId, str.Dx, str.Dy)
+}
+
 func (str *RotateInput) ToBytes() []byte {
 	buffer := make([]byte, 0)
 	buffer = serialization.Append(buffer, TypeRotateInput)
@@ -125,6 +136,10 @@ func (str *RotateInput) FromBytes(data []byte) int16 {
 
 func (str *RotateInput) Type() int16 {
 	return TypeRotateInput
+}
+
+func (str *RotateInput) String() string {
+	return fmt.Sprintf("RotateInput: InputId: %s, Quantity: %s, ", str.InputId, str.Quantity)
 }
 
 func (str *JoinShardRequest) ToBytes() []byte {
@@ -150,6 +165,10 @@ func (str *JoinShardRequest) Type() int16 {
 	return TypeJoinShardRequest
 }
 
+func (str *JoinShardRequest) String() string {
+	return fmt.Sprintf("JoinShardRequest: RequestId: %s, Name: %s, Portal: %s, ", str.RequestId, str.Name, str.Portal)
+}
+
 func (str *JoinShardResponse) ToBytes() []byte {
 	buffer := make([]byte, 0)
 	buffer = serialization.Append(buffer, TypeJoinShardResponse)
@@ -171,6 +190,10 @@ func (str *JoinShardResponse) Type() int16 {
 	return TypeJoinShardResponse
 }
 
+func (str *JoinShardResponse) String() string {
+	return fmt.Sprintf("JoinShardResponse: RequestId: %s, Entity: %s, ", str.RequestId, str.Entity)
+}
+
 func (str *EntityCreated) ToBytes() []byte {
 	buffer := make([]byte, 0)
 	buffer = serialization.Append(buffer, TypeEntityCreated)
@@ -188,6 +211,10 @@ func (str *EntityCreated) FromBytes(data []byte) int16 {
 
 func (str *EntityCreated) Type() int16 {
 	return TypeEntityCreated
+}
+
+func (str *EntityCreated) String() string {
+	return fmt.Sprintf("EntityCreated: Entity: %s, ", str.Entity)
 }
 
 func (str *EntityUpdated) ToBytes() []byte {
@@ -211,6 +238,10 @@ func (str *EntityUpdated) Type() int16 {
 	return TypeEntityUpdated
 }
 
+func (str *EntityUpdated) String() string {
+	return fmt.Sprintf("EntityUpdated: EntityId: %s, Components: %s, ", str.EntityId, str.Components)
+}
+
 func (str *EntityRemoved) ToBytes() []byte {
 	buffer := make([]byte, 0)
 	buffer = serialization.Append(buffer, TypeEntityRemoved)
@@ -228,4 +259,8 @@ func (str *EntityRemoved) FromBytes(data []byte) int16 {
 
 func (str *EntityRemoved) Type() int16 {
 	return TypeEntityRemoved
+}
+
+func (str *EntityRemoved) String() string {
+	return fmt.Sprintf("EntityRemoved: EntityId: %s, ", str.EntityId)
 }

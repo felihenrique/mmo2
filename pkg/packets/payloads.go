@@ -33,7 +33,7 @@ type EntityCreated struct {
 }
 type EntityUpdated struct {
 	EntityId   int16
-	Components [][]byte
+	Components []byte
 }
 type EntityRemoved struct {
 	EntityId int16

@@ -1,5 +1,10 @@
 package game
 
+import (
+	"encoding/binary"
+	"mmo2/pkg/serialization"
+)
+
 type Entity struct {
 	id         int16
 	components map[int16]any
@@ -33,4 +38,23 @@ func (e *Entity) Update() {
 		updatable := item.(IUpdatable)
 		updatable.Update(e.world)
 	}
+}
+
+func (e *Entity) Serialize() []byte {
+	data := make([]byte, 4)
+	binary.BigEndian.PutUint16(data, uint16(e.id))
+	for _, value := range e.components {
+		item, ok := value.(serialization.ISerializable)
+		if !ok {
+			continue
+		}
+		data = serialization.Write(data, item.ID())
+		data = append(data, item.ToBytes()...)
+	}
+	binary.BigEndian.PutUint16(data, uint16(len(data)))
+	return data
+}
+
+func (e *Entity) Unserialize(data []byte) {
+
 }

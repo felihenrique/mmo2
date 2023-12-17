@@ -21,14 +21,14 @@ próximo do jogador
 func (s *Server) moveRequest(player *Player, pe gsp.PeerEvent) {
 	move := payloads.MoveRequest{}
 	events.Unserialize(pe.Event, &move)
-	tc, tok := player.entity.Get(game.TypeTransform)
+	tc, tok := player.entity.Get(game.TypePosition)
 	if !tok {
-		log.Printf("move command error: entity %d doesn't have transform", player.entity.ID())
+		log.Printf("move command error: entity %d doesn't have position", player.entity.ID())
 		return
 	}
-	transform := tc.(*game.Position)
-	transform.X += move.Dx
-	transform.Y += move.Dy
+	position := tc.(*game.Position)
+	position.X += move.Dx
+	position.Y += move.Dy
 	s.ackEvent(pe.Event, pe.Peer)
 }
 
@@ -37,22 +37,22 @@ func (s *Server) joinShardRequest(player *Player, pe gsp.PeerEvent) {
 	events.Unserialize(pe.Event, &event)
 	entity := s.world.NewEntity()
 	player.entity = entity
-	transform := game.Position{}
+	position := game.Position{}
 	switch event.Portal {
 	case 0:
-		transform.X = 0
-		transform.Y = 0
+		position.X = 0
+		position.Y = 0
 	case 1:
-		transform.X = 100
-		transform.Y = 100
+		position.X = 100
+		position.Y = 100
 	case 2:
-		transform.X = 200
-		transform.Y = 200
+		position.X = 200
+		position.Y = 200
 	default:
-		transform.X = 0
-		transform.Y = 0
+		position.X = 0
+		position.Y = 0
 	}
-	entity.Add(&transform)
+	entity.Add(&position)
 	s.ackEvent(pe.Event, pe.Peer)
 }
 

@@ -6,7 +6,7 @@ import (
 	"math"
 )
 
-func WriteBinary(buffer []byte, data any) []byte {
+func Write(buffer []byte, data any) []byte {
 	switch v := data.(type) {
 	case bool:
 		if v {
@@ -97,7 +97,7 @@ func WriteBinary(buffer []byte, data any) []byte {
 	return buffer
 }
 
-func ReadBinary(buffer []byte, data any) int16 {
+func Read(buffer []byte, data any) int16 {
 	switch data := data.(type) {
 	case *bool:
 		*data = buffer[0] != 0

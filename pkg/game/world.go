@@ -50,7 +50,3 @@ func (w *World) RemoveEntity(entity *Entity) {
 	w.entities[entity.id] = nil
 	w.availablePos.Push(entity.id)
 }
-
-func (w *World) SerializeEntity(entityId int16) {
-
-}

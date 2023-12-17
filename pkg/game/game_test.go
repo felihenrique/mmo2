@@ -17,17 +17,17 @@ func TestWorld(t *testing.T) {
 		X: 123,
 		Y: 111,
 	})
-	if entity.components[TypeTransform] == nil {
+	if entity.components[TypePosition] == nil {
 		panic("wrong")
 	}
-	if !entity.Has(TypeTransform) {
+	if !entity.Has(TypePosition) {
 		panic("wrong")
 	}
-	entity.Remove(TypeTransform)
-	if entity.components[TypeTransform] != nil {
+	entity.Remove(TypePosition)
+	if entity.components[TypePosition] != nil {
 		panic("wrong")
 	}
-	if entity.Has(TypeTransform) {
+	if entity.Has(TypePosition) {
 		panic("wrong")
 	}
 }

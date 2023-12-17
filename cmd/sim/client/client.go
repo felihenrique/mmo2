@@ -30,7 +30,7 @@ main:
 				panic("wrong type!")
 			}
 			event := packets.MoveInput{}
-			events.Unserialize(eventBytes, &event)
+			event.FromBytes(eventBytes)
 			if event.Dx != 5 && event.Dy != 2 {
 				panic("wrong data")
 			}
@@ -40,8 +40,7 @@ main:
 				Dx: 5,
 				Dy: 2,
 			}
-			data := events.Serialize(&event)
-			client.SendEvent(data)
+			client.SendEvent(&event)
 			sent.Add(1)
 		case <-disconChan:
 			break main

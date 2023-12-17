@@ -4,7 +4,6 @@ import (
 	"log"
 	"mmo2/pkg/events"
 	"mmo2/pkg/game"
-	"mmo2/pkg/gsp"
 	"mmo2/pkg/packets"
 )
 
@@ -18,9 +17,9 @@ próximo do jogador
 (a tela do jogador 4 x 4 seções)
 */
 
-func (s *Server) moveRequest(player *Player, pe gsp.PeerEvent) {
+func (s *Server) moveRequest(player *Player, event events.Raw) {
 	move := packets.MoveInput{}
-	events.Unserialize(pe.Event, &move)
+	move.FromBytes(event)
 	tc, tok := player.entity.Get(game.TypePosition)
 	if !tok {
 		log.Printf("move command error: entity %d doesn't have position", player.entity.ID())
@@ -29,31 +28,38 @@ func (s *Server) moveRequest(player *Player, pe gsp.PeerEvent) {
 	position := tc.(*game.Position)
 	position.X += move.Dx
 	position.Y += move.Dy
-	s.ackInput(pe.Event, pe.Peer)
+	player.peer.SendEvent(&packets.AckInput{
+		InputId: move.InputId,
+	})
+	s.BroadcastFiltered(&packets.EntityUpdated{
+		EntityId:   player.entity.ID(),
+		Components: [][]byte{position.ToBytes()},
+	}, player.peer)
 }
 
-func (s *Server) joinShardRequest(player *Player, pe gsp.PeerEvent) {
-	event := packets.JoinShardRequest{}
-	events.Unserialize(pe.Event, &event)
+func (s *Server) joinShardRequest(player *Player, event events.Raw) {
+	request := packets.JoinShardRequest{}
+	request.FromBytes(event)
 	entity := s.world.NewEntity()
 	player.entity = entity
 	position := game.Position{}
-	switch event.Portal {
-	case 0:
-		position.X = 0
-		position.Y = 0
-	case 1:
-		position.X = 100
-		position.Y = 100
-	case 2:
-		position.X = 200
-		position.Y = 200
+	switch request.Portal {
 	default:
 		position.X = 0
 		position.Y = 0
 	}
+
 	entity.Add(&position)
-	s.ackInput(pe.Event, pe.Peer)
+	entityBytes := entity.ToBytes()
+
+	player.peer.SendEvent(&packets.JoinShardResponse{
+		RequestId: request.RequestId,
+		Entity:    entityBytes,
+	})
+
+	s.BroadcastFiltered(&packets.EntityCreated{
+		Entity: entityBytes,
+	}, player.peer)
 }
 
 /*

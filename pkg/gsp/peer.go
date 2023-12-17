@@ -2,6 +2,7 @@ package gsp
 
 import (
 	"mmo2/pkg/events"
+	"mmo2/pkg/serialization"
 	"net"
 )
 
@@ -23,8 +24,12 @@ func (c *TcpPeer) Close() error {
 	return c.conn.Close()
 }
 
-func (c *TcpPeer) SendEvent(event events.Raw) {
+func (c *TcpPeer) SendEvent(event serialization.ISerializable) {
 	c.writer.Append(event)
+}
+
+func (c *TcpPeer) SendBytes(data []byte) {
+	c.writer.AppendBytes(data)
 }
 
 func (c *TcpPeer) Addr() string {

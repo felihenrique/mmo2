@@ -32,12 +32,11 @@ func (s *Server) handleEvent(pe gsp.PeerEvent) {
 	evType := events.GetType(pe.Event)
 	switch evType {
 	case packets.TypeMoveInput:
-		s.moveRequest(player, pe)
+		s.moveRequest(player, pe.Event)
 	case packets.TypeJoinShardRequest:
-		s.joinShardRequest(player, pe)
+		s.joinShardRequest(player, pe.Event)
 	default:
-		fmt.Printf("wrong request: %d", evType)
-		return
+		panic(fmt.Sprintf("wrong packet: %d", evType))
 	}
 }
 
@@ -74,30 +73,23 @@ func New(host string, port int) *Server {
 	return &server
 }
 
-func (s *Server) ackInput(input events.Raw, peer *gsp.TcpPeer) {
-	data := events.Serialize(&packets.AckInput{
-		InputId: events.GetID(input),
-	})
-	peer.SendEvent(data)
-}
-
 func (s *Server) Broadcast(event serialization.ISerializable) {
-	data := events.Serialize(event)
+	data := event.ToBytes()
 	for _, player := range s.players {
 		if player.entity == nil {
 			continue
 		}
-		player.peer.SendEvent(data)
+		player.peer.SendBytes(data)
 	}
 }
 
 func (s *Server) BroadcastFiltered(event serialization.ISerializable, filterPeer *gsp.TcpPeer) {
-	data := events.Serialize(event)
+	data := event.ToBytes()
 	for _, player := range s.players {
 		if player.entity == nil {
 			continue
 		}
-		player.peer.SendEvent(data)
+		player.peer.SendBytes(data)
 	}
 }
 

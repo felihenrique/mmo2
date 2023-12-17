@@ -66,13 +66,14 @@ func Read(data []byte) (serialization.ISerializable, int16) {
 
 func (str *AckInput) ToBytes() []byte {
 	buffer := make([]byte, 0)
+	buffer = serialization.Append(buffer, TypeAckInput)
 	buffer = serialization.Append(buffer, str.InputId)
 
 	return buffer
 }
 
 func (str *AckInput) FromBytes(data []byte) int16 {
-	var n int16 = 0
+	var n int16 = 2
 	n += serialization.Read(data[n:], &str.InputId)
 
 	return n
@@ -84,6 +85,8 @@ func (str *AckInput) Type() int16 {
 
 func (str *MoveInput) ToBytes() []byte {
 	buffer := make([]byte, 0)
+	buffer = serialization.Append(buffer, TypeMoveInput)
+	buffer = serialization.Append(buffer, str.InputId)
 	buffer = serialization.Append(buffer, str.Dx)
 	buffer = serialization.Append(buffer, str.Dy)
 
@@ -91,7 +94,8 @@ func (str *MoveInput) ToBytes() []byte {
 }
 
 func (str *MoveInput) FromBytes(data []byte) int16 {
-	var n int16 = 0
+	var n int16 = 2
+	n += serialization.Read(data[n:], &str.InputId)
 	n += serialization.Read(data[n:], &str.Dx)
 	n += serialization.Read(data[n:], &str.Dy)
 
@@ -104,13 +108,16 @@ func (str *MoveInput) Type() int16 {
 
 func (str *RotateInput) ToBytes() []byte {
 	buffer := make([]byte, 0)
+	buffer = serialization.Append(buffer, TypeRotateInput)
+	buffer = serialization.Append(buffer, str.InputId)
 	buffer = serialization.Append(buffer, str.Quantity)
 
 	return buffer
 }
 
 func (str *RotateInput) FromBytes(data []byte) int16 {
-	var n int16 = 0
+	var n int16 = 2
+	n += serialization.Read(data[n:], &str.InputId)
 	n += serialization.Read(data[n:], &str.Quantity)
 
 	return n
@@ -122,6 +129,8 @@ func (str *RotateInput) Type() int16 {
 
 func (str *JoinShardRequest) ToBytes() []byte {
 	buffer := make([]byte, 0)
+	buffer = serialization.Append(buffer, TypeJoinShardRequest)
+	buffer = serialization.Append(buffer, str.RequestId)
 	buffer = serialization.Append(buffer, str.Name)
 	buffer = serialization.Append(buffer, str.Portal)
 
@@ -129,7 +138,8 @@ func (str *JoinShardRequest) ToBytes() []byte {
 }
 
 func (str *JoinShardRequest) FromBytes(data []byte) int16 {
-	var n int16 = 0
+	var n int16 = 2
+	n += serialization.Read(data[n:], &str.RequestId)
 	n += serialization.Read(data[n:], &str.Name)
 	n += serialization.Read(data[n:], &str.Portal)
 
@@ -142,13 +152,16 @@ func (str *JoinShardRequest) Type() int16 {
 
 func (str *JoinShardResponse) ToBytes() []byte {
 	buffer := make([]byte, 0)
+	buffer = serialization.Append(buffer, TypeJoinShardResponse)
+	buffer = serialization.Append(buffer, str.RequestId)
 	buffer = serialization.Append(buffer, str.Entity)
 
 	return buffer
 }
 
 func (str *JoinShardResponse) FromBytes(data []byte) int16 {
-	var n int16 = 0
+	var n int16 = 2
+	n += serialization.Read(data[n:], &str.RequestId)
 	n += serialization.Read(data[n:], &str.Entity)
 
 	return n
@@ -160,13 +173,14 @@ func (str *JoinShardResponse) Type() int16 {
 
 func (str *EntityCreated) ToBytes() []byte {
 	buffer := make([]byte, 0)
+	buffer = serialization.Append(buffer, TypeEntityCreated)
 	buffer = serialization.Append(buffer, str.Entity)
 
 	return buffer
 }
 
 func (str *EntityCreated) FromBytes(data []byte) int16 {
-	var n int16 = 0
+	var n int16 = 2
 	n += serialization.Read(data[n:], &str.Entity)
 
 	return n
@@ -178,14 +192,17 @@ func (str *EntityCreated) Type() int16 {
 
 func (str *EntityUpdated) ToBytes() []byte {
 	buffer := make([]byte, 0)
-	buffer = serialization.Append(buffer, str.Entity)
+	buffer = serialization.Append(buffer, TypeEntityUpdated)
+	buffer = serialization.Append(buffer, str.EntityId)
+	buffer = serialization.Append(buffer, str.Components)
 
 	return buffer
 }
 
 func (str *EntityUpdated) FromBytes(data []byte) int16 {
-	var n int16 = 0
-	n += serialization.Read(data[n:], &str.Entity)
+	var n int16 = 2
+	n += serialization.Read(data[n:], &str.EntityId)
+	n += serialization.Read(data[n:], &str.Components)
 
 	return n
 }
@@ -196,13 +213,14 @@ func (str *EntityUpdated) Type() int16 {
 
 func (str *EntityRemoved) ToBytes() []byte {
 	buffer := make([]byte, 0)
+	buffer = serialization.Append(buffer, TypeEntityRemoved)
 	buffer = serialization.Append(buffer, str.EntityId)
 
 	return buffer
 }
 
 func (str *EntityRemoved) FromBytes(data []byte) int16 {
-	var n int16 = 0
+	var n int16 = 2
 	n += serialization.Read(data[n:], &str.EntityId)
 
 	return n

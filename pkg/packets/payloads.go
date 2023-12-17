@@ -7,20 +7,24 @@ type AckInput struct {
 	InputId int16
 }
 type MoveInput struct {
-	Dx int32
-	Dy int32
+	InputId int16
+	Dx      int32
+	Dy      int32
 }
 type RotateInput struct {
+	InputId  int16
 	Quantity float32
 }
 
 // REQUESTS
 type JoinShardRequest struct {
-	Name   string
-	Portal uint8
+	RequestId int16
+	Name      string
+	Portal    uint8
 }
 type JoinShardResponse struct {
-	Entity []byte
+	RequestId int16
+	Entity    []byte
 }
 
 // EVENTS
@@ -28,7 +32,8 @@ type EntityCreated struct {
 	Entity []byte
 }
 type EntityUpdated struct {
-	Entity []byte
+	EntityId   int16
+	Components [][]byte
 }
 type EntityRemoved struct {
 	EntityId int16

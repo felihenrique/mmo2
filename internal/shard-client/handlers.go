@@ -7,15 +7,15 @@ import (
 
 func (c *Client) entityCreated(rawEvent events.Raw) {
 	event := packets.EntityCreated{}
-	events.Unserialize(rawEvent, &event)
+	event.FromBytes(rawEvent)
 }
 
 func (c *Client) entityUpdated(rawEvent events.Raw) {
 	event := packets.EntityUpdated{}
-	events.Unserialize(rawEvent, &event)
+	event.FromBytes(rawEvent)
 }
 
 func (c *Client) entityRemoved(rawEvent events.Raw) {
 	event := packets.EntityRemoved{}
-	events.Unserialize(rawEvent, &event)
+	event.FromBytes(rawEvent)
 }

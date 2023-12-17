@@ -55,11 +55,11 @@ func handleEvent(rawEvent events.Raw, peers map[string]*gsp.TcpPeer) {
 		panic("WRONG")
 	}
 	event := packets.MoveInput{}
-	events.Unserialize(rawEvent, &event)
+	event.FromBytes(rawEvent)
 	if event.Dx != 5 || event.Dy != 2 {
 		panic("DIVERGENT")
 	}
 	for _, peer := range peers {
-		peer.SendEvent(rawEvent)
+		peer.SendEvent(&event)
 	}
 }

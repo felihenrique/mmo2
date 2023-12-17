@@ -50,16 +50,9 @@ func (e *Entity) FromBytes(data []byte) int16 {
 	for i := int16(0); i < cNumber; i++ {
 		var cType int16
 		n += serialization.Read(data[n:], cType)
-		switch cType {
-		case TypePosition:
-			component := Position{}
-			n += component.FromBytes(data[n:])
-			e.components[component.Type()] = &component
-		case TypeRotation:
-			component := Rotation{}
-			n += component.FromBytes(data[n:])
-			e.components[component.Type()] = &component
-		}
+		component, readed := Read(data[n:])
+		n += readed
+		e.components[component.Type()] = component
 	}
 	return n
 }

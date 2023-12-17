@@ -35,13 +35,14 @@ func Read(data []byte) (serialization.ISerializable, int16) {
 {{ range .Structs }}
 func (str *{{ .Name }}) ToBytes() []byte {
 	buffer := make([]byte, 0)
+	buffer = serialization.Append(buffer, Type{{ .Name }})
 	{{ range .Fields }}buffer = serialization.Append(buffer, str.{{ .Name }})
 	{{ end }}
 	return buffer
 }
 
 func (str *{{ .Name }}) FromBytes(data []byte) int16 {
-	var n int16 = 0
+	var n int16 = 2
 	{{ range .Fields }}n += serialization.Read(data[n:], &str.{{ .Name }})
 	{{ end }}
 	return n

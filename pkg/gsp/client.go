@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"mmo2/pkg/events"
+	"mmo2/pkg/serialization"
 	"net"
 	"time"
 )
@@ -44,7 +45,7 @@ func (c *TcpClient) Connect(host string, port int) error {
 	return nil
 }
 
-func (c *TcpClient) SendEvent(event events.Raw) {
+func (c *TcpClient) SendEvent(event serialization.ISerializable) {
 	c.writer.Append(event)
 }
 

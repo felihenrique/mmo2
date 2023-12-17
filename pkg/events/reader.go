@@ -3,6 +3,7 @@ package events
 import (
 	"errors"
 	"io"
+	"mmo2/pkg/serialization"
 )
 
 var ErrNotEnoughBytes = errors.New("not enough bytes in the buffer. please fill it")
@@ -10,6 +11,12 @@ var ErrNotEnoughBytes = errors.New("not enough bytes in the buffer. please fill 
 type Reader struct {
 	buffer []byte
 	length int32
+}
+
+func getSize(data Raw) int16 {
+	var size int16
+	serialization.ReadInt16(data, &size)
+	return size
 }
 
 func NewReader() *Reader {
@@ -29,20 +36,20 @@ func (r *Reader) FillFrom(reader io.Reader) error {
 }
 
 func (r *Reader) Next() ([]byte, error) {
-	if r.length < 7 {
+	if r.length < 5 {
 		return nil, ErrNotEnoughBytes
 	}
-	eventLength := GetSize(r.buffer)
+	eventLength := getSize(r.buffer)
 	if r.length < int32(eventLength) {
 		return nil, ErrNotEnoughBytes
 	}
 	event := make([]byte, eventLength)
-	copy(event, r.buffer[0:eventLength])
+	copy(event, r.buffer[2:eventLength])
 	return event, nil
 }
 
 func (r *Reader) Pop() {
-	eventLength := GetSize(r.buffer)
+	eventLength := getSize(r.buffer)
 	nextLength := r.length - int32(eventLength)
 	copy(r.buffer, r.buffer[eventLength:r.length])
 	r.length = nextLength

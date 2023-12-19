@@ -1,5 +1,7 @@
 package packets
 
+import "mmo2/pkg/game"
+
 //go:generate ../../bin/serialize-generator
 
 // INPUTS
@@ -19,11 +21,19 @@ type JoinShardRequest struct {
 	Portal int8
 }
 type JoinShardResponse struct {
-	RequestId int16
-	Entity    []byte
+	EntityId int16
+	Position game.Position
 }
 
 // EVENTS
+type PlayerJoined struct {
+	EntityId int16
+	Position game.Position
+}
+type EntityMoved struct {
+	EntityId int16
+	Position game.Position
+}
 type EntityRemoved struct {
 	EntityId int16
 }

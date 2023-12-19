@@ -5,6 +5,7 @@ import (
 	"mmo2/pkg/events"
 	"mmo2/pkg/game"
 	"mmo2/pkg/gsp"
+	"mmo2/pkg/packets"
 	"mmo2/pkg/serialization"
 )
 
@@ -18,6 +19,9 @@ func NewClient(world *game.World) *Client {
 	client := Client{}
 	client.gspClient = gsp.NewTcpClient()
 	client.world = world
+	client.handlers = make(map[int16]EventHandler)
+	client.handlers[packets.TypeJoinShardResponse] = client.joinShardResponse
+	client.handlers[packets.TypePlayerJoined] = client.playerJoined
 	return &client
 }
 

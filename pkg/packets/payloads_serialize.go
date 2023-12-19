@@ -12,6 +12,8 @@ const (
 	TypeRotateRequest
 	TypeJoinShardRequest
 	TypeJoinShardResponse
+	TypePlayerJoined
+	TypeEntityMoved
 	TypeEntityRemoved
 )
 
@@ -117,16 +119,16 @@ func (str *JoinShardResponse) ToBytes(eventId int16) []byte {
 	buffer := make([]byte, 0)
 	buffer = serialization.Append(buffer, TypeJoinShardResponse)
 	buffer = serialization.Append(buffer, eventId)
-	buffer = serialization.Append(buffer, str.RequestId)
-	buffer = serialization.Append(buffer, str.Entity)
+	buffer = serialization.Append(buffer, str.EntityId)
+	buffer = serialization.Append(buffer, str.Position)
 
 	return buffer
 }
 
 func (str *JoinShardResponse) FromBytes(data []byte) int16 {
 	var n int16 = 4
-	n += serialization.Read(data[n:], &str.RequestId)
-	n += serialization.Read(data[n:], &str.Entity)
+	n += serialization.Read(data[n:], &str.EntityId)
+	n += serialization.Read(data[n:], &str.Position)
 
 	return n
 }
@@ -136,7 +138,59 @@ func (str *JoinShardResponse) Type() int16 {
 }
 
 func (str *JoinShardResponse) String() string {
-	return fmt.Sprintf("JoinShardResponse: { RequestId: %v, Entity: %v,  }", str.RequestId, str.Entity)
+	return fmt.Sprintf("JoinShardResponse: { EntityId: %v, Position: %v,  }", str.EntityId, str.Position)
+}
+
+func (str *PlayerJoined) ToBytes(eventId int16) []byte {
+	buffer := make([]byte, 0)
+	buffer = serialization.Append(buffer, TypePlayerJoined)
+	buffer = serialization.Append(buffer, eventId)
+	buffer = serialization.Append(buffer, str.EntityId)
+	buffer = serialization.Append(buffer, str.Position)
+
+	return buffer
+}
+
+func (str *PlayerJoined) FromBytes(data []byte) int16 {
+	var n int16 = 4
+	n += serialization.Read(data[n:], &str.EntityId)
+	n += serialization.Read(data[n:], &str.Position)
+
+	return n
+}
+
+func (str *PlayerJoined) Type() int16 {
+	return TypePlayerJoined
+}
+
+func (str *PlayerJoined) String() string {
+	return fmt.Sprintf("PlayerJoined: { EntityId: %v, Position: %v,  }", str.EntityId, str.Position)
+}
+
+func (str *EntityMoved) ToBytes(eventId int16) []byte {
+	buffer := make([]byte, 0)
+	buffer = serialization.Append(buffer, TypeEntityMoved)
+	buffer = serialization.Append(buffer, eventId)
+	buffer = serialization.Append(buffer, str.EntityId)
+	buffer = serialization.Append(buffer, str.Position)
+
+	return buffer
+}
+
+func (str *EntityMoved) FromBytes(data []byte) int16 {
+	var n int16 = 4
+	n += serialization.Read(data[n:], &str.EntityId)
+	n += serialization.Read(data[n:], &str.Position)
+
+	return n
+}
+
+func (str *EntityMoved) Type() int16 {
+	return TypeEntityMoved
+}
+
+func (str *EntityMoved) String() string {
+	return fmt.Sprintf("EntityMoved: { EntityId: %v, Position: %v,  }", str.EntityId, str.Position)
 }
 
 func (str *EntityRemoved) ToBytes(eventId int16) []byte {

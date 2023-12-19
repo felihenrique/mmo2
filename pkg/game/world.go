@@ -7,7 +7,7 @@ import (
 )
 
 type World struct {
-	entities     []*Entity
+	entities     map[int16]*Entity
 	maxEntites   int16
 	currentPos   int16
 	availablePos ds.Queue[int16]
@@ -15,7 +15,7 @@ type World struct {
 
 func NewWorld(maxEntites int16) *World {
 	w := World{}
-	w.entities = make([]*Entity, 0, maxEntites)
+	w.entities = make(map[int16]*Entity)
 	w.currentPos = 0
 	w.maxEntites = maxEntites
 	return &w
@@ -37,12 +37,22 @@ func (w *World) NewEntity() *Entity {
 	nextPos := w.nextPos()
 	if nextPos == -1 {
 		entity.id = int16(len(w.entities))
-		w.entities = append(w.entities, &entity)
+		w.entities[entity.id] = &entity
 	} else {
 		entity.id = nextPos
 		w.entities[entity.id] = &entity
 	}
 
+	return &entity
+}
+
+func (w *World) NewEntityFrom(id int16, components []serialization.ISerializable) *Entity {
+	entity := Entity{}
+	entity.id = id
+	for _, c := range components {
+		entity.Add(c)
+	}
+	w.entities[id] = &entity
 	return &entity
 }
 
@@ -62,6 +72,6 @@ func (w *World) RemoveEntity(entityId int16) {
 	w.availablePos.Push(entityId)
 }
 
-func (w *World) Entites() []*Entity {
+func (w *World) Entites() map[int16]*Entity {
 	return w.entities
 }

@@ -25,6 +25,7 @@ func (str *Position) ToBytes(eventId int16) []byte {
 func (str *Position) FromBytes(data []byte) int16 {
 	var n int16 = 4
 	n += serialization.Read(data[n:], &str.X)
+
 	n += serialization.Read(data[n:], &str.Y)
 
 	return n

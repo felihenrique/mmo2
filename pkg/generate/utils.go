@@ -5,9 +5,16 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"slices"
 	"strings"
 	"text/template"
 )
+
+var basicTypes = []string{
+	"byte", "string", "bool", "int8", "int16", "int32",
+	"float32", "[]byte", "[]bool", "[]int8", "[]int16",
+	"[]int32", "[]float32",
+}
 
 type Data struct {
 	Filename string
@@ -16,8 +23,10 @@ type Data struct {
 }
 
 type Field struct {
-	Name string
-	Type string
+	Name               string
+	Type               string
+	WithoutPointerType string
+	BasicType          bool
 }
 
 type Struct struct {
@@ -57,10 +66,16 @@ func ReadFields(tokens []string) ([]Field, int) {
 		if tokens[i] == "}" {
 			break
 		}
-		fields = append(fields, Field{
-			Name: tokens[i],
-			Type: tokens[i+1],
-		})
+		field := Field{
+			Name:               tokens[i],
+			Type:               tokens[i+1],
+			BasicType:          slices.Index(basicTypes, tokens[i+1]) != -1,
+			WithoutPointerType: tokens[i+1][1:],
+		}
+		if !field.BasicType && !strings.HasPrefix(field.Type, "*") {
+			panic(fmt.Sprintf("Serializable type %s must be a pointer", field.Type))
+		}
+		fields = append(fields, field)
 	}
 	return fields, len(fields) * 2
 }

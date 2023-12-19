@@ -30,7 +30,7 @@ func (s *Server) moveRequest(player *Player, event events.Raw) {
 	position.Y += move.Dy
 	player.peer.SendResponse(event, &packets.AckRequest{})
 	s.BroadcastFiltered(&packets.EntityMoved{
-		Position: *position, EntityId: player.entity.ID(),
+		NewPosition: position, EntityId: player.entity.ID(),
 	}, player.peer)
 }
 
@@ -48,11 +48,11 @@ func (s *Server) joinShardRequest(player *Player, event events.Raw) {
 	entity.Add(&position)
 	player.peer.SendResponse(event, &packets.JoinShardResponse{
 		EntityId: entity.ID(),
-		Position: position,
+		Position: &position,
 	})
 	s.BroadcastFiltered(&packets.PlayerJoined{
 		EntityId: entity.ID(),
-		Position: position,
+		Position: &position,
 	}, player.peer)
 }
 

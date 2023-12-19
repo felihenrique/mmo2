@@ -2,6 +2,7 @@ package packets
 
 import (
 	"fmt"
+	"mmo2/pkg/game"
 	"mmo2/pkg/serialization"
 )
 
@@ -52,6 +53,7 @@ func (str *MoveRequest) ToBytes(eventId int16) []byte {
 func (str *MoveRequest) FromBytes(data []byte) int16 {
 	var n int16 = 4
 	n += serialization.Read(data[n:], &str.Dx)
+
 	n += serialization.Read(data[n:], &str.Dy)
 
 	return n
@@ -102,6 +104,7 @@ func (str *JoinShardRequest) ToBytes(eventId int16) []byte {
 func (str *JoinShardRequest) FromBytes(data []byte) int16 {
 	var n int16 = 4
 	n += serialization.Read(data[n:], &str.Name)
+
 	n += serialization.Read(data[n:], &str.Portal)
 
 	return n
@@ -128,7 +131,9 @@ func (str *JoinShardResponse) ToBytes(eventId int16) []byte {
 func (str *JoinShardResponse) FromBytes(data []byte) int16 {
 	var n int16 = 4
 	n += serialization.Read(data[n:], &str.EntityId)
-	n += serialization.Read(data[n:], &str.Position)
+
+	str.Position = &game.Position{}
+	n += serialization.Read(data[n:], str.Position)
 
 	return n
 }
@@ -154,7 +159,9 @@ func (str *PlayerJoined) ToBytes(eventId int16) []byte {
 func (str *PlayerJoined) FromBytes(data []byte) int16 {
 	var n int16 = 4
 	n += serialization.Read(data[n:], &str.EntityId)
-	n += serialization.Read(data[n:], &str.Position)
+
+	str.Position = &game.Position{}
+	n += serialization.Read(data[n:], str.Position)
 
 	return n
 }
@@ -172,7 +179,7 @@ func (str *EntityMoved) ToBytes(eventId int16) []byte {
 	buffer = serialization.Append(buffer, TypeEntityMoved)
 	buffer = serialization.Append(buffer, eventId)
 	buffer = serialization.Append(buffer, str.EntityId)
-	buffer = serialization.Append(buffer, str.Position)
+	buffer = serialization.Append(buffer, str.NewPosition)
 
 	return buffer
 }
@@ -180,7 +187,9 @@ func (str *EntityMoved) ToBytes(eventId int16) []byte {
 func (str *EntityMoved) FromBytes(data []byte) int16 {
 	var n int16 = 4
 	n += serialization.Read(data[n:], &str.EntityId)
-	n += serialization.Read(data[n:], &str.Position)
+
+	str.NewPosition = &game.Position{}
+	n += serialization.Read(data[n:], str.NewPosition)
 
 	return n
 }
@@ -190,7 +199,7 @@ func (str *EntityMoved) Type() int16 {
 }
 
 func (str *EntityMoved) String() string {
-	return fmt.Sprintf("EntityMoved: { EntityId: %v, Position: %v,  }", str.EntityId, str.Position)
+	return fmt.Sprintf("EntityMoved: { EntityId: %v, NewPosition: %v,  }", str.EntityId, str.NewPosition)
 }
 
 func (str *EntityRemoved) ToBytes(eventId int16) []byte {

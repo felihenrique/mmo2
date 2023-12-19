@@ -45,6 +45,8 @@ func (s *Server) handleChans() {
 	for s.gspServer.Listening() {
 		select {
 		case peer := <-peerDisChan:
+			player := s.players[peer.Addr()]
+			s.world.RemoveEntity(player.entity.ID())
 			delete(s.players, peer.Addr())
 		case peer := <-peerConnChan:
 			s.players[peer.Addr()] = &Player{

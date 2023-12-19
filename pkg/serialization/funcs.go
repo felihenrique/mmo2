@@ -36,6 +36,8 @@ func Append(buffer []byte, data any) []byte {
 		return AppendInt32Slice(buffer, data)
 	case []float32:
 		return AppendFloat32Slice(buffer, data)
+	case ISerializable:
+		return append(buffer, data.ToBytes(0)...)
 	default:
 		panic(fmt.Sprintf("wrong data type %s", data))
 	}
@@ -73,6 +75,8 @@ func Read(buffer []byte, data any) int16 {
 		return ReadInt32Slice(buffer, data)
 	case *[]float32:
 		return ReadFloat32Slice(buffer, data)
+	case ISerializable:
+		return data.FromBytes(buffer)
 	default:
 		panic(fmt.Sprintf("wrong data type %s", data))
 	}

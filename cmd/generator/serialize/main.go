@@ -32,7 +32,9 @@ func (str *{{ .Name }}) ToBytes(eventId int16) []byte {
 
 func (str *{{ .Name }}) FromBytes(data []byte) int16 {
 	var n int16 = 4
-	{{ range .Fields }}n += serialization.Read(data[n:], &str.{{ .Name }})
+	{{ range .Fields }}{{ if .BasicType }}n += serialization.Read(data[n:], &str.{{ .Name }})
+	{{ else }}str.{{ .Name }} = &{{ .WithoutPointerType }}{}
+	n += serialization.Read(data[n:], str.{{ .Name }}){{ end }}
 	{{ end }}
 	return n
 }

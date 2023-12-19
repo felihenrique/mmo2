@@ -22,6 +22,7 @@ func NewClient(world *game.World) *Client {
 	client.handlers = make(map[int16]EventHandler)
 	client.handlers[packets.TypeJoinShardResponse] = client.joinShardResponse
 	client.handlers[packets.TypePlayerJoined] = client.playerJoined
+	client.handlers[packets.TypeEntityMoved] = client.entityMoved
 	return &client
 }
 

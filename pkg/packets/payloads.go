@@ -22,17 +22,17 @@ type JoinShardRequest struct {
 }
 type JoinShardResponse struct {
 	EntityId int16
-	Position game.Position
+	Position *game.Position
 }
 
 // EVENTS
 type PlayerJoined struct {
 	EntityId int16
-	Position game.Position
+	Position *game.Position
 }
 type EntityMoved struct {
-	EntityId int16
-	Position game.Position
+	EntityId    int16
+	NewPosition *game.Position
 }
 type EntityRemoved struct {
 	EntityId int16

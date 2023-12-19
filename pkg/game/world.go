@@ -49,6 +49,7 @@ func (w *World) NewEntity() *Entity {
 func (w *World) NewEntityFrom(id int16, components []serialization.ISerializable) *Entity {
 	entity := Entity{}
 	entity.id = id
+	entity.components = make(map[int16]serialization.ISerializable)
 	for _, c := range components {
 		entity.Add(c)
 	}

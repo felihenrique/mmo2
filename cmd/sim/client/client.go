@@ -26,21 +26,21 @@ main:
 		select {
 		case eventBytes := <-eventsChan:
 			evId := events.GetType(eventBytes)
-			if evId != packets.TypeMoveInput {
+			if evId != packets.TypeMoveRequest {
 				panic("wrong type!")
 			}
-			event := packets.MoveInput{}
+			event := packets.MoveRequest{}
 			event.FromBytes(eventBytes)
 			if event.Dx != 5 && event.Dy != 2 {
 				panic("wrong data")
 			}
 			readed.Add(1)
 		case <-ticker.C:
-			event := packets.MoveInput{
+			event := packets.MoveRequest{
 				Dx: 5,
 				Dy: 2,
 			}
-			client.SendEvent(&event)
+			client.SendRequest(&event)
 			sent.Add(1)
 		case <-disconChan:
 			break main

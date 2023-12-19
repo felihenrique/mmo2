@@ -8,19 +8,17 @@ import (
 )
 
 func TestReader(t *testing.T) {
-	ev1 := packets.MoveInput{
-		Dx:      111,
-		Dy:      244,
-		InputId: 123,
+	ev1 := packets.MoveRequest{
+		Dx: 111,
+		Dy: 244,
 	}
-	ev2 := packets.MoveInput{
-		Dx:      123,
-		Dy:      656,
-		InputId: 777,
+	ev2 := packets.MoveRequest{
+		Dx: 123,
+		Dy: 656,
 	}
 	writer := NewWriter()
-	writer.Append(&ev1)
-	writer.Append(&ev2)
+	writer.Append(ev1.ToBytes(0))
+	writer.Append(ev2.ToBytes(0))
 	buffer := bytes.Buffer{}
 	writer.Send(&buffer)
 	if buffer.Len() != 28 {
@@ -32,10 +30,10 @@ func TestReader(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if GetType(readedBytes1) != packets.TypeMoveInput {
+	if GetType(readedBytes1) != packets.TypeMoveRequest {
 		panic("wrong type")
 	}
-	readedEvent := packets.MoveInput{}
+	readedEvent := packets.MoveRequest{}
 	readedEvent.FromBytes(readedBytes1)
 	if readedEvent.Dx != 111 || readedEvent.Dy != 244 {
 		panic("wrong data")
@@ -45,10 +43,10 @@ func TestReader(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if GetType(readedBytes2) != packets.TypeMoveInput {
+	if GetType(readedBytes2) != packets.TypeMoveRequest {
 		panic("wrong type")
 	}
-	readedEvent2 := packets.MoveInput{}
+	readedEvent2 := packets.MoveRequest{}
 	readedEvent2.FromBytes(readedBytes2)
 	if readedEvent2.Dx != 123 || readedEvent2.Dy != 656 {
 		panic("wrong data")

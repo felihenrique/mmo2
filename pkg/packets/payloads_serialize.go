@@ -7,145 +7,90 @@ import (
 
 const (
 	TypeNone = int16(iota)
-	TypeAckInput
-	TypeMoveInput
-	TypeRotateInput
+	TypeAckRequest
+	TypeMoveRequest
+	TypeRotateRequest
 	TypeJoinShardRequest
 	TypeJoinShardResponse
-	TypeEntityCreated
-	TypeEntityUpdated
 	TypeEntityRemoved
 )
 
-func Read(data []byte) (serialization.ISerializable, int16) {
-	var strType int16
-	n := serialization.Read(data, &strType)
-	switch strType {
-
-	case TypeAckInput:
-		var str AckInput
-		n += str.FromBytes(data[n:])
-		return &str, n
-
-	case TypeMoveInput:
-		var str MoveInput
-		n += str.FromBytes(data[n:])
-		return &str, n
-
-	case TypeRotateInput:
-		var str RotateInput
-		n += str.FromBytes(data[n:])
-		return &str, n
-
-	case TypeJoinShardRequest:
-		var str JoinShardRequest
-		n += str.FromBytes(data[n:])
-		return &str, n
-
-	case TypeJoinShardResponse:
-		var str JoinShardResponse
-		n += str.FromBytes(data[n:])
-		return &str, n
-
-	case TypeEntityCreated:
-		var str EntityCreated
-		n += str.FromBytes(data[n:])
-		return &str, n
-
-	case TypeEntityUpdated:
-		var str EntityUpdated
-		n += str.FromBytes(data[n:])
-		return &str, n
-
-	case TypeEntityRemoved:
-		var str EntityRemoved
-		n += str.FromBytes(data[n:])
-		return &str, n
-
-	default:
-		panic("wrong type")
-	}
-}
-
-func (str *AckInput) ToBytes() []byte {
+func (str *AckRequest) ToBytes(eventId int16) []byte {
 	buffer := make([]byte, 0)
-	buffer = serialization.Append(buffer, TypeAckInput)
-	buffer = serialization.Append(buffer, str.InputId)
+	buffer = serialization.Append(buffer, TypeAckRequest)
+	buffer = serialization.Append(buffer, eventId)
 
 	return buffer
 }
 
-func (str *AckInput) FromBytes(data []byte) int16 {
-	var n int16 = 2
-	n += serialization.Read(data[n:], &str.InputId)
+func (str *AckRequest) FromBytes(data []byte) int16 {
+	var n int16 = 4
 
 	return n
 }
 
-func (str *AckInput) Type() int16 {
-	return TypeAckInput
+func (str *AckRequest) Type() int16 {
+	return TypeAckRequest
 }
 
-func (str *AckInput) String() string {
-	return fmt.Sprintf("AckInput: InputId: %s, ", str.InputId)
+func (str *AckRequest) String() string {
+	return fmt.Sprintf("AckRequest: {  }")
 }
 
-func (str *MoveInput) ToBytes() []byte {
+func (str *MoveRequest) ToBytes(eventId int16) []byte {
 	buffer := make([]byte, 0)
-	buffer = serialization.Append(buffer, TypeMoveInput)
-	buffer = serialization.Append(buffer, str.InputId)
+	buffer = serialization.Append(buffer, TypeMoveRequest)
+	buffer = serialization.Append(buffer, eventId)
 	buffer = serialization.Append(buffer, str.Dx)
 	buffer = serialization.Append(buffer, str.Dy)
 
 	return buffer
 }
 
-func (str *MoveInput) FromBytes(data []byte) int16 {
-	var n int16 = 2
-	n += serialization.Read(data[n:], &str.InputId)
+func (str *MoveRequest) FromBytes(data []byte) int16 {
+	var n int16 = 4
 	n += serialization.Read(data[n:], &str.Dx)
 	n += serialization.Read(data[n:], &str.Dy)
 
 	return n
 }
 
-func (str *MoveInput) Type() int16 {
-	return TypeMoveInput
+func (str *MoveRequest) Type() int16 {
+	return TypeMoveRequest
 }
 
-func (str *MoveInput) String() string {
-	return fmt.Sprintf("MoveInput: InputId: %s, Dx: %s, Dy: %s, ", str.InputId, str.Dx, str.Dy)
+func (str *MoveRequest) String() string {
+	return fmt.Sprintf("MoveRequest: { Dx: %v, Dy: %v,  }", str.Dx, str.Dy)
 }
 
-func (str *RotateInput) ToBytes() []byte {
+func (str *RotateRequest) ToBytes(eventId int16) []byte {
 	buffer := make([]byte, 0)
-	buffer = serialization.Append(buffer, TypeRotateInput)
-	buffer = serialization.Append(buffer, str.InputId)
+	buffer = serialization.Append(buffer, TypeRotateRequest)
+	buffer = serialization.Append(buffer, eventId)
 	buffer = serialization.Append(buffer, str.Quantity)
 
 	return buffer
 }
 
-func (str *RotateInput) FromBytes(data []byte) int16 {
-	var n int16 = 2
-	n += serialization.Read(data[n:], &str.InputId)
+func (str *RotateRequest) FromBytes(data []byte) int16 {
+	var n int16 = 4
 	n += serialization.Read(data[n:], &str.Quantity)
 
 	return n
 }
 
-func (str *RotateInput) Type() int16 {
-	return TypeRotateInput
+func (str *RotateRequest) Type() int16 {
+	return TypeRotateRequest
 }
 
-func (str *RotateInput) String() string {
-	return fmt.Sprintf("RotateInput: InputId: %s, Quantity: %s, ", str.InputId, str.Quantity)
+func (str *RotateRequest) String() string {
+	return fmt.Sprintf("RotateRequest: { Quantity: %v,  }", str.Quantity)
 }
 
-func (str *JoinShardRequest) ToBytes() []byte {
+func (str *JoinShardRequest) ToBytes(eventId int16) []byte {
 	buffer := make([]byte, 0)
 	buffer = serialization.Append(buffer, TypeJoinShardRequest)
-	buffer = serialization.Append(buffer, str.RequestId)
+	buffer = serialization.Append(buffer, eventId)
 	buffer = serialization.Append(buffer, str.Name)
 	buffer = serialization.Append(buffer, str.Portal)
 
@@ -153,8 +98,7 @@ func (str *JoinShardRequest) ToBytes() []byte {
 }
 
 func (str *JoinShardRequest) FromBytes(data []byte) int16 {
-	var n int16 = 2
-	n += serialization.Read(data[n:], &str.RequestId)
+	var n int16 = 4
 	n += serialization.Read(data[n:], &str.Name)
 	n += serialization.Read(data[n:], &str.Portal)
 
@@ -166,12 +110,13 @@ func (str *JoinShardRequest) Type() int16 {
 }
 
 func (str *JoinShardRequest) String() string {
-	return fmt.Sprintf("JoinShardRequest: RequestId: %s, Name: %s, Portal: %s, ", str.RequestId, str.Name, str.Portal)
+	return fmt.Sprintf("JoinShardRequest: { Name: %v, Portal: %v,  }", str.Name, str.Portal)
 }
 
-func (str *JoinShardResponse) ToBytes() []byte {
+func (str *JoinShardResponse) ToBytes(eventId int16) []byte {
 	buffer := make([]byte, 0)
 	buffer = serialization.Append(buffer, TypeJoinShardResponse)
+	buffer = serialization.Append(buffer, eventId)
 	buffer = serialization.Append(buffer, str.RequestId)
 	buffer = serialization.Append(buffer, str.Entity)
 
@@ -179,7 +124,7 @@ func (str *JoinShardResponse) ToBytes() []byte {
 }
 
 func (str *JoinShardResponse) FromBytes(data []byte) int16 {
-	var n int16 = 2
+	var n int16 = 4
 	n += serialization.Read(data[n:], &str.RequestId)
 	n += serialization.Read(data[n:], &str.Entity)
 
@@ -191,67 +136,20 @@ func (str *JoinShardResponse) Type() int16 {
 }
 
 func (str *JoinShardResponse) String() string {
-	return fmt.Sprintf("JoinShardResponse: RequestId: %s, Entity: %s, ", str.RequestId, str.Entity)
+	return fmt.Sprintf("JoinShardResponse: { RequestId: %v, Entity: %v,  }", str.RequestId, str.Entity)
 }
 
-func (str *EntityCreated) ToBytes() []byte {
-	buffer := make([]byte, 0)
-	buffer = serialization.Append(buffer, TypeEntityCreated)
-	buffer = serialization.Append(buffer, str.Entity)
-
-	return buffer
-}
-
-func (str *EntityCreated) FromBytes(data []byte) int16 {
-	var n int16 = 2
-	n += serialization.Read(data[n:], &str.Entity)
-
-	return n
-}
-
-func (str *EntityCreated) Type() int16 {
-	return TypeEntityCreated
-}
-
-func (str *EntityCreated) String() string {
-	return fmt.Sprintf("EntityCreated: Entity: %s, ", str.Entity)
-}
-
-func (str *EntityUpdated) ToBytes() []byte {
-	buffer := make([]byte, 0)
-	buffer = serialization.Append(buffer, TypeEntityUpdated)
-	buffer = serialization.Append(buffer, str.EntityId)
-	buffer = serialization.Append(buffer, str.Components)
-
-	return buffer
-}
-
-func (str *EntityUpdated) FromBytes(data []byte) int16 {
-	var n int16 = 2
-	n += serialization.Read(data[n:], &str.EntityId)
-	n += serialization.Read(data[n:], &str.Components)
-
-	return n
-}
-
-func (str *EntityUpdated) Type() int16 {
-	return TypeEntityUpdated
-}
-
-func (str *EntityUpdated) String() string {
-	return fmt.Sprintf("EntityUpdated: EntityId: %s, Components: %s, ", str.EntityId, str.Components)
-}
-
-func (str *EntityRemoved) ToBytes() []byte {
+func (str *EntityRemoved) ToBytes(eventId int16) []byte {
 	buffer := make([]byte, 0)
 	buffer = serialization.Append(buffer, TypeEntityRemoved)
+	buffer = serialization.Append(buffer, eventId)
 	buffer = serialization.Append(buffer, str.EntityId)
 
 	return buffer
 }
 
 func (str *EntityRemoved) FromBytes(data []byte) int16 {
-	var n int16 = 2
+	var n int16 = 4
 	n += serialization.Read(data[n:], &str.EntityId)
 
 	return n
@@ -262,5 +160,5 @@ func (str *EntityRemoved) Type() int16 {
 }
 
 func (str *EntityRemoved) String() string {
-	return fmt.Sprintf("EntityRemoved: EntityId: %s, ", str.EntityId)
+	return fmt.Sprintf("EntityRemoved: { EntityId: %v,  }", str.EntityId)
 }

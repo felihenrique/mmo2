@@ -3,24 +3,20 @@ package packets
 //go:generate ../../bin/serialize-generator
 
 // INPUTS
-type AckInput struct {
-	InputId int16
+type AckRequest struct {
 }
-type MoveInput struct {
-	InputId int16
-	Dx      int32
-	Dy      int32
+type MoveRequest struct {
+	Dx int32
+	Dy int32
 }
-type RotateInput struct {
-	InputId  int16
+type RotateRequest struct {
 	Quantity float32
 }
 
 // REQUESTS
 type JoinShardRequest struct {
-	RequestId int16
-	Name      string
-	Portal    uint8
+	Name   string
+	Portal int8
 }
 type JoinShardResponse struct {
 	RequestId int16
@@ -28,13 +24,6 @@ type JoinShardResponse struct {
 }
 
 // EVENTS
-type EntityCreated struct {
-	Entity []byte
-}
-type EntityUpdated struct {
-	EntityId   int16
-	Components []byte
-}
 type EntityRemoved struct {
 	EntityId int16
 }

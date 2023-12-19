@@ -15,7 +15,7 @@ type World struct {
 
 func NewWorld(maxEntites int16) *World {
 	w := World{}
-	w.entities = make([]*Entity, maxEntites)
+	w.entities = make([]*Entity, 0, maxEntites)
 	w.currentPos = 0
 	w.maxEntites = maxEntites
 	return &w
@@ -25,10 +25,7 @@ func (w *World) nextPos() int16 {
 	if w.availablePos.Len() > 0 {
 		return w.availablePos.Pop()
 	}
-	pos := w.currentPos
-	w.currentPos += 1
-
-	return pos
+	return -1
 }
 
 func (w *World) NewEntity() *Entity {
@@ -37,8 +34,15 @@ func (w *World) NewEntity() *Entity {
 	}
 	entity := Entity{}
 	entity.components = make(map[int16]serialization.ISerializable)
-	entity.id = w.nextPos()
-	w.entities[entity.id] = &entity
+	nextPos := w.nextPos()
+	if nextPos == -1 {
+		entity.id = int16(len(w.entities))
+		w.entities = append(w.entities, &entity)
+	} else {
+		entity.id = nextPos
+		w.entities[entity.id] = &entity
+	}
+
 	return &entity
 }
 
@@ -56,4 +60,8 @@ func (w *World) RemoveEntity(entityId int16) {
 	}
 	w.entities[entityId] = nil
 	w.availablePos.Push(entityId)
+}
+
+func (w *World) Entites() []*Entity {
+	return w.entities
 }

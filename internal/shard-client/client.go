@@ -5,12 +5,13 @@ import (
 	"mmo2/pkg/events"
 	"mmo2/pkg/game"
 	"mmo2/pkg/gsp"
-	"mmo2/pkg/packets"
+	"mmo2/pkg/serialization"
 )
 
 type Client struct {
 	gspClient *gsp.TcpClient
 	world     *game.World
+	handlers  map[int16]EventHandler
 }
 
 func NewClient(world *game.World) *Client {
@@ -29,6 +30,20 @@ func (c *Client) Connect(host string, port int) error {
 	return nil
 }
 
+func (c *Client) SendRequest(event serialization.ISerializable) {
+	c.gspClient.SendRequest(event)
+}
+
+func (c *Client) handleEvent(event events.Raw) {
+	evType := events.GetType(event)
+	handler := c.handlers[evType]
+	if handler == nil {
+		fmt.Printf("Handler for %d not found \n", evType)
+		return
+	}
+	handler(event)
+}
+
 func (c *Client) manageEvents() {
 	eventsChan := c.gspClient.EventsChan()
 	disconChan := c.gspClient.DisconnectedChan()
@@ -36,17 +51,7 @@ main:
 	for {
 		select {
 		case eventBytes := <-eventsChan:
-			evType := events.GetType(eventBytes)
-			switch evType {
-			case packets.TypeEntityCreated:
-				c.entityCreated(eventBytes)
-			case packets.TypeEntityUpdated:
-				c.entityUpdated(eventBytes)
-			case packets.TypeEntityRemoved:
-				c.entityRemoved(eventBytes)
-			default:
-				panic(fmt.Sprintf("unrecognized type %d", evType))
-			}
+			c.handleEvent(eventBytes)
 		case <-disconChan:
 			break main
 		}

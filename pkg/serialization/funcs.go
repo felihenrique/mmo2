@@ -2,10 +2,15 @@ package serialization
 
 import (
 	"fmt"
+	"mmo2/pkg/ds"
 )
+
+var IdGen ds.SequentialID
 
 func Append(buffer []byte, data any) []byte {
 	switch data := data.(type) {
+	case byte:
+		return append(buffer, data)
 	case string:
 		return AppendString(buffer, data)
 	case bool:
@@ -18,6 +23,9 @@ func Append(buffer []byte, data any) []byte {
 		return AppendInt32(buffer, data)
 	case float32:
 		return AppendFloat32(buffer, data)
+	case []byte:
+		buffer = AppendInt16(buffer, int16(len(data)))
+		return append(buffer, data...)
 	case []bool:
 		return AppendBoolSlice(buffer, data)
 	case []int8:
@@ -35,6 +43,9 @@ func Append(buffer []byte, data any) []byte {
 
 func Read(buffer []byte, data any) int16 {
 	switch data := data.(type) {
+	case *byte:
+		*data = buffer[0]
+		return 1
 	case *string:
 		return ReadString(buffer, data)
 	case *bool:
@@ -47,6 +58,11 @@ func Read(buffer []byte, data any) int16 {
 		return ReadInt32(buffer, data)
 	case *float32:
 		return ReadFloat32(buffer, data)
+	case *[]byte:
+		var size int16
+		n := ReadInt16(buffer, &size)
+		*data = buffer[:n]
+		return n + 2
 	case *[]bool:
 		return ReadBoolSlice(buffer, data)
 	case *[]int8:

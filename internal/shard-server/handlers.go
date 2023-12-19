@@ -18,7 +18,7 @@ próximo do jogador
 */
 
 func (s *Server) moveRequest(player *Player, event events.Raw) {
-	move := packets.MoveInput{}
+	move := packets.MoveRequest{}
 	move.FromBytes(event)
 	tc, tok := player.entity.Get(game.TypePosition)
 	if !tok {
@@ -28,13 +28,7 @@ func (s *Server) moveRequest(player *Player, event events.Raw) {
 	position := tc.(*game.Position)
 	position.X += move.Dx
 	position.Y += move.Dy
-	player.peer.SendEvent(&packets.AckInput{
-		InputId: move.InputId,
-	})
-	s.BroadcastFiltered(&packets.EntityUpdated{
-		EntityId:   player.entity.ID(),
-		Components: position.ToBytes(),
-	}, player.peer)
+	player.peer.SendResponse(event, &packets.AckRequest{})
 }
 
 func (s *Server) joinShardRequest(player *Player, event events.Raw) {
@@ -50,16 +44,6 @@ func (s *Server) joinShardRequest(player *Player, event events.Raw) {
 	}
 
 	entity.Add(&position)
-	entityBytes := entity.ToBytes()
-
-	player.peer.SendEvent(&packets.JoinShardResponse{
-		RequestId: request.RequestId,
-		Entity:    entityBytes,
-	})
-
-	s.BroadcastFiltered(&packets.EntityCreated{
-		Entity: entityBytes,
-	}, player.peer)
 }
 
 /*

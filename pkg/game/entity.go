@@ -1,7 +1,7 @@
 package game
 
 import (
-	"encoding/binary"
+	"fmt"
 	"mmo2/pkg/serialization"
 )
 
@@ -32,27 +32,11 @@ func (e *Entity) Get(componentId int16) (serialization.ISerializable, bool) {
 	return c, ok
 }
 
-func (e *Entity) ToBytes() []byte {
-	data := make([]byte, 4)
-	binary.BigEndian.PutUint16(data, uint16(e.id))
-	binary.BigEndian.PutUint16(data, uint16(len(e.components)))
-	for _, value := range e.components {
-		data = serialization.Append(data, value.Type())
-		data = append(data, value.ToBytes()...)
+func (e *Entity) String() string {
+	str := "Entity { Id: %d, Components: { %s } }"
+	compsStr := ""
+	for _, component := range e.components {
+		compsStr = compsStr + component.String()
 	}
-	return data
-}
-
-func (e *Entity) FromBytes(data []byte) int16 {
-	n := serialization.Read(data, &e.id)
-	var cNumber int16
-	n += serialization.Read(data, &cNumber)
-	for i := int16(0); i < cNumber; i++ {
-		var cType int16
-		n += serialization.Read(data[n:], cType)
-		component, readed := Read(data[n:])
-		n += readed
-		e.components[component.Type()] = component
-	}
-	return n
+	return fmt.Sprintf(str, e.id, compsStr)
 }

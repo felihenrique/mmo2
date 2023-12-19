@@ -8,21 +8,18 @@ import (
 
 func TestWriter(t *testing.T) {
 	writer := NewWriter()
-	writer.Append(&packets.MoveInput{
-		InputId: 123,
-		Dx:      11,
-		Dy:      12,
-	})
-	writer.Append(&packets.MoveInput{
-		InputId: 565,
-		Dx:      44,
-		Dy:      78,
-	})
-	writer.Append(&packets.MoveInput{
-		InputId: 999,
-		Dx:      78,
-		Dy:      90,
-	})
+	writer.Append((&packets.MoveRequest{
+		Dx: 11,
+		Dy: 12,
+	}).ToBytes(0))
+	writer.Append((&packets.MoveRequest{
+		Dx: 44,
+		Dy: 78,
+	}).ToBytes(0))
+	writer.Append((&packets.MoveRequest{
+		Dx: 78,
+		Dy: 90,
+	}).ToBytes(0))
 	buffer := bytes.Buffer{}
 	n, err := writer.Send(&buffer)
 	if n < 42 || err != nil {

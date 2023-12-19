@@ -17,12 +17,7 @@ func NewWriter() *Writer {
 	return &writer
 }
 
-func (w *Writer) Append(data serialization.ISerializable) {
-	bytes := data.ToBytes()
-	w.AppendBytes(bytes)
-}
-
-func (w *Writer) AppendBytes(bytes []byte) {
+func (w *Writer) Append(bytes []byte) {
 	eventSize := serialization.AppendInt16([]byte{}, int16(len(bytes)+2))
 	bytes = append(eventSize, bytes...)
 	w.bufferLock.Lock()

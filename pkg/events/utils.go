@@ -11,3 +11,9 @@ func GetType(data Raw) int16 {
 	serialization.ReadInt16(data, &evType)
 	return evType
 }
+
+func GetEventId(data Raw) int16 {
+	var requestId int16
+	serialization.ReadInt16(data[2:], &requestId)
+	return requestId
+}

@@ -9,6 +9,7 @@ import (
 const (
 	TypeNone = int16(iota)
 	TypeAckRequest
+	TypeRequestError
 	TypeMoveRequest
 	TypeRotateRequest
 	TypeJoinShardRequest
@@ -38,6 +39,30 @@ func (str *AckRequest) Type() int16 {
 
 func (str *AckRequest) String() string {
 	return fmt.Sprintf("AckRequest: {  }")
+}
+
+func (str *RequestError) ToBytes(eventId int16) []byte {
+	buffer := make([]byte, 0)
+	buffer = serialization.Append(buffer, TypeRequestError)
+	buffer = serialization.Append(buffer, eventId)
+	buffer = serialization.Append(buffer, str.Message)
+
+	return buffer
+}
+
+func (str *RequestError) FromBytes(data []byte) int16 {
+	var n int16 = 4
+	n += serialization.Read(data[n:], &str.Message)
+
+	return n
+}
+
+func (str *RequestError) Type() int16 {
+	return TypeRequestError
+}
+
+func (str *RequestError) String() string {
+	return fmt.Sprintf("RequestError: { Message: %v,  }", str.Message)
 }
 
 func (str *MoveRequest) ToBytes(eventId int16) []byte {

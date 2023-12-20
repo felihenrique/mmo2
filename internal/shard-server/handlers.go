@@ -22,7 +22,7 @@ func (s *Server) moveRequest(player *Player, event events.Raw) {
 	move.FromBytes(event)
 	tc, tok := player.entity.Get(game.TypePosition)
 	if !tok {
-		log.Printf("move command error: entity %d doesn't have position", player.entity.ID())
+		log.Printf("wrong: entity %d doesn't have position", player.entity.ID())
 		return
 	}
 	position := tc.(*game.Position)

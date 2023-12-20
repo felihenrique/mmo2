@@ -7,6 +7,9 @@ import "mmo2/pkg/game"
 // INPUTS
 type AckRequest struct {
 }
+type RequestError struct {
+	Message string
+}
 type MoveRequest struct {
 	Dx int32
 	Dy int32

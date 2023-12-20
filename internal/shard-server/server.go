@@ -56,6 +56,13 @@ func (s *Server) handleChans() {
 				peer:   peer,
 			}
 		case newEvent := <-newEventsChan:
+			if events.GetType(newEvent.Event) != packets.TypeJoinShardRequest {
+				fmt.Printf("Peer %s cant send events. Need to join shard first \n", newEvent.Peer.Addr())
+				newEvent.Peer.SendResponse(newEvent.Event, &packets.RequestError{
+					Message: "Can't send requests. Should join the shard first",
+				})
+				continue
+			}
 			s.handleEvent(newEvent)
 		case <-ticker.C:
 			// DO TICK

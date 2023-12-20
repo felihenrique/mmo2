@@ -6,9 +6,18 @@ import (
 	"net"
 )
 
+type IPeer interface {
+	Close() error
+	SendEvent(event serialization.ISerializable)
+	SendResponse(event events.Raw, response serialization.ISerializable)
+	SendBytes(data []byte)
+	Addr() string
+}
+
 type TcpPeer struct {
 	conn   net.Conn
 	writer *events.Writer
+	reader *events.Reader
 	addr   string
 }
 
@@ -16,6 +25,7 @@ func NewPeer(conn net.Conn) *TcpPeer {
 	peer := TcpPeer{}
 	peer.conn = conn
 	peer.writer = events.NewWriter()
+	peer.reader = events.NewReader()
 	peer.addr = conn.RemoteAddr().String()
 	return &peer
 }

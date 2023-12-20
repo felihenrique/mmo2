@@ -1,14 +1,21 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"mmo2/pkg/events"
 	"mmo2/pkg/gsp"
 	"mmo2/pkg/packets"
 	"os"
 	"runtime/pprof"
+	"sync/atomic"
 	"time"
 )
+
+var sent atomic.Int32
+var readed atomic.Int32
+
+var peers = make(map[string]gsp.IPeer)
 
 func main() {
 	f, err := os.Create("cpu.prof")
@@ -30,11 +37,11 @@ func main() {
 		panic(err)
 	}
 
-	time.Sleep(time.Second * 20)
+	time.Sleep(time.Second * 30)
+	fmt.Printf("Sent: %d, Readed: %d", sent.Load(), readed.Load())
 }
 
 func handleChans(server gsp.TcpServer) {
-	peers := make(map[string]*gsp.TcpPeer)
 	peerConnected := server.PeerConnChan()
 	peerDisconnected := server.PeerDisChan()
 	newEvents := server.NewEventsChan()
@@ -50,7 +57,8 @@ func handleChans(server gsp.TcpServer) {
 	}
 }
 
-func handleEvent(rawEvent events.Raw, peers map[string]*gsp.TcpPeer) {
+func handleEvent(rawEvent events.Raw, peers map[string]gsp.IPeer) {
+	readed.Add(1)
 	if len(rawEvent) != 14 {
 		panic("WRONG")
 	}
@@ -60,6 +68,7 @@ func handleEvent(rawEvent events.Raw, peers map[string]*gsp.TcpPeer) {
 		panic("DIVERGENT")
 	}
 	for _, peer := range peers {
-		peer.SendEvent(&event)
+		sent.Add(1)
+		peer.SendBytes(rawEvent)
 	}
 }

@@ -3,7 +3,6 @@ package events
 import (
 	"errors"
 	"io"
-	"mmo2/pkg/serialization"
 )
 
 var ErrNotEnoughBytes = errors.New("not enough bytes in the buffer. please fill it")
@@ -11,12 +10,6 @@ var ErrNotEnoughBytes = errors.New("not enough bytes in the buffer. please fill 
 type Reader struct {
 	buffer []byte
 	length int32
-}
-
-func getSize(data Raw) int16 {
-	var size int16
-	serialization.ReadInt16(data, &size)
-	return size
 }
 
 func NewReader() *Reader {

@@ -1,32 +1,41 @@
 package gsp
 
 import (
-	"errors"
 	"fmt"
+	"mmo2/pkg/errors"
 	"mmo2/pkg/events"
 	"net"
 	"time"
 )
 
 type PeerEvent struct {
-	Peer  *TcpPeer
+	Peer  IPeer
 	Event events.Raw
+}
+
+type IServer interface {
+	Listening() bool
+	PeerConnChan() <-chan IPeer
+	PeerDisChan() <-chan IPeer
+	NewEventsChan() <-chan PeerEvent
+	Listen(host string, port int) error
+	Close() error
 }
 
 type TcpServer struct {
 	listener         net.Listener
 	listening        bool
-	peerConnected    chan *TcpPeer
-	peerDisconnected chan *TcpPeer
+	peerConnected    chan IPeer
+	peerDisconnected chan IPeer
 	newEventsChan    chan PeerEvent
 }
 
 func NewTcpServer() TcpServer {
 	server := TcpServer{}
 	server.listening = false
-	server.peerConnected = make(chan *TcpPeer, 10)
-	server.peerDisconnected = make(chan *TcpPeer, 10)
-	server.newEventsChan = make(chan PeerEvent, 2048)
+	server.peerConnected = make(chan IPeer, 10)
+	server.peerDisconnected = make(chan IPeer, 10)
+	server.newEventsChan = make(chan PeerEvent, 10000)
 	return server
 }
 
@@ -34,11 +43,11 @@ func (s *TcpServer) Listening() bool {
 	return s.listening
 }
 
-func (s *TcpServer) PeerConnChan() <-chan *TcpPeer {
+func (s *TcpServer) PeerConnChan() <-chan IPeer {
 	return s.peerConnected
 }
 
-func (s *TcpServer) PeerDisChan() <-chan *TcpPeer {
+func (s *TcpServer) PeerDisChan() <-chan IPeer {
 	return s.peerDisconnected
 }
 
@@ -86,18 +95,18 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 		}
 		peer.Close()
 	}()
-	reader := events.NewReader()
+
 	for s.listening {
 		// READ
 		peer.conn.SetReadDeadline(time.Now().Add(time.Millisecond * 200))
-		err := handleError(reader.FillFrom(peer.conn))
-		if err != nil && !errors.Is(err, ErrTimeout) {
+		err := errors.Handle(peer.reader.FillFrom(peer.conn))
+		if err != nil && !errors.Is(err, errors.ErrTimeout) {
 			println(err.Error())
 			s.peerDisconnected <- peer
 			break
 		}
 		for {
-			rawEvent, err := reader.Next()
+			rawEvent, err := peer.reader.Next()
 			if err != nil {
 				break
 			}
@@ -105,13 +114,13 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 				Peer:  peer,
 				Event: rawEvent,
 			}
-			reader.Pop()
+			peer.reader.Pop()
 		}
 		// WRITE
-		peer.conn.SetWriteDeadline(time.Now().Add(time.Millisecond * 500))
+		peer.conn.SetWriteDeadline(time.Now().Add(time.Millisecond * 200))
 		_, err = peer.writer.Send(peer.conn)
-		err = handleError(err)
-		if err != nil && !errors.Is(err, ErrTimeout) {
+		err = errors.Handle(err)
+		if err != nil && !errors.Is(err, errors.ErrTimeout) {
 			println(err.Error())
 			s.peerDisconnected <- peer
 			break

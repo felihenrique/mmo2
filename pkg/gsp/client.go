@@ -1,8 +1,8 @@
 package gsp
 
 import (
-	"errors"
 	"fmt"
+	"mmo2/pkg/errors"
 	"mmo2/pkg/events"
 	"mmo2/pkg/serialization"
 	"net"
@@ -14,12 +14,14 @@ type TcpClient struct {
 	eventsChan       chan events.Raw
 	disconnectedChan chan byte
 	writer           *events.Writer
+	reader           *events.Reader
 	connected        bool
 }
 
 func NewTcpClient() *TcpClient {
 	client := TcpClient{}
 	client.writer = events.NewWriter()
+	client.reader = events.NewReader()
 	client.disconnectedChan = make(chan byte)
 	client.eventsChan = make(chan []byte)
 	return &client
@@ -71,29 +73,28 @@ func (c *TcpClient) readEvents() {
 		c.conn.Close()
 		c.disconnectedChan <- 1
 	}()
-	reader := events.NewReader()
 
 	for c.connected {
 		// READ
 		c.conn.SetReadDeadline(time.Now().Add(time.Millisecond * 200))
-		err := handleError(reader.FillFrom(c.conn))
-		if err != nil && !errors.Is(err, ErrTimeout) {
+		err := errors.Handle(c.reader.FillFrom(c.conn))
+		if err != nil && !errors.Is(err, errors.ErrTimeout) {
 			println(err.Error())
 			break
 		}
 		for {
-			rawEvent, err := reader.Next()
+			rawEvent, err := c.reader.Next()
 			if err != nil {
 				break
 			}
 			c.eventsChan <- rawEvent
-			reader.Pop()
+			c.reader.Pop()
 		}
 		// WRITE
 		c.conn.SetWriteDeadline(time.Now().Add(time.Millisecond * 200))
 		_, err = c.writer.Send(c.conn)
-		err = handleError(err)
-		if err != nil && !errors.Is(err, ErrTimeout) {
+		err = errors.Handle(err)
+		if err != nil && !errors.Is(err, errors.ErrTimeout) {
 			println(err.Error())
 			break
 		}

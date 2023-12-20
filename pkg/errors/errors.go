@@ -1,4 +1,4 @@
-package gsp
+package errors
 
 import (
 	"context"
@@ -11,8 +11,9 @@ import (
 
 var ErrDisconnected = errors.New("client disconnected")
 var ErrTimeout = errors.New("IO timeout")
+var ErrNotEnoughBytes = errors.New("not enough bytes in the buffer. please fill it")
 
-func handleError(err error) error {
+func Handle(err error) error {
 	e, ok := err.(net.Error)
 	isTimeout :=
 		ok &&
@@ -36,4 +37,8 @@ func handleError(err error) error {
 	}
 
 	return err
+}
+
+func Is(err error, target error) bool {
+	return errors.Is(err, target)
 }

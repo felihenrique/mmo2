@@ -19,7 +19,7 @@ type Server struct {
 
 type Player struct {
 	entity *game.Entity
-	peer   *gsp.TcpPeer
+	peer   gsp.IPeer
 }
 
 func (s *Server) handleEvent(pe gsp.PeerEvent) {
@@ -87,7 +87,7 @@ func (s *Server) Broadcast(event serialization.ISerializable) {
 	}
 }
 
-func (s *Server) BroadcastFiltered(event serialization.ISerializable, filterPeer *gsp.TcpPeer) {
+func (s *Server) BroadcastFiltered(event serialization.ISerializable, filterPeer gsp.IPeer) {
 	data := event.ToBytes(0)
 	for _, player := range s.players {
 		if player.entity == nil || player.peer.Addr() == filterPeer.Addr() {

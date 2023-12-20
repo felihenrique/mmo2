@@ -17,3 +17,9 @@ func GetEventId(data Raw) int16 {
 	serialization.ReadInt16(data[2:], &requestId)
 	return requestId
 }
+
+func getSize(data Raw) int16 {
+	var size int16
+	serialization.ReadInt16(data, &size)
+	return size
+}

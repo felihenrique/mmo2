@@ -19,10 +19,8 @@ var reading atomic.Bool
 
 func manageClient(client *gsp.TcpClient) {
 	eventsChan := client.EventsChan()
-	disconChan := client.DisconnectedChan()
 	ticker := time.NewTicker(time.Millisecond * 100)
-main:
-	for {
+	for reading.Load() {
 		select {
 		case eventBytes := <-eventsChan:
 			evId := events.GetType(eventBytes)
@@ -36,17 +34,17 @@ main:
 			}
 			readed.Add(1)
 		case <-ticker.C:
+			if !writing.Load() {
+				return
+			}
 			event := packets.MoveRequest{
 				Dx: 5,
 				Dy: 2,
 			}
 			client.SendRequest(&event)
 			sent.Add(1)
-		case <-disconChan:
-			break main
 		}
 	}
-	ticker.Stop()
 }
 
 func main() {
@@ -62,8 +60,9 @@ func main() {
 
 	writing.Store(true)
 	reading.Store(true)
-	for i := 0; i < 100; i++ {
-		client := gsp.NewTcpClient()
+	var client *gsp.TcpClient
+	for i := 0; i < 500; i++ {
+		client = gsp.NewTcpClient()
 		err := client.Connect("", 5555)
 		if err != nil {
 			panic(err)
@@ -72,7 +71,7 @@ func main() {
 	}
 	time.Sleep(time.Second * 10)
 	writing.Store(false)
-	time.Sleep(time.Second * 5)
+	time.Sleep(time.Second * 10)
 	reading.Store(false)
 	println("total sent", sent.Load())
 	println("total received", readed.Load())

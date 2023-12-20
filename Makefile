@@ -1,7 +1,7 @@
 shards:
 	go run cmd/shard/server/main.go
-shardc:
-	go run cmd/shard/client/main.go
+gamec:
+	go run cmd/game/main.go
 simc:
 	go run cmd/sim/client/client.go
 sims:

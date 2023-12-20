@@ -46,7 +46,9 @@ func (s *Server) handleChans() {
 		select {
 		case peer := <-peerDisChan:
 			player := s.players[peer.Addr()]
-			s.world.RemoveEntity(player.entity.ID())
+			if player.entity != nil {
+				s.world.RemoveEntity(player.entity.ID())
+			}
 			delete(s.players, peer.Addr())
 		case peer := <-peerConnChan:
 			s.players[peer.Addr()] = &Player{
@@ -64,7 +66,7 @@ func (s *Server) handleChans() {
 
 func New() *Server {
 	server := Server{}
-	server.world = game.NewWorld(1000)
+	server.world = game.NewWorld()
 	server.gspServer = gsp.NewTcpServer()
 	server.players = make(map[string]*Player)
 	server.handlers = make(map[int16]EventHandler)

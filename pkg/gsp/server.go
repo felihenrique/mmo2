@@ -30,13 +30,13 @@ type TcpServer struct {
 	newEventsChan    chan PeerEvent
 }
 
-func NewTcpServer() TcpServer {
+func NewTcpServer() *TcpServer {
 	server := TcpServer{}
 	server.listening = false
 	server.peerConnected = make(chan IPeer, 10)
 	server.peerDisconnected = make(chan IPeer, 10)
-	server.newEventsChan = make(chan PeerEvent, 10000)
-	return server
+	server.newEventsChan = make(chan PeerEvent, 2048)
+	return &server
 }
 
 func (s *TcpServer) Listening() bool {

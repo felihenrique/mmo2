@@ -11,7 +11,7 @@ import (
 )
 
 type Server struct {
-	gspServer gsp.TcpServer
+	gspServer *gsp.TcpServer
 	handlers  map[int16]EventHandler
 	world     *game.World
 	players   map[string]*Player

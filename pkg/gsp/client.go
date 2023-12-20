@@ -23,7 +23,7 @@ func NewTcpClient() *TcpClient {
 	client.writer = events.NewWriter()
 	client.reader = events.NewReader()
 	client.disconnectedChan = make(chan byte)
-	client.eventsChan = make(chan []byte)
+	client.eventsChan = make(chan []byte, 256)
 	return &client
 }
 
@@ -64,6 +64,13 @@ func (c *TcpClient) Close() {
 	c.conn.Close()
 }
 
+func (c *TcpClient) handleDisconn(err error) {
+	println(err.Error())
+	c.disconnectedChan <- 1
+	close(c.disconnectedChan)
+	close(c.eventsChan)
+}
+
 func (c *TcpClient) readEvents() {
 	defer func() {
 		if r := recover(); r != nil {
@@ -79,7 +86,7 @@ func (c *TcpClient) readEvents() {
 		c.conn.SetReadDeadline(time.Now().Add(time.Millisecond * 200))
 		err := errors.Handle(c.reader.FillFrom(c.conn))
 		if err != nil && !errors.Is(err, errors.ErrTimeout) {
-			println(err.Error())
+			c.handleDisconn(err)
 			break
 		}
 		for {
@@ -95,7 +102,7 @@ func (c *TcpClient) readEvents() {
 		_, err = c.writer.Send(c.conn)
 		err = errors.Handle(err)
 		if err != nil && !errors.Is(err, errors.ErrTimeout) {
-			println(err.Error())
+			c.handleDisconn(err)
 			break
 		}
 	}

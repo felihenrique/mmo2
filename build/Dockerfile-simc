@@ -1,0 +1,9 @@
+FROM golang:1.21-alpine as builder
+WORKDIR /home/app
+COPY . .
+RUN go build -ldflags "-s -w" ./cmd/sim/client/client.go
+
+FROM scratch
+WORKDIR /home/app
+COPY --from=builder /home/app/client /home/app/client
+CMD ["./client"]

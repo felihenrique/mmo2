@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
-	"mmo2/pkg/events"
 	"mmo2/pkg/gsp"
 	"mmo2/pkg/packets"
 	"os"
 	"runtime/pprof"
+	"sync"
 	"sync/atomic"
 	"time"
 )
@@ -15,10 +15,8 @@ import (
 var sent atomic.Int32
 var readed atomic.Int32
 
-var peers = make(map[string]gsp.IPeer)
-
 func main() {
-	f, err := os.Create("cpu.prof")
+	f, err := os.Create("cpu_server.prof")
 	if err != nil {
 		log.Fatal("could not create CPU profile: ", err)
 	}
@@ -28,8 +26,11 @@ func main() {
 	}
 	defer pprof.StopCPUProfile()
 
+	var peers = make(map[string]gsp.IPeer)
+	var peersLock sync.Mutex
+
 	server := gsp.NewTcpServer()
-	go handleChans(server)
+	go handleChans(server, &peers, &peersLock)
 
 	println("Listening on port 5555")
 	err = server.Listen("", 5555)
@@ -37,38 +38,48 @@ func main() {
 		panic(err)
 	}
 
-	time.Sleep(time.Second * 30)
+	time.Sleep(time.Second * 20)
 	fmt.Printf("Sent: %d, Readed: %d", sent.Load(), readed.Load())
 }
 
-func handleChans(server gsp.TcpServer) {
+func handleChans(server *gsp.TcpServer, peers *map[string]gsp.IPeer, peersLock *sync.Mutex) {
 	peerConnected := server.PeerConnChan()
 	peerDisconnected := server.PeerDisChan()
-	newEvents := server.NewEventsChan()
+	go readEvents(server, peers, peersLock)
+	go readEvents(server, peers, peersLock)
+	go readEvents(server, peers, peersLock)
+	go readEvents(server, peers, peersLock)
 	for {
 		select {
 		case peer := <-peerConnected:
-			peers[peer.Addr()] = peer
+			peersLock.Lock()
+			(*peers)[peer.Addr()] = peer
+			peersLock.Unlock()
 		case peer := <-peerDisconnected:
-			delete(peers, peer.Addr())
-		case peerEvent := <-newEvents:
-			handleEvent(peerEvent.Event, peers)
+			delete(*peers, peer.Addr())
 		}
 	}
 }
 
-func handleEvent(rawEvent events.Raw, peers map[string]gsp.IPeer) {
-	readed.Add(1)
-	if len(rawEvent) != 14 {
-		panic("WRONG")
-	}
-	event := packets.MoveRequest{}
-	event.FromBytes(rawEvent)
-	if event.Dx != 5 || event.Dy != 2 {
-		panic("DIVERGENT")
-	}
-	for _, peer := range peers {
-		sent.Add(1)
-		peer.SendBytes(rawEvent)
+func readEvents(server *gsp.TcpServer, peers *map[string]gsp.IPeer, peersLock *sync.Mutex) {
+	newEvents := server.NewEventsChan()
+	for peerEvent := range newEvents {
+		readed.Add(1)
+		rawEvent := peerEvent.Event
+		if len(rawEvent) != 14 {
+			panic("WRONG")
+		}
+		event := packets.MoveRequest{}
+		event.FromBytes(rawEvent)
+		if event.Dx != 5 || event.Dy != 2 {
+			panic("DIVERGENT")
+		}
+		peerEvent.Peer.SendBytes(rawEvent)
+		// peersLock.Lock()
+		// for _, peer := range *peers {
+		// 	sent.Add(1)
+		// 	peer.SendBytes(rawEvent)
+		// }
+		// peersLock.Unlock()
 	}
 }

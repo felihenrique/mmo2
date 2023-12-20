@@ -1,22 +1,22 @@
 version: '3'
 
 services:
-  shard:
+  simc:
     build:
       context: .
-      dockerfile: build/Dockerfile-shard
+      dockerfile: build/Dockerfile-simc
     network_mode: "host"
-    cpus: 1
-    mem_limit: "200Mb"
+    mem_limit: "4000Mb"
     volumes:
     - ./prof:/home/app/prof
+    depends_on:
+      - sims
 
-  sim:
+  sims:
     build:
       context: .
-      dockerfile: build/Dockerfile-sim
+      dockerfile: build/Dockerfile-sims
     network_mode: "host"
-    cpus: 1
-    mem_limit: "200Mb"
-    depends_on:
-      - shard
+    mem_limit: "4000Mb"
+    volumes:
+    - ./prof:/home/app/prof

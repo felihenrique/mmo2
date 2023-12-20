@@ -15,35 +15,32 @@ var readed atomic.Int32
 var sent atomic.Int32
 
 var writing atomic.Bool
-var reading atomic.Bool
 
-func manageClient(client *gsp.TcpClient) {
+func reader(client *gsp.TcpClient) {
 	eventsChan := client.EventsChan()
-	ticker := time.NewTicker(time.Millisecond * 100)
-	for reading.Load() {
-		select {
-		case eventBytes := <-eventsChan:
-			evId := events.GetType(eventBytes)
-			if evId != packets.TypeMoveRequest {
-				panic("wrong type!")
-			}
-			event := packets.MoveRequest{}
-			event.FromBytes(eventBytes)
-			if event.Dx != 5 && event.Dy != 2 {
-				panic("wrong data")
-			}
-			readed.Add(1)
-		case <-ticker.C:
-			if !writing.Load() {
-				return
-			}
-			event := packets.MoveRequest{
-				Dx: 5,
-				Dy: 2,
-			}
-			client.SendRequest(&event)
-			sent.Add(1)
+	for eventBytes := range eventsChan {
+		evId := events.GetType(eventBytes)
+		if evId != packets.TypeMoveRequest {
+			panic("wrong type!")
 		}
+		event := packets.MoveRequest{}
+		event.FromBytes(eventBytes)
+		if event.Dx != 5 && event.Dy != 2 {
+			panic("wrong data")
+		}
+		readed.Add(1)
+	}
+}
+
+func writer(client *gsp.TcpClient) {
+	for writing.Load() {
+		event := packets.MoveRequest{
+			Dx: 5,
+			Dy: 2,
+		}
+		client.SendRequest(&event)
+		sent.Add(1)
+		time.Sleep(time.Millisecond * 1)
 	}
 }
 
@@ -59,20 +56,20 @@ func main() {
 	defer pprof.StopCPUProfile()
 
 	writing.Store(true)
-	reading.Store(true)
 	var client *gsp.TcpClient
-	for i := 0; i < 500; i++ {
+	for i := 0; i < 1500; i++ {
 		client = gsp.NewTcpClient()
 		err := client.Connect("", 5555)
 		if err != nil {
 			panic(err)
 		}
-		go manageClient(client)
+		go writer(client)
+		go reader(client)
+		go reader(client)
 	}
 	time.Sleep(time.Second * 10)
 	writing.Store(false)
-	time.Sleep(time.Second * 10)
-	reading.Store(false)
+	time.Sleep(time.Second * 20)
 	println("total sent", sent.Load())
 	println("total received", readed.Load())
 }

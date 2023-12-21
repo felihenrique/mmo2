@@ -47,8 +47,6 @@ func handleChans(server *gsp.TcpServer, peers *map[string]gsp.IPeer, peersLock *
 	peerDisconnected := server.DisconnectedChan()
 	go readEvents(server, peers, peersLock)
 	go readEvents(server, peers, peersLock)
-	go readEvents(server, peers, peersLock)
-	go readEvents(server, peers, peersLock)
 	for {
 		select {
 		case peer := <-peerConnected:
@@ -74,12 +72,11 @@ func readEvents(server *gsp.TcpServer, peers *map[string]gsp.IPeer, peersLock *s
 		if event.Dx != 5 || event.Dy != 2 {
 			panic("DIVERGENT")
 		}
-		peerEvent.Peer.SendBytes(rawEvent)
-		// peersLock.Lock()
-		// for _, peer := range *peers {
-		// 	sent.Add(1)
-		// 	peer.SendBytes(rawEvent)
-		// }
-		// peersLock.Unlock()
+		peersLock.Lock()
+		for _, peer := range *peers {
+			sent.Add(1)
+			peer.SendBytes(rawEvent)
+		}
+		peersLock.Unlock()
 	}
 }

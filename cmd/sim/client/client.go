@@ -40,7 +40,7 @@ func writer(client *gsp.TcpClient) {
 		}
 		client.SendRequest(&event)
 		sent.Add(1)
-		time.Sleep(time.Millisecond * 1)
+		time.Sleep(time.Millisecond * 1000)
 	}
 }
 
@@ -57,7 +57,7 @@ func main() {
 
 	writing.Store(true)
 	var client *gsp.TcpClient
-	for i := 0; i < 1500; i++ {
+	for i := 0; i < 1000; i++ {
 		client = gsp.NewTcpClient()
 		err := client.Connect("", 5555)
 		if err != nil {
@@ -65,11 +65,10 @@ func main() {
 		}
 		go writer(client)
 		go reader(client)
-		go reader(client)
 	}
 	time.Sleep(time.Second * 10)
 	writing.Store(false)
-	time.Sleep(time.Second * 20)
+	time.Sleep(time.Second * 15)
 	println("total sent", sent.Load())
 	println("total received", readed.Load())
 }

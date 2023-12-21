@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: build/Dockerfile-simc
     network_mode: "host"
-    mem_limit: "4000Mb"
+    mem_limit: "2000Mb"
     volumes:
     - ./prof:/home/app/prof
     depends_on:

@@ -1,11 +1,10 @@
 package game
 
 import (
-	"fmt"
 	"mmo2/assets"
 	"mmo2/internal/shard-client"
 	"mmo2/pkg/game"
-	"time"
+	"mmo2/pkg/gui"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -44,35 +43,17 @@ func (c *Client) mainLoop() {
 	rl.InitAudioDevice()
 	defer rl.CloseWindow()
 	tickChan := c.shardClient.TickChan()
-	var timeStep int64
 	texture := rl.LoadTexture("assets/images/simple_rpg_gui.png")
-	music := rl.LoadMusicStream("assets/music/main_title.mp3")
-	logo := rl.LoadTexture("assets/images/logo.png")
-	rl.PlayMusicStream(music)
+	gui.SetGuiTexture(texture)
+	window := gui.Container(800, 600, 100)
+	panel := gui.NewWidget(assets.MainPanel, window, 30)
+	gui.NewWidget(assets.MainPanel, panel, 30)
 	for !rl.WindowShouldClose() {
-		now := time.Now()
-		rl.UpdateMusicStream(music)
 		<-tickChan
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.DarkGray)
-		rl.DrawTexturePro(
-			logo,
-			rl.NewRectangle(0, 0, 1024, 1024),
-			rl.NewRectangle(400, 200, 400, 400),
-			rl.NewVector2(0, 0),
-			0,
-			rl.White,
-		)
-		rl.DrawTextureNPatch(
-			texture, assets.Window1,
-			rl.Rectangle{X: 100, Y: 100, Width: 300, Height: 200},
-			rl.Vector2{X: 0, Y: 0}, 0, rl.White,
-		)
-		rl.DrawText(
-			fmt.Sprintf("Frame %d", timeStep), 0, 0, 20, rl.LightGray,
-		)
+		window.Render()
 		rl.EndDrawing()
 		tickChan <- 1
-		timeStep = time.Since(now).Milliseconds()
 	}
 }

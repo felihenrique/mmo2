@@ -22,6 +22,8 @@ func NewWidget(renderer Renderer, parent *Widget, padding int32) *Widget {
 		padding:  padding,
 		childs:   make([]*Widget, 0),
 	}
-	parent.childs = append(parent.childs, widget)
+	if parent != nil {
+		parent.childs = append(parent.childs, widget)
+	}
 	return widget
 }

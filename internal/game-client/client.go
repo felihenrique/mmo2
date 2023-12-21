@@ -45,9 +45,13 @@ func (c *Client) mainLoop() {
 	tickChan := c.shardClient.TickChan()
 	texture := rl.LoadTexture("assets/images/simple_rpg_gui.png")
 	gui.SetGuiTexture(texture)
-	window := gui.Container(800, 600, 100)
+	window := gui.Window(800, 600, 100)
 	panel := gui.NewWidget(assets.MainPanel, window, 30)
-	gui.NewWidget(assets.MainPanel, panel, 30)
+	cells := gui.NewGrid(panel, 2, 2)
+	gui.NewWidget(assets.MainPanel, cells[0], 15)
+	gui.NewWidget(assets.MainPanel, cells[1], 15)
+	gui.NewWidget(assets.MainPanel, cells[2], 15)
+	gui.NewWidget(assets.MainPanel, cells[3], 15)
 	for !rl.WindowShouldClose() {
 		<-tickChan
 		rl.BeginDrawing()

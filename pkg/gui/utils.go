@@ -30,12 +30,13 @@ type Renderer interface {
 	Render(w *Widget)
 }
 
-func Container(width int32, height int32, padding int32) *Widget {
-	return &Widget{
+func Window(width int, height int, padding int32) *Widget {
+	w := Widget{
 		renderer: nil,
 		parent:   nil,
+		padding:  int32(padding),
 		destRect: rl.NewRectangle(0, 0, float32(width), float32(height)),
-		padding:  padding,
 		childs:   make([]*Widget, 0),
 	}
+	return &w
 }

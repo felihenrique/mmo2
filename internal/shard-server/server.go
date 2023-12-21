@@ -39,9 +39,9 @@ func (s *Server) handleEvent(pe gsp.PeerEvent) {
 
 func (s *Server) handleChans() {
 	ticker := time.NewTicker(time.Millisecond * 100)
-	peerConnChan := s.gspServer.PeerConnChan()
-	peerDisChan := s.gspServer.PeerDisChan()
-	newEventsChan := s.gspServer.NewEventsChan()
+	peerConnChan := s.gspServer.NewConnectionChan()
+	peerDisChan := s.gspServer.DisconnectedChan()
+	newEventsChan := s.gspServer.EventsChan()
 	for s.gspServer.Listening() {
 		select {
 		case peer := <-peerDisChan:

@@ -2,11 +2,11 @@ package game
 
 import (
 	"fmt"
+	"mmo2/assets"
 	"mmo2/internal/shard-client"
 	"mmo2/pkg/game"
 	"time"
 
-	rlgui "github.com/gen2brain/raylib-go/raygui"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -44,21 +44,17 @@ func (c *Client) mainLoop() {
 	defer rl.CloseWindow()
 	tickChan := c.shardClient.TickChan()
 	var timeStep int64
-	var name string
+	texture := rl.LoadTexture("assets/images/simple_rpg_gui.png")
 	for !rl.WindowShouldClose() {
 		now := time.Now()
 		<-tickChan
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.DarkGray)
-		mouseCell := rl.Vector2{}
-		rlgui.Grid(rl.NewRectangle(50, 50, 700, 500), "", 30, 2, &mouseCell)
-		rl.DrawText(
-			"Enter your name: ", 288, 225, 20, rl.LightGray,
+		rl.DrawTextureNPatch(
+			texture, assets.Window1,
+			rl.Rectangle{X: 100, Y: 100, Width: 300, Height: 200},
+			rl.Vector2{X: 0, Y: 0}, 0, rl.White,
 		)
-		rlgui.TextBox(rl.NewRectangle(288, 250, 224, 32), &name, 10, true)
-		if rlgui.Button(rl.NewRectangle(350, 350, 100, 40), "Join game") {
-			fmt.Println("omg")
-		}
 		rl.DrawText(
 			fmt.Sprintf("Frame %d", timeStep), 0, 0, 20, rl.LightGray,
 		)

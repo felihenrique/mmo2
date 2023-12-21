@@ -8,5 +8,8 @@ func main() {
 		ShardPort:    5555,
 		Title:        "Best MMORPG",
 	})
-	client.Start()
+	err := client.Start()
+	if err != nil {
+		println(err.Error())
+	}
 }

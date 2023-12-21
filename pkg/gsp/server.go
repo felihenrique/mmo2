@@ -15,27 +15,27 @@ type PeerEvent struct {
 
 type IServer interface {
 	Listening() bool
-	PeerConnChan() <-chan IPeer
-	PeerDisChan() <-chan IPeer
-	NewEventsChan() <-chan PeerEvent
+	NewConnectionChan() <-chan IPeer
+	DisconnectedChan() <-chan IPeer
+	EventsChan() <-chan PeerEvent
 	Listen(host string, port int) error
 	Close() error
 }
 
 type TcpServer struct {
-	listener         net.Listener
-	listening        bool
-	peerConnected    chan IPeer
-	peerDisconnected chan IPeer
-	newEventsChan    chan PeerEvent
+	listener          net.Listener
+	listening         bool
+	newConnectionChan chan IPeer
+	disconnectedChan  chan IPeer
+	eventsChan        chan PeerEvent
 }
 
 func NewTcpServer() *TcpServer {
 	server := TcpServer{}
 	server.listening = false
-	server.peerConnected = make(chan IPeer, 10)
-	server.peerDisconnected = make(chan IPeer, 10)
-	server.newEventsChan = make(chan PeerEvent, 2048)
+	server.newConnectionChan = make(chan IPeer, 10)
+	server.disconnectedChan = make(chan IPeer, 10)
+	server.eventsChan = make(chan PeerEvent, 2048)
 	return &server
 }
 
@@ -43,16 +43,16 @@ func (s *TcpServer) Listening() bool {
 	return s.listening
 }
 
-func (s *TcpServer) PeerConnChan() <-chan IPeer {
-	return s.peerConnected
+func (s *TcpServer) NewConnectionChan() <-chan IPeer {
+	return s.newConnectionChan
 }
 
-func (s *TcpServer) PeerDisChan() <-chan IPeer {
-	return s.peerDisconnected
+func (s *TcpServer) DisconnectedChan() <-chan IPeer {
+	return s.disconnectedChan
 }
 
-func (s *TcpServer) NewEventsChan() <-chan PeerEvent {
-	return s.newEventsChan
+func (s *TcpServer) EventsChan() <-chan PeerEvent {
+	return s.eventsChan
 }
 
 func (s *TcpServer) Listen(host string, port int) error {
@@ -83,7 +83,7 @@ func (s *TcpServer) connectionLoop() {
 			continue
 		}
 		peer := NewPeer(conn)
-		s.peerConnected <- peer
+		s.newConnectionChan <- peer
 		go s.readEvents(peer)
 	}
 }
@@ -102,7 +102,7 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 		err := errors.Handle(peer.reader.FillFrom(peer.conn))
 		if err != nil && !errors.Is(err, errors.ErrTimeout) {
 			println(err.Error())
-			s.peerDisconnected <- peer
+			s.disconnectedChan <- peer
 			break
 		}
 		for {
@@ -110,7 +110,7 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 			if err != nil {
 				break
 			}
-			s.newEventsChan <- PeerEvent{
+			s.eventsChan <- PeerEvent{
 				Peer:  peer,
 				Event: rawEvent,
 			}
@@ -122,7 +122,7 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 		err = errors.Handle(err)
 		if err != nil && !errors.Is(err, errors.ErrTimeout) {
 			println(err.Error())
-			s.peerDisconnected <- peer
+			s.disconnectedChan <- peer
 			break
 		}
 	}

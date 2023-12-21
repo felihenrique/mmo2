@@ -41,15 +41,28 @@ func (c *Client) Start() error {
 
 func (c *Client) mainLoop() {
 	rl.InitWindow(800, 600, c.options.Title)
+	rl.InitAudioDevice()
 	defer rl.CloseWindow()
 	tickChan := c.shardClient.TickChan()
 	var timeStep int64
 	texture := rl.LoadTexture("assets/images/simple_rpg_gui.png")
+	music := rl.LoadMusicStream("assets/music/main_title.mp3")
+	logo := rl.LoadTexture("assets/images/logo.png")
+	rl.PlayMusicStream(music)
 	for !rl.WindowShouldClose() {
 		now := time.Now()
+		rl.UpdateMusicStream(music)
 		<-tickChan
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.DarkGray)
+		rl.DrawTexturePro(
+			logo,
+			rl.NewRectangle(0, 0, 1024, 1024),
+			rl.NewRectangle(400, 200, 400, 400),
+			rl.NewVector2(0, 0),
+			0,
+			rl.White,
+		)
 		rl.DrawTextureNPatch(
 			texture, assets.Window1,
 			rl.Rectangle{X: 100, Y: 100, Width: 300, Height: 200},

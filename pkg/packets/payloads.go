@@ -26,12 +26,16 @@ type JoinShardRequest struct {
 type JoinShardResponse struct {
 	EntityId int16
 	Position *game.Position
+	Movable  *game.Movable
+	Name     *game.Name
 }
 
 // EVENTS
 type PlayerJoined struct {
 	EntityId int16
 	Position *game.Position
+	Name     *game.Name
+	Movable  *game.Movable
 }
 type EntityMoved struct {
 	EntityId    int16

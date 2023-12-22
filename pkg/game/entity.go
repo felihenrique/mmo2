@@ -14,8 +14,10 @@ func (e *Entity) ID() int16 {
 	return e.id
 }
 
-func (e *Entity) Add(component serialization.ISerializable) {
-	e.components[component.Type()] = component
+func (e *Entity) Add(components ...serialization.ISerializable) {
+	for _, c := range components {
+		e.components[c.Type()] = c
+	}
 }
 
 func (e *Entity) Remove(componentId int16) {

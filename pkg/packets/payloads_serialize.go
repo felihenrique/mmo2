@@ -19,6 +19,16 @@ const (
 	TypeEntityRemoved
 )
 
+func NewAckRequest() *AckRequest {
+	return &AckRequest{}
+}
+
+func ParseAckRequest(event []byte) *AckRequest {
+	str := AckRequest{}
+	str.FromBytes(event)
+	return &str
+}
+
 func (str *AckRequest) ToBytes(eventId int16) []byte {
 	buffer := make([]byte, 0)
 	buffer = serialization.Append(buffer, TypeAckRequest)
@@ -39,6 +49,18 @@ func (str *AckRequest) Type() int16 {
 
 func (str *AckRequest) String() string {
 	return fmt.Sprintf("AckRequest: {  }")
+}
+
+func NewRequestError(Message string) *RequestError {
+	return &RequestError{
+		Message: Message,
+	}
+}
+
+func ParseRequestError(event []byte) *RequestError {
+	str := RequestError{}
+	str.FromBytes(event)
+	return &str
 }
 
 func (str *RequestError) ToBytes(eventId int16) []byte {
@@ -63,6 +85,19 @@ func (str *RequestError) Type() int16 {
 
 func (str *RequestError) String() string {
 	return fmt.Sprintf("RequestError: { Message: %v,  }", str.Message)
+}
+
+func NewMoveRequest(Dx int32, Dy int32) *MoveRequest {
+	return &MoveRequest{
+		Dx: Dx,
+		Dy: Dy,
+	}
+}
+
+func ParseMoveRequest(event []byte) *MoveRequest {
+	str := MoveRequest{}
+	str.FromBytes(event)
+	return &str
 }
 
 func (str *MoveRequest) ToBytes(eventId int16) []byte {
@@ -92,6 +127,18 @@ func (str *MoveRequest) String() string {
 	return fmt.Sprintf("MoveRequest: { Dx: %v, Dy: %v,  }", str.Dx, str.Dy)
 }
 
+func NewRotateRequest(Quantity float32) *RotateRequest {
+	return &RotateRequest{
+		Quantity: Quantity,
+	}
+}
+
+func ParseRotateRequest(event []byte) *RotateRequest {
+	str := RotateRequest{}
+	str.FromBytes(event)
+	return &str
+}
+
 func (str *RotateRequest) ToBytes(eventId int16) []byte {
 	buffer := make([]byte, 0)
 	buffer = serialization.Append(buffer, TypeRotateRequest)
@@ -114,6 +161,19 @@ func (str *RotateRequest) Type() int16 {
 
 func (str *RotateRequest) String() string {
 	return fmt.Sprintf("RotateRequest: { Quantity: %v,  }", str.Quantity)
+}
+
+func NewJoinShardRequest(Name string, Portal int8) *JoinShardRequest {
+	return &JoinShardRequest{
+		Name:   Name,
+		Portal: Portal,
+	}
+}
+
+func ParseJoinShardRequest(event []byte) *JoinShardRequest {
+	str := JoinShardRequest{}
+	str.FromBytes(event)
+	return &str
 }
 
 func (str *JoinShardRequest) ToBytes(eventId int16) []byte {
@@ -143,12 +203,29 @@ func (str *JoinShardRequest) String() string {
 	return fmt.Sprintf("JoinShardRequest: { Name: %v, Portal: %v,  }", str.Name, str.Portal)
 }
 
+func NewJoinShardResponse(EntityId int16, Position *game.Position, Movable *game.Movable, Name *game.Name) *JoinShardResponse {
+	return &JoinShardResponse{
+		EntityId: EntityId,
+		Position: Position,
+		Movable:  Movable,
+		Name:     Name,
+	}
+}
+
+func ParseJoinShardResponse(event []byte) *JoinShardResponse {
+	str := JoinShardResponse{}
+	str.FromBytes(event)
+	return &str
+}
+
 func (str *JoinShardResponse) ToBytes(eventId int16) []byte {
 	buffer := make([]byte, 0)
 	buffer = serialization.Append(buffer, TypeJoinShardResponse)
 	buffer = serialization.Append(buffer, eventId)
 	buffer = serialization.Append(buffer, str.EntityId)
 	buffer = serialization.Append(buffer, str.Position)
+	buffer = serialization.Append(buffer, str.Movable)
+	buffer = serialization.Append(buffer, str.Name)
 
 	return buffer
 }
@@ -159,6 +236,10 @@ func (str *JoinShardResponse) FromBytes(data []byte) int16 {
 
 	str.Position = &game.Position{}
 	n += serialization.Read(data[n:], str.Position)
+	str.Movable = &game.Movable{}
+	n += serialization.Read(data[n:], str.Movable)
+	str.Name = &game.Name{}
+	n += serialization.Read(data[n:], str.Name)
 
 	return n
 }
@@ -168,7 +249,22 @@ func (str *JoinShardResponse) Type() int16 {
 }
 
 func (str *JoinShardResponse) String() string {
-	return fmt.Sprintf("JoinShardResponse: { EntityId: %v, Position: %v,  }", str.EntityId, str.Position)
+	return fmt.Sprintf("JoinShardResponse: { EntityId: %v, Position: %v, Movable: %v, Name: %v,  }", str.EntityId, str.Position, str.Movable, str.Name)
+}
+
+func NewPlayerJoined(EntityId int16, Position *game.Position, Name *game.Name, Movable *game.Movable) *PlayerJoined {
+	return &PlayerJoined{
+		EntityId: EntityId,
+		Position: Position,
+		Name:     Name,
+		Movable:  Movable,
+	}
+}
+
+func ParsePlayerJoined(event []byte) *PlayerJoined {
+	str := PlayerJoined{}
+	str.FromBytes(event)
+	return &str
 }
 
 func (str *PlayerJoined) ToBytes(eventId int16) []byte {
@@ -177,6 +273,8 @@ func (str *PlayerJoined) ToBytes(eventId int16) []byte {
 	buffer = serialization.Append(buffer, eventId)
 	buffer = serialization.Append(buffer, str.EntityId)
 	buffer = serialization.Append(buffer, str.Position)
+	buffer = serialization.Append(buffer, str.Name)
+	buffer = serialization.Append(buffer, str.Movable)
 
 	return buffer
 }
@@ -187,6 +285,10 @@ func (str *PlayerJoined) FromBytes(data []byte) int16 {
 
 	str.Position = &game.Position{}
 	n += serialization.Read(data[n:], str.Position)
+	str.Name = &game.Name{}
+	n += serialization.Read(data[n:], str.Name)
+	str.Movable = &game.Movable{}
+	n += serialization.Read(data[n:], str.Movable)
 
 	return n
 }
@@ -196,7 +298,20 @@ func (str *PlayerJoined) Type() int16 {
 }
 
 func (str *PlayerJoined) String() string {
-	return fmt.Sprintf("PlayerJoined: { EntityId: %v, Position: %v,  }", str.EntityId, str.Position)
+	return fmt.Sprintf("PlayerJoined: { EntityId: %v, Position: %v, Name: %v, Movable: %v,  }", str.EntityId, str.Position, str.Name, str.Movable)
+}
+
+func NewEntityMoved(EntityId int16, NewPosition *game.Position) *EntityMoved {
+	return &EntityMoved{
+		EntityId:    EntityId,
+		NewPosition: NewPosition,
+	}
+}
+
+func ParseEntityMoved(event []byte) *EntityMoved {
+	str := EntityMoved{}
+	str.FromBytes(event)
+	return &str
 }
 
 func (str *EntityMoved) ToBytes(eventId int16) []byte {
@@ -225,6 +340,18 @@ func (str *EntityMoved) Type() int16 {
 
 func (str *EntityMoved) String() string {
 	return fmt.Sprintf("EntityMoved: { EntityId: %v, NewPosition: %v,  }", str.EntityId, str.NewPosition)
+}
+
+func NewEntityRemoved(EntityId int16) *EntityRemoved {
+	return &EntityRemoved{
+		EntityId: EntityId,
+	}
+}
+
+func ParseEntityRemoved(event []byte) *EntityRemoved {
+	str := EntityRemoved{}
+	str.FromBytes(event)
+	return &str
 }
 
 func (str *EntityRemoved) ToBytes(eventId int16) []byte {

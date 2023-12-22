@@ -14,3 +14,7 @@ type Rotation struct {
 type Movable struct {
 	Velocity float32
 }
+
+type Name struct {
+	Value string
+}

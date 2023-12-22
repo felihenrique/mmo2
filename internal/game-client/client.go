@@ -1,10 +1,9 @@
 package game
 
 import (
-	"mmo2/assets"
 	"mmo2/internal/shard-client"
 	"mmo2/pkg/game"
-	"mmo2/pkg/gui"
+	"mmo2/pkg/scene"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -41,21 +40,17 @@ func (c *Client) Start() error {
 func (c *Client) mainLoop() {
 	rl.InitWindow(800, 600, c.options.Title)
 	rl.InitAudioDevice()
+	scene := scene.MainMenu{
+		ShardClient: c.shardClient,
+	}
+	scene.Init(c.world)
 	defer rl.CloseWindow()
 	tickChan := c.shardClient.TickChan()
-	texture := rl.LoadTexture("assets/images/simple_rpg_gui.png")
-	gui.SetTexture(texture)
-	container := gui.Window(assets.MainPanel, 0, 0, 800, 600, 100)
-	window := gui.NewWidget(assets.MainPanel, container, 10)
-	cells := gui.NewGrid(window, 15, 10, 0)
-	for _, cell := range cells {
-		gui.NewWidget(assets.SlotWhite, cell, 0)
-	}
 	for !rl.WindowShouldClose() {
 		<-tickChan
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.DarkGray)
-		window.Render()
+		scene.Update(c.world, 0)
 		rl.EndDrawing()
 		tickChan <- 1
 	}

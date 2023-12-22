@@ -21,6 +21,19 @@ const (
 )
 
 {{ range .Structs }}
+func New{{ .Name }}({{ range .Fields }}{{ .Name }} {{ .Type }},{{ end }}) *{{ .Name }} {
+	return &{{ .Name }}{
+		{{ range .Fields }}{{ .Name }}: {{ .Name }},
+		{{ end }}
+	}
+}
+
+func Parse{{ .Name }}(event []byte) *{{ .Name }} {
+	str := {{ .Name }}{}
+	str.FromBytes(event)
+	return &str
+}
+
 func (str *{{ .Name }}) ToBytes(eventId int16) []byte {
 	buffer := make([]byte, 0)
 	buffer = serialization.Append(buffer, Type{{ .Name }})

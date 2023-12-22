@@ -14,6 +14,7 @@ type Client struct {
 	gspClient   *gsp.TcpClient
 	world       *game.World
 	handlers    map[int16]EventHandler
+	callbacks   map[int16]ResponseHandler
 	disconnChan chan byte
 	tickChan    chan byte
 }
@@ -25,9 +26,11 @@ func NewClient(world *game.World) *Client {
 	client.disconnChan = make(chan byte)
 	client.tickChan = make(chan byte)
 	client.handlers = make(map[int16]EventHandler)
+	client.callbacks = make(map[int16]ResponseHandler)
 	client.handlers[packets.TypeJoinShardResponse] = client.joinShardResponse
 	client.handlers[packets.TypePlayerJoined] = client.playerJoined
 	client.handlers[packets.TypeEntityMoved] = client.entityMoved
+	client.handlers[packets.TypeRequestError] = client.requestError
 	return &client
 }
 
@@ -44,8 +47,9 @@ func (c *Client) TickChan() chan byte {
 	return c.tickChan
 }
 
-func (c *Client) SendRequest(event serialization.ISerializable) {
-	c.gspClient.SendRequest(event)
+func (c *Client) SendRequest(event serialization.ISerializable, callback ResponseHandler) {
+	id := c.gspClient.SendRequest(event)
+	c.callbacks[id] = callback
 }
 
 func (c *Client) handleEvent(event events.Raw) {
@@ -55,7 +59,14 @@ func (c *Client) handleEvent(event events.Raw) {
 		fmt.Printf("Handler for %d not found \n", evType)
 		return
 	}
-	handler(event)
+	response := handler(event)
+	id := events.GetEventId(event)
+	callback := c.callbacks[id]
+	if callback == nil {
+		fmt.Printf("Callback for %d not found", id)
+		return
+	}
+	callback(response)
 }
 
 func (c *Client) manageEvents() {

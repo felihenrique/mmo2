@@ -18,8 +18,7 @@ próximo do jogador
 */
 
 func (s *Server) moveRequest(player *Player, event events.Raw) {
-	move := packets.MoveRequest{}
-	move.FromBytes(event)
+	move := packets.ParseMoveRequest(event)
 	tc, tok := player.entity.Get(game.TypePosition)
 	if !tok {
 		log.Printf("wrong: entity %d doesn't have position", player.entity.ID())
@@ -28,32 +27,30 @@ func (s *Server) moveRequest(player *Player, event events.Raw) {
 	position := tc.(*game.Position)
 	position.X += move.Dx
 	position.Y += move.Dy
-	player.peer.SendResponse(event, &packets.AckRequest{})
-	s.BroadcastFiltered(&packets.EntityMoved{
-		NewPosition: position, EntityId: player.entity.ID(),
-	}, player.peer)
+	player.peer.SendResponse(event, packets.NewAckRequest())
+	s.BroadcastFiltered(
+		packets.NewEntityMoved(player.entity.ID(), position), player.peer,
+	)
 }
 
 func (s *Server) joinShardRequest(player *Player, event events.Raw) {
-	request := packets.JoinShardRequest{}
-	request.FromBytes(event)
+	if player.entity != nil {
+		player.peer.SendResponse(event, packets.NewRequestError("You already joined this shard"))
+		return
+	}
+	request := packets.ParseJoinShardRequest(event)
 	entity := s.world.NewEntity()
 	player.entity = entity
-	position := game.Position{}
-	switch request.Portal {
-	default:
-		position.X = 0
-		position.Y = 0
-	}
-	entity.Add(&position)
-	player.peer.SendResponse(event, &packets.JoinShardResponse{
-		EntityId: entity.ID(),
-		Position: &position,
-	})
-	s.BroadcastFiltered(&packets.PlayerJoined{
-		EntityId: entity.ID(),
-		Position: &position,
-	}, player.peer)
+	position := game.NewPosition(0, 0)
+	movable := game.NewMovable(10)
+	name := game.NewName(request.Name)
+	entity.Add(position, movable, name)
+	player.peer.SendResponse(event, packets.NewJoinShardResponse(
+		entity.ID(), position, movable, name,
+	))
+	s.BroadcastFiltered(packets.NewPlayerJoined(
+		entity.ID(), position, name, movable,
+	), player.peer)
 }
 
 /*

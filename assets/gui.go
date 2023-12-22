@@ -20,3 +20,8 @@ var SlotWhite = gui.NewPanel(rl.NPatchInfo{
 	Source: rl.NewRectangle(152, 36, 36, 34),
 	Left:   10, Top: 10, Right: 10, Bottom: 10, Layout: rl.NPatchNinePatch,
 })
+
+var GreenButton = gui.NewPanel(rl.NPatchInfo{
+	Source: rl.NewRectangle(263, 1, 70, 25),
+	Left:   10, Top: 10, Right: 10, Bottom: 10, Layout: rl.NPatchNinePatch,
+})

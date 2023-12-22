@@ -47,8 +47,6 @@ MUSICA TITLE SCREEN: https://opengameart.org/content/grassy-world-overture-8bito
 tipos suportados:
 bool, int8, uint8, int16, uint16, int32, uint32, int64, uint64, float32, float64
 
-ONDE PAREI: Escrevendo game client
-
 Os primeiros minutos de um jogo são os mais importantes. É naquele momento que você irá prender a atenção do jogador e torna-lo interessado em continuar explorando o jogo, ou ele apenas irá fechar o jogo e ver o próximo. 
 Outro aspecto importante dos jogos online é a capacidade de reter jogadores por longos períodos. Para que isso seja possível, primeiramente o jogo deve ser divertido de jogar. Outra maneira é investir bastante no aspecto social do jogo, pois muitos jogadores acabam chamando seus amigos para jogar junto. 
 Uma boa maneira de icentivar a interação entre jogadores são dungeons que precisam ser feitas em grupo. Podem ser adicionadas dungeons que podem ser feitas diariamente que dão recompensas essenciais para o progresso no jogo.
@@ -65,3 +63,6 @@ montros mudando fora da cidade.
 - Eventos que mudam como o mundo funciona (por exemplo invasões de monstros)
 - World bosses que aparecem de maneira recorrente
 - Players/animais que deixam seus corpos no chão ao morrerem (estilo tibia)
+
+
+ONDE PAREI: ver pq o grid está com espaçamento entre os itens sem eu ter colocado

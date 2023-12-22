@@ -22,7 +22,7 @@ func recursiveRender(w *Widget) {
 
 var guiTexture rl.Texture2D
 
-func SetGuiTexture(texture rl.Texture2D) {
+func SetTexture(texture rl.Texture2D) {
 	guiTexture = texture
 }
 
@@ -30,12 +30,12 @@ type Renderer interface {
 	Render(w *Widget)
 }
 
-func Window(width int, height int, padding int32) *Widget {
+func Window(renderer Renderer, x int, y int, width int, height int, padding int32) *Widget {
 	w := Widget{
-		renderer: nil,
+		renderer: renderer,
 		parent:   nil,
 		padding:  int32(padding),
-		destRect: rl.NewRectangle(0, 0, float32(width), float32(height)),
+		destRect: rl.NewRectangle(float32(x), float32(y), float32(width), float32(height)),
 		childs:   make([]*Widget, 0),
 	}
 	return &w

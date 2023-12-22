@@ -7,8 +7,16 @@ import (
 )
 
 var MainPanel = gui.NewPanel(rl.NPatchInfo{
-	Source: rl.Rectangle{
-		X: 0, Y: 0, Width: 65, Height: 64,
-	},
-	Left: 20, Top: 20, Right: 20, Bottom: 20, Layout: rl.NPatchNinePatch,
+	Source: rl.NewRectangle(0, 0, 65, 64),
+	Left:   20, Top: 20, Right: 20, Bottom: 20, Layout: rl.NPatchNinePatch,
+})
+
+var Slot = gui.NewPanel(rl.NPatchInfo{
+	Source: rl.NewRectangle(115, 36, 34, 34),
+	Left:   5, Top: 5, Right: 5, Bottom: 5, Layout: rl.NPatchNinePatch,
+})
+
+var SlotWhite = gui.NewPanel(rl.NPatchInfo{
+	Source: rl.NewRectangle(152, 36, 36, 34),
+	Left:   10, Top: 10, Right: 10, Bottom: 10, Layout: rl.NPatchNinePatch,
 })

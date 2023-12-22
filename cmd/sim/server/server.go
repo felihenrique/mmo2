@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
+	"mmo2/game/packets"
 	"mmo2/pkg/gsp"
-	"mmo2/pkg/packets"
 	"os"
 	"runtime/pprof"
 	"sync"

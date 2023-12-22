@@ -1,6 +1,6 @@
 package packets
 
-import "mmo2/pkg/ecs"
+import "mmo2/game/ecs"
 
 //go:generate ../../bin/serialize-generator
 

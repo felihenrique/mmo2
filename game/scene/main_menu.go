@@ -1,9 +1,9 @@
 package scene
 
 import (
+	"mmo2/game/ecs"
+	"mmo2/game/packets"
 	"mmo2/internal/shard-client"
-	"mmo2/pkg/ecs"
-	"mmo2/pkg/packets"
 	"mmo2/pkg/serialization"
 
 	rl "github.com/gen2brain/raylib-go/raylib"

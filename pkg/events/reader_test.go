@@ -3,7 +3,7 @@ package events
 import (
 	"bytes"
 	"errors"
-	"mmo2/pkg/packets"
+	"mmo2/game/packets"
 	"testing"
 )
 

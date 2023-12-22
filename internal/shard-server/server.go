@@ -2,10 +2,10 @@ package shard
 
 import (
 	"fmt"
-	"mmo2/pkg/ecs"
+	"mmo2/game/ecs"
+	"mmo2/game/packets"
 	"mmo2/pkg/events"
 	"mmo2/pkg/gsp"
-	"mmo2/pkg/packets"
 	"mmo2/pkg/serialization"
 	"time"
 )

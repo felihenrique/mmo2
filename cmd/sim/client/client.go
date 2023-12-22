@@ -2,9 +2,9 @@ package main
 
 import (
 	"log"
+	"mmo2/game/packets"
 	"mmo2/pkg/events"
 	"mmo2/pkg/gsp"
-	"mmo2/pkg/packets"
 	"os"
 	"runtime/pprof"
 	"sync/atomic"

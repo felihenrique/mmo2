@@ -2,9 +2,9 @@ package shard
 
 import (
 	"log"
-	"mmo2/pkg/ecs"
+	"mmo2/game/ecs"
+	"mmo2/game/packets"
 	"mmo2/pkg/events"
-	"mmo2/pkg/packets"
 )
 
 /*

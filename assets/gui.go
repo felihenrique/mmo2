@@ -1,7 +1,7 @@
 package assets
 
 import (
-	"mmo2/pkg/gui"
+	"mmo2/game/gui"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )

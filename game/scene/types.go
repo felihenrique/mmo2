@@ -1,6 +1,6 @@
 package scene
 
-import "mmo2/pkg/ecs"
+import "mmo2/game/ecs"
 
 type IScene interface {
 	Init(world *ecs.World)

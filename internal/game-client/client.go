@@ -1,9 +1,9 @@
 package game
 
 import (
+	"mmo2/game/ecs"
+	"mmo2/game/scene"
 	"mmo2/internal/shard-client"
-	"mmo2/pkg/ecs"
-	"mmo2/pkg/scene"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )

@@ -2,7 +2,7 @@ package packets
 
 import (
 	"fmt"
-	"mmo2/pkg/ecs"
+	"mmo2/game/ecs"
 	"mmo2/pkg/serialization"
 )
 

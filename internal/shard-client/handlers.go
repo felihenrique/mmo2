@@ -2,8 +2,8 @@ package shard
 
 import (
 	"fmt"
+	"mmo2/game/packets"
 	"mmo2/pkg/events"
-	"mmo2/pkg/packets"
 	"mmo2/pkg/serialization"
 )
 

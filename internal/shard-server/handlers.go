@@ -2,8 +2,8 @@ package shard
 
 import (
 	"log"
+	"mmo2/pkg/ecs"
 	"mmo2/pkg/events"
-	"mmo2/pkg/game"
 	"mmo2/pkg/packets"
 )
 
@@ -16,15 +16,14 @@ próximo do jogador
 - Envia o evento EntityMoved para todos os jogadores em um radio de 6 seções
 (a tela do jogador 4 x 4 seções)
 */
-
 func (s *Server) moveRequest(player *Player, event events.Raw) {
 	move := packets.ParseMoveRequest(event)
-	tc, tok := player.entity.Get(game.TypePosition)
+	tc, tok := player.entity.Get(ecs.TypePosition)
 	if !tok {
 		log.Printf("wrong: entity %d doesn't have position", player.entity.ID())
 		return
 	}
-	position := tc.(*game.Position)
+	position := tc.(*ecs.Position)
 	position.X += move.Dx
 	position.Y += move.Dy
 	player.peer.SendResponse(event, packets.NewAckRequest())
@@ -41,29 +40,15 @@ func (s *Server) joinShardRequest(player *Player, event events.Raw) {
 	request := packets.ParseJoinShardRequest(event)
 	entity := s.world.NewEntity()
 	player.entity = entity
-	position := game.NewPosition(0, 0)
-	movable := game.NewMovable(10)
-	name := game.NewName(request.Name)
-	entity.Add(position, movable, name)
+	position := ecs.NewPosition(0, 0)
+	movable := ecs.NewMovable(10)
+	name := ecs.NewName(request.Name)
+	playerCircle := ecs.NewPlayerCircle(40, request.Color)
+	entity.Add(position, movable, name, playerCircle)
 	player.peer.SendResponse(event, packets.NewJoinShardResponse(
-		entity.ID(), position, movable, name,
+		entity.ID(), position, movable, name, playerCircle,
 	))
 	s.BroadcastFiltered(packets.NewPlayerJoined(
-		entity.ID(), position, name, movable,
+		entity.ID(), position, name, movable, playerCircle,
 	), player.peer)
 }
-
-/*
-TODO: Haverá um evento para pedir a lista de entidades ao redor de uma seção x (raio default 6)
-O jogador enviará esse comando a cada 1 segundo e o servidor olhará no spatial map e enviará
-para o jogador
-*/
-
-/*
-Haverá um commando para cada tipo de evento. Na instancia do command (no metodo OnEvent)
-serão colocados todas as referências que aquele comando precisa, como por exemplo o estado
-do jogo, jogador que executou, entre outras coisas.
-No comando de movimento, serão checados também as colisões com obstaculos e entidades.
-Primeiramente serão processados todos os inputs, depois será processada a lógica do jogo
-Por exemplo, checar se um monstro está próximo do jogador e caso esteja atacar ele.
-*/

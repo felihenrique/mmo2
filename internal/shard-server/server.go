@@ -2,8 +2,8 @@ package shard
 
 import (
 	"fmt"
+	"mmo2/pkg/ecs"
 	"mmo2/pkg/events"
-	"mmo2/pkg/game"
 	"mmo2/pkg/gsp"
 	"mmo2/pkg/packets"
 	"mmo2/pkg/serialization"
@@ -13,12 +13,12 @@ import (
 type Server struct {
 	gspServer *gsp.TcpServer
 	handlers  map[int16]EventHandler
-	world     *game.World
+	world     *ecs.World
 	players   map[string]*Player
 }
 
 type Player struct {
-	entity *game.Entity
+	entity *ecs.Entity
 	peer   gsp.IPeer
 }
 
@@ -58,9 +58,10 @@ func (s *Server) handleChans() {
 		case newEvent := <-newEventsChan:
 			if events.GetType(newEvent.Event) != packets.TypeJoinShardRequest {
 				fmt.Printf("Peer %s cant send events. Need to join shard first \n", newEvent.Peer.Addr())
-				newEvent.Peer.SendResponse(newEvent.Event, &packets.RequestError{
-					Message: "Can't send requests. Should join the shard first",
-				})
+				newEvent.Peer.SendResponse(
+					newEvent.Event,
+					packets.NewRequestError("Can't send requests. Should join the shard first"),
+				)
 				continue
 			}
 			s.handleEvent(newEvent)
@@ -73,7 +74,7 @@ func (s *Server) handleChans() {
 
 func New() *Server {
 	server := Server{}
-	server.world = game.NewWorld()
+	server.world = ecs.NewWorld()
 	server.gspServer = gsp.NewTcpServer()
 	server.players = make(map[string]*Player)
 	server.handlers = make(map[int16]EventHandler)
@@ -113,6 +114,6 @@ func (s *Server) Start(host string, port int) error {
 	return nil
 }
 
-func (s *Server) World() *game.World {
+func (s *Server) World() *ecs.World {
 	return s.world
 }

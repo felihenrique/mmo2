@@ -21,6 +21,8 @@ func Append(buffer []byte, data any) []byte {
 		return AppendInt16(buffer, data)
 	case int32:
 		return AppendInt32(buffer, data)
+	case uint32:
+		return AppendUint32(buffer, data)
 	case float32:
 		return AppendFloat32(buffer, data)
 	case []byte:
@@ -58,6 +60,8 @@ func Read(buffer []byte, data any) int16 {
 		return ReadInt16(buffer, data)
 	case *int32:
 		return ReadInt32(buffer, data)
+	case *uint32:
+		return ReadUint32(buffer, data)
 	case *float32:
 		return ReadFloat32(buffer, data)
 	case *[]byte:

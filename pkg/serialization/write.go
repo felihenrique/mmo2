@@ -29,6 +29,10 @@ func AppendInt32(buffer []byte, data int32) []byte {
 	return binary.BigEndian.AppendUint32(buffer, uint32(data))
 }
 
+func AppendUint32(buffer []byte, data uint32) []byte {
+	return binary.BigEndian.AppendUint32(buffer, data)
+}
+
 func AppendFloat32(buffer []byte, data float32) []byte {
 	return binary.BigEndian.AppendUint32(buffer, math.Float32bits(data))
 }

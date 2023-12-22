@@ -63,10 +63,6 @@ montros mudando fora da cidade.
 - Eventos que mudam como o mundo funciona (por exemplo invasões de monstros)
 - World bosses que aparecem de maneira recorrente
 - Players/animais que deixam seus corpos no chão ao morrerem (estilo tibia)
+TODO: ver pq o grid está com espaçamento entre os itens sem eu ter colocado
 
-
-ONDE PAREI: ver pq o grid está com espaçamento entre os itens sem eu ter colocado
-ONDE PAREI: Gerar automaticamente os metodos NewXXX e usar somente eles para
-instanciar as structs (evita problemas na mudança da estrutura de não ter passado 
-todos os parametros)
-ONDE PAREI: Não permitir que o player envie o join mais de uma vez
+ONDE PAREI: Estava desenhando os systems para renderizar o PlayerCircle

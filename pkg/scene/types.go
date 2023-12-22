@@ -1,8 +1,8 @@
 package scene
 
-import "mmo2/pkg/game"
+import "mmo2/pkg/ecs"
 
 type IScene interface {
-	Init(world *game.World)
-	Update(world *game.World, timeStep float32)
+	Init(world *ecs.World)
+	Update(world *ecs.World, timeStep float32)
 }

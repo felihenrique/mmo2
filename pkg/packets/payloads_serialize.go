@@ -2,7 +2,7 @@ package packets
 
 import (
 	"fmt"
-	"mmo2/pkg/game"
+	"mmo2/pkg/ecs"
 	"mmo2/pkg/serialization"
 )
 
@@ -163,9 +163,10 @@ func (str *RotateRequest) String() string {
 	return fmt.Sprintf("RotateRequest: { Quantity: %v,  }", str.Quantity)
 }
 
-func NewJoinShardRequest(Name string, Portal int8) *JoinShardRequest {
+func NewJoinShardRequest(Name string, Color *ecs.Color, Portal int8) *JoinShardRequest {
 	return &JoinShardRequest{
 		Name:   Name,
+		Color:  Color,
 		Portal: Portal,
 	}
 }
@@ -181,6 +182,7 @@ func (str *JoinShardRequest) ToBytes(eventId int16) []byte {
 	buffer = serialization.Append(buffer, TypeJoinShardRequest)
 	buffer = serialization.Append(buffer, eventId)
 	buffer = serialization.Append(buffer, str.Name)
+	buffer = serialization.Append(buffer, str.Color)
 	buffer = serialization.Append(buffer, str.Portal)
 
 	return buffer
@@ -190,6 +192,8 @@ func (str *JoinShardRequest) FromBytes(data []byte) int16 {
 	var n int16 = 4
 	n += serialization.Read(data[n:], &str.Name)
 
+	str.Color = &ecs.Color{}
+	n += serialization.Read(data[n:], str.Color)
 	n += serialization.Read(data[n:], &str.Portal)
 
 	return n
@@ -200,15 +204,16 @@ func (str *JoinShardRequest) Type() int16 {
 }
 
 func (str *JoinShardRequest) String() string {
-	return fmt.Sprintf("JoinShardRequest: { Name: %v, Portal: %v,  }", str.Name, str.Portal)
+	return fmt.Sprintf("JoinShardRequest: { Name: %v, Color: %v, Portal: %v,  }", str.Name, str.Color, str.Portal)
 }
 
-func NewJoinShardResponse(EntityId int16, Position *game.Position, Movable *game.Movable, Name *game.Name) *JoinShardResponse {
+func NewJoinShardResponse(EntityId int16, Position *ecs.Position, Movable *ecs.Movable, Name *ecs.Name, PlayerCircle *ecs.PlayerCircle) *JoinShardResponse {
 	return &JoinShardResponse{
-		EntityId: EntityId,
-		Position: Position,
-		Movable:  Movable,
-		Name:     Name,
+		EntityId:     EntityId,
+		Position:     Position,
+		Movable:      Movable,
+		Name:         Name,
+		PlayerCircle: PlayerCircle,
 	}
 }
 
@@ -226,6 +231,7 @@ func (str *JoinShardResponse) ToBytes(eventId int16) []byte {
 	buffer = serialization.Append(buffer, str.Position)
 	buffer = serialization.Append(buffer, str.Movable)
 	buffer = serialization.Append(buffer, str.Name)
+	buffer = serialization.Append(buffer, str.PlayerCircle)
 
 	return buffer
 }
@@ -234,12 +240,14 @@ func (str *JoinShardResponse) FromBytes(data []byte) int16 {
 	var n int16 = 4
 	n += serialization.Read(data[n:], &str.EntityId)
 
-	str.Position = &game.Position{}
+	str.Position = &ecs.Position{}
 	n += serialization.Read(data[n:], str.Position)
-	str.Movable = &game.Movable{}
+	str.Movable = &ecs.Movable{}
 	n += serialization.Read(data[n:], str.Movable)
-	str.Name = &game.Name{}
+	str.Name = &ecs.Name{}
 	n += serialization.Read(data[n:], str.Name)
+	str.PlayerCircle = &ecs.PlayerCircle{}
+	n += serialization.Read(data[n:], str.PlayerCircle)
 
 	return n
 }
@@ -249,15 +257,16 @@ func (str *JoinShardResponse) Type() int16 {
 }
 
 func (str *JoinShardResponse) String() string {
-	return fmt.Sprintf("JoinShardResponse: { EntityId: %v, Position: %v, Movable: %v, Name: %v,  }", str.EntityId, str.Position, str.Movable, str.Name)
+	return fmt.Sprintf("JoinShardResponse: { EntityId: %v, Position: %v, Movable: %v, Name: %v, PlayerCircle: %v,  }", str.EntityId, str.Position, str.Movable, str.Name, str.PlayerCircle)
 }
 
-func NewPlayerJoined(EntityId int16, Position *game.Position, Name *game.Name, Movable *game.Movable) *PlayerJoined {
+func NewPlayerJoined(EntityId int16, Position *ecs.Position, Name *ecs.Name, Movable *ecs.Movable, PlayerCircle *ecs.PlayerCircle) *PlayerJoined {
 	return &PlayerJoined{
-		EntityId: EntityId,
-		Position: Position,
-		Name:     Name,
-		Movable:  Movable,
+		EntityId:     EntityId,
+		Position:     Position,
+		Name:         Name,
+		Movable:      Movable,
+		PlayerCircle: PlayerCircle,
 	}
 }
 
@@ -275,6 +284,7 @@ func (str *PlayerJoined) ToBytes(eventId int16) []byte {
 	buffer = serialization.Append(buffer, str.Position)
 	buffer = serialization.Append(buffer, str.Name)
 	buffer = serialization.Append(buffer, str.Movable)
+	buffer = serialization.Append(buffer, str.PlayerCircle)
 
 	return buffer
 }
@@ -283,12 +293,14 @@ func (str *PlayerJoined) FromBytes(data []byte) int16 {
 	var n int16 = 4
 	n += serialization.Read(data[n:], &str.EntityId)
 
-	str.Position = &game.Position{}
+	str.Position = &ecs.Position{}
 	n += serialization.Read(data[n:], str.Position)
-	str.Name = &game.Name{}
+	str.Name = &ecs.Name{}
 	n += serialization.Read(data[n:], str.Name)
-	str.Movable = &game.Movable{}
+	str.Movable = &ecs.Movable{}
 	n += serialization.Read(data[n:], str.Movable)
+	str.PlayerCircle = &ecs.PlayerCircle{}
+	n += serialization.Read(data[n:], str.PlayerCircle)
 
 	return n
 }
@@ -298,10 +310,10 @@ func (str *PlayerJoined) Type() int16 {
 }
 
 func (str *PlayerJoined) String() string {
-	return fmt.Sprintf("PlayerJoined: { EntityId: %v, Position: %v, Name: %v, Movable: %v,  }", str.EntityId, str.Position, str.Name, str.Movable)
+	return fmt.Sprintf("PlayerJoined: { EntityId: %v, Position: %v, Name: %v, Movable: %v, PlayerCircle: %v,  }", str.EntityId, str.Position, str.Name, str.Movable, str.PlayerCircle)
 }
 
-func NewEntityMoved(EntityId int16, NewPosition *game.Position) *EntityMoved {
+func NewEntityMoved(EntityId int16, NewPosition *ecs.Position) *EntityMoved {
 	return &EntityMoved{
 		EntityId:    EntityId,
 		NewPosition: NewPosition,
@@ -328,7 +340,7 @@ func (str *EntityMoved) FromBytes(data []byte) int16 {
 	var n int16 = 4
 	n += serialization.Read(data[n:], &str.EntityId)
 
-	str.NewPosition = &game.Position{}
+	str.NewPosition = &ecs.Position{}
 	n += serialization.Read(data[n:], str.NewPosition)
 
 	return n

@@ -1,4 +1,4 @@
-package game
+package ecs
 
 import (
 	"fmt"
@@ -11,6 +11,8 @@ const (
 	TypeRotation
 	TypeMovable
 	TypeName
+	TypeColor
+	TypePlayerCircle
 )
 
 func NewPosition(X int32, Y int32) *Position {
@@ -159,4 +161,93 @@ func (str *Name) Type() int16 {
 
 func (str *Name) String() string {
 	return fmt.Sprintf("Name: { Value: %v,  }", str.Value)
+}
+
+func NewColor(R uint8, G uint8, B uint8, A uint8) *Color {
+	return &Color{
+		R: R,
+		G: G,
+		B: B,
+		A: A,
+	}
+}
+
+func ParseColor(event []byte) *Color {
+	str := Color{}
+	str.FromBytes(event)
+	return &str
+}
+
+func (str *Color) ToBytes(eventId int16) []byte {
+	buffer := make([]byte, 0)
+	buffer = serialization.Append(buffer, TypeColor)
+	buffer = serialization.Append(buffer, eventId)
+	buffer = serialization.Append(buffer, str.R)
+	buffer = serialization.Append(buffer, str.G)
+	buffer = serialization.Append(buffer, str.B)
+	buffer = serialization.Append(buffer, str.A)
+
+	return buffer
+}
+
+func (str *Color) FromBytes(data []byte) int16 {
+	var n int16 = 4
+	n += serialization.Read(data[n:], &str.R)
+
+	n += serialization.Read(data[n:], &str.G)
+
+	n += serialization.Read(data[n:], &str.B)
+
+	n += serialization.Read(data[n:], &str.A)
+
+	return n
+}
+
+func (str *Color) Type() int16 {
+	return TypeColor
+}
+
+func (str *Color) String() string {
+	return fmt.Sprintf("Color: { R: %v, G: %v, B: %v, A: %v,  }", str.R, str.G, str.B, str.A)
+}
+
+func NewPlayerCircle(Radius float32, Color *Color) *PlayerCircle {
+	return &PlayerCircle{
+		Radius: Radius,
+		Color:  Color,
+	}
+}
+
+func ParsePlayerCircle(event []byte) *PlayerCircle {
+	str := PlayerCircle{}
+	str.FromBytes(event)
+	return &str
+}
+
+func (str *PlayerCircle) ToBytes(eventId int16) []byte {
+	buffer := make([]byte, 0)
+	buffer = serialization.Append(buffer, TypePlayerCircle)
+	buffer = serialization.Append(buffer, eventId)
+	buffer = serialization.Append(buffer, str.Radius)
+	buffer = serialization.Append(buffer, str.Color)
+
+	return buffer
+}
+
+func (str *PlayerCircle) FromBytes(data []byte) int16 {
+	var n int16 = 4
+	n += serialization.Read(data[n:], &str.Radius)
+
+	str.Color = &Color{}
+	n += serialization.Read(data[n:], str.Color)
+
+	return n
+}
+
+func (str *PlayerCircle) Type() int16 {
+	return TypePlayerCircle
+}
+
+func (str *PlayerCircle) String() string {
+	return fmt.Sprintf("PlayerCircle: { Radius: %v, Color: %v,  }", str.Radius, str.Color)
 }

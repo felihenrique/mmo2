@@ -1,6 +1,6 @@
 package packets
 
-import "mmo2/pkg/game"
+import "mmo2/pkg/ecs"
 
 //go:generate ../../bin/serialize-generator
 
@@ -21,25 +21,28 @@ type RotateRequest struct {
 // REQUESTS
 type JoinShardRequest struct {
 	Name   string
+	Color  *ecs.Color
 	Portal int8
 }
 type JoinShardResponse struct {
-	EntityId int16
-	Position *game.Position
-	Movable  *game.Movable
-	Name     *game.Name
+	EntityId     int16
+	Position     *ecs.Position
+	Movable      *ecs.Movable
+	Name         *ecs.Name
+	PlayerCircle *ecs.PlayerCircle
 }
 
 // EVENTS
 type PlayerJoined struct {
-	EntityId int16
-	Position *game.Position
-	Name     *game.Name
-	Movable  *game.Movable
+	EntityId     int16
+	Position     *ecs.Position
+	Name         *ecs.Name
+	Movable      *ecs.Movable
+	PlayerCircle *ecs.PlayerCircle
 }
 type EntityMoved struct {
 	EntityId    int16
-	NewPosition *game.Position
+	NewPosition *ecs.Position
 }
 type EntityRemoved struct {
 	EntityId int16

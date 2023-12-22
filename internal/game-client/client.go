@@ -2,7 +2,7 @@ package game
 
 import (
 	"mmo2/internal/shard-client"
-	"mmo2/pkg/game"
+	"mmo2/pkg/ecs"
 	"mmo2/pkg/scene"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -16,13 +16,13 @@ type ClientOptions struct {
 
 type Client struct {
 	shardClient *shard.Client
-	world       *game.World
+	world       *ecs.World
 	options     ClientOptions
 }
 
 func NewClient(options ClientOptions) *Client {
 	client := Client{}
-	client.world = game.NewWorld()
+	client.world = ecs.NewWorld()
 	client.shardClient = shard.NewClient(client.world)
 	client.options = options
 	return &client

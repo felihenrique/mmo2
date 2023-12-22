@@ -26,6 +26,11 @@ func ReadInt16(buffer []byte, data *int16) int16 {
 	return 2
 }
 
+func ReadUint32(buffer []byte, data *uint32) int16 {
+	*data = binary.BigEndian.Uint32(buffer)
+	return 4
+}
+
 func ReadInt32(buffer []byte, data *int32) int16 {
 	*data = int32(binary.BigEndian.Uint32(buffer))
 	return 4

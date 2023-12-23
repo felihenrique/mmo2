@@ -98,7 +98,7 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 
 	for s.listening {
 		// READ
-		peer.conn.SetReadDeadline(time.Now().Add(time.Millisecond * 200))
+		peer.conn.SetReadDeadline(time.Now().Add(time.Millisecond * 100))
 		err := errors.Handle(peer.reader.FillFrom(peer.conn))
 		if err != nil && !errors.Is(err, errors.ErrTimeout) {
 			println(err.Error())
@@ -117,7 +117,7 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 			peer.reader.Pop()
 		}
 		// WRITE
-		peer.conn.SetWriteDeadline(time.Now().Add(time.Millisecond * 200))
+		peer.conn.SetWriteDeadline(time.Now().Add(time.Millisecond * 100))
 		_, err = peer.writer.Send(peer.conn)
 		err = errors.Handle(err)
 		if err != nil && !errors.Is(err, errors.ErrTimeout) {

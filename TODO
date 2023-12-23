@@ -64,5 +64,7 @@ montros mudando fora da cidade.
 - World bosses que aparecem de maneira recorrente
 - Players/animais que deixam seus corpos no chão ao morrerem (estilo tibia)
 TODO: ver pq o grid está com espaçamento entre os itens sem eu ter colocado
+TODO: Trackear quantas mensagens tem no buffer da conexão, e caso seja muito alta (definir)
+desconectar o jogador para evitar consumo exagerado de memória.
 
 ONDE PAREI: Estava desenhando os systems para renderizar o PlayerCircle

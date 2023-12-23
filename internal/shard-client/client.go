@@ -67,6 +67,7 @@ func (c *Client) handleEvent(event events.Raw) {
 		return
 	}
 	callback(response)
+	delete(c.callbacks, id)
 }
 
 func (c *Client) manageEvents() {

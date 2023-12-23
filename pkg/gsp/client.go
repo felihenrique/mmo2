@@ -47,6 +47,10 @@ func (c *TcpClient) Connect(host string, port int) error {
 	return nil
 }
 
+func (c *TcpClient) SendBytes(data []byte) {
+	c.writer.Append(data)
+}
+
 func (c *TcpClient) SendRequest(event serialization.ISerializable) int16 {
 	id := serialization.IdGen.Next()
 	eventBytes := event.ToBytes(id)

@@ -8,7 +8,6 @@ import (
 
 type IPeer interface {
 	Close() error
-	SendEvent(event serialization.ISerializable)
 	SendResponse(event events.Raw, response serialization.ISerializable)
 	SendBytes(data []byte)
 	Addr() string
@@ -32,11 +31,6 @@ func NewPeer(conn net.Conn) *TcpPeer {
 
 func (c *TcpPeer) Close() error {
 	return c.conn.Close()
-}
-
-func (c *TcpPeer) SendEvent(event serialization.ISerializable) {
-	eventBytes := event.ToBytes(serialization.IdGen.Next())
-	c.writer.Append(eventBytes)
 }
 
 func (c *TcpPeer) SendResponse(event events.Raw, response serialization.ISerializable) {

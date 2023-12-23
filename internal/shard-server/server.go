@@ -46,7 +46,7 @@ func (s *Server) handleChans() {
 		select {
 		case peer := <-peerDisChan:
 			player := s.players[peer.Addr()]
-			if player.entity != nil {
+			if player.entity != nil { // Player disconnect before join shard
 				s.world.RemoveEntity(player.entity.ID())
 			}
 			delete(s.players, peer.Addr())

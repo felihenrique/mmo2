@@ -43,7 +43,11 @@ TODO: decidir o que fazer quando o packet tem outra struct dentro
   - 
 
 MUSICA TITLE SCREEN: https://opengameart.org/content/grassy-world-overture-8bitorchestral
-
+CIDADE DESERTO: https://opengameart.org/content/fantasy-music-the-eternal-sand
+https://opengameart.org/content/desert-theme-1
+https://opengameart.org/users/projecthelmet
+https://opengameart.org/content/epic-boss-theme
+https://opengameart.org/users/hitctrl
 tipos suportados:
 bool, int8, uint8, int16, uint16, int32, uint32, int64, uint64, float32, float64
 
@@ -69,7 +73,7 @@ desconectar o jogador para evitar consumo exagerado de memória.
 TODO: Criar estrutura chamada BinaryPack que acomoda uma lista de ISerializables.
 Checar por esse tipo na função read/write.
 TODO: Implementar rate limit para o cliente. Caso passar o rate limit, desconectar o jogador
-TODO: evitar que um packet mal formado do cliente crashe o servidor
+TODO: evitar que um packet mal formado do cliente crashe o servidor (fazer o recover funcionar)
 No read do serialization verificar se a quantidade de bytes é suficiente, caso não seja,
 retornar ErrMalformed. Checar também se o tamanho do packet ultrapassa um tamanho x, caso
 ultrapasse, retornar ErrMaxSize, e descartar os x bytes do buffer.

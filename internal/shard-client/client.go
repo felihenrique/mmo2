@@ -24,10 +24,10 @@ func NewClient() *Client {
 	client.tickChan = make(chan byte)
 	client.handlers = make(map[int16]EventHandler)
 	client.callbacks = make(map[int16]ResponseHandler)
-	client.handlers[packets.TypeJoinShardResponse] = client.joinShardResponse
 	client.handlers[packets.TypePlayerJoined] = client.playerJoined
 	client.handlers[packets.TypeEntityMoved] = client.entityMoved
 	client.handlers[packets.TypeRequestError] = client.requestError
+	client.handlers[packets.TypeAckRequest] = client.ackRequest
 	return &client
 }
 
@@ -58,6 +58,9 @@ func (c *Client) handleEvent(event events.Raw) {
 	}
 	response := handler(event)
 	id := events.GetEventId(event)
+	if id == 0 { // SERVER EVENT
+		return
+	}
 	callback := c.callbacks[id]
 	if callback == nil {
 		fmt.Printf("Callback for %d not found", id)

@@ -24,12 +24,6 @@ type JoinShardRequest struct {
 	Color  *ecs.Color
 	Portal int8
 }
-type JoinShardResponse struct {
-	EntityId     int16
-	Transform    *ecs.Transform
-	Living       *ecs.Living
-	PlayerCircle *ecs.Circle
-}
 
 // EVENTS
 type PlayerJoined struct {

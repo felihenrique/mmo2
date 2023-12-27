@@ -8,17 +8,8 @@ import (
 	"mmo2/pkg/serialization"
 )
 
-func (c *Client) joinShardResponse(event events.Raw) serialization.ISerializable {
-	join := packets.ParseJoinShardResponse(event)
-	ecs.MainWorld.NewEntityFrom(
-		join.EntityId,
-		[]ecs.IComponent{
-			join.Transform,
-			join.Living,
-			join.PlayerCircle,
-		},
-	)
-	return join
+func (c *Client) ackRequest(event events.Raw) serialization.ISerializable {
+	return packets.ParseAckRequest(event)
 }
 
 func (c *Client) playerJoined(event events.Raw) serialization.ISerializable {

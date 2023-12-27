@@ -13,7 +13,6 @@ const (
 	TypeMoveRequest
 	TypeRotateRequest
 	TypeJoinShardRequest
-	TypeJoinShardResponse
 	TypePlayerJoined
 	TypeEntityMoved
 	TypeEntityRemoved
@@ -205,55 +204,6 @@ func (str *JoinShardRequest) Type() int16 {
 
 func (str *JoinShardRequest) String() string {
 	return fmt.Sprintf("JoinShardRequest: { Name: %v, Color: %v, Portal: %v,  }", str.Name, str.Color, str.Portal)
-}
-
-func NewJoinShardResponse(EntityId int16, Transform *ecs.Transform, Living *ecs.Living, PlayerCircle *ecs.Circle) *JoinShardResponse {
-	return &JoinShardResponse{
-		EntityId:     EntityId,
-		Transform:    Transform,
-		Living:       Living,
-		PlayerCircle: PlayerCircle,
-	}
-}
-
-func ParseJoinShardResponse(event []byte) *JoinShardResponse {
-	str := JoinShardResponse{}
-	str.FromBytes(event)
-	return &str
-}
-
-func (str *JoinShardResponse) ToBytes(eventId int16) []byte {
-	buffer := make([]byte, 0)
-	buffer = serialization.Append(buffer, TypeJoinShardResponse)
-	buffer = serialization.Append(buffer, eventId)
-	buffer = serialization.Append(buffer, str.EntityId)
-	buffer = serialization.Append(buffer, str.Transform)
-	buffer = serialization.Append(buffer, str.Living)
-	buffer = serialization.Append(buffer, str.PlayerCircle)
-
-	return buffer
-}
-
-func (str *JoinShardResponse) FromBytes(data []byte) int16 {
-	var n int16 = 4
-	n += serialization.Read(data[n:], &str.EntityId)
-
-	str.Transform = &ecs.Transform{}
-	n += serialization.Read(data[n:], str.Transform)
-	str.Living = &ecs.Living{}
-	n += serialization.Read(data[n:], str.Living)
-	str.PlayerCircle = &ecs.Circle{}
-	n += serialization.Read(data[n:], str.PlayerCircle)
-
-	return n
-}
-
-func (str *JoinShardResponse) Type() int16 {
-	return TypeJoinShardResponse
-}
-
-func (str *JoinShardResponse) String() string {
-	return fmt.Sprintf("JoinShardResponse: { EntityId: %v, Transform: %v, Living: %v, PlayerCircle: %v,  }", str.EntityId, str.Transform, str.Living, str.PlayerCircle)
 }
 
 func NewPlayerJoined(EntityId int16, Transform *ecs.Transform, Living *ecs.Living, PlayerCircle *ecs.Circle) *PlayerJoined {

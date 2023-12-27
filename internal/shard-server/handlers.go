@@ -43,10 +43,8 @@ func (s *Server) joinShardRequest(player *Player, event events.Raw) {
 	living := ecs.NewLiving(request.Name, 10)
 	playerCircle := ecs.NewCircle(40, request.Color)
 	entity.Add(position, living, playerCircle)
-	player.peer.SendResponse(event, packets.NewJoinShardResponse(
+	player.peer.SendResponse(event, packets.NewAckRequest())
+	s.Broadcast(packets.NewPlayerJoined(
 		entity.ID(), position, living, playerCircle,
 	))
-	s.BroadcastFiltered(packets.NewPlayerJoined(
-		entity.ID(), position, living, playerCircle,
-	), player.peer)
 }

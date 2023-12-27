@@ -1,6 +1,6 @@
 shard:
 	go run cmd/shard/main.go
-game:
+gamec:
 	go run cmd/game/main.go
 simc:
 	go run cmd/sim/client/client.go

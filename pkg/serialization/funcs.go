@@ -8,6 +8,7 @@ import (
 var IdGen ds.SequentialID
 
 func Append(buffer []byte, data any) []byte {
+
 	switch data := data.(type) {
 	case byte:
 		return append(buffer, data)

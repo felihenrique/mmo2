@@ -5,11 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run GAME",
+      "name": "GAME",
       "type": "go",
       "request": "launch",
       "mode": "auto",
       "program": "cmd/game/main.go"
+    },
+    {
+      "name": "SHARD",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "cmd/shard/main.go"
     }
   ]
 }

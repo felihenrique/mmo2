@@ -12,3 +12,5 @@ builds:
 	go build -o bin/serialize-generator cmd/generator/serialize/main.go
 gen:
 	go generate ./...
+sim-docker:
+	docker-compose up --build --remove-orphans

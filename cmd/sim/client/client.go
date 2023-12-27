@@ -1,5 +1,3 @@
-//go:build drm || noaudio
-
 package main
 
 import (
@@ -42,7 +40,7 @@ func writer(client *gsp.TcpClient) {
 		}
 		client.SendRequest(&event)
 		sent.Add(1)
-		time.Sleep(time.Millisecond * 1000)
+		time.Sleep(time.Millisecond * 100)
 	}
 }
 
@@ -70,7 +68,7 @@ func main() {
 	}
 	time.Sleep(time.Second * 10)
 	writing.Store(false)
-	time.Sleep(time.Second * 15)
+	time.Sleep(time.Second * 5)
 	println("total sent", sent.Load())
 	println("total received", readed.Load())
 }

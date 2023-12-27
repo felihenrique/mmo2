@@ -1,7 +1,5 @@
 package ecs
 
-import rl "github.com/gen2brain/raylib-go/raylib"
-
 //go:generate ../../bin/serialize-generator
 
 type Transform struct {
@@ -20,15 +18,6 @@ type Color struct {
 	G uint8
 	B uint8
 	A uint8
-}
-
-func ToEcsColor(color rl.Color) *Color {
-	return &Color{
-		R: color.R,
-		G: color.G,
-		B: color.B,
-		A: color.A,
-	}
 }
 
 type Circle struct {

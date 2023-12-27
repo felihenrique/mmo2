@@ -12,5 +12,7 @@ builds:
 	go build -o bin/serialize-generator cmd/generator/serialize/main.go
 gen:
 	go generate ./...
+build-sim:
+	go build -o bin/simc ./cmd/sim/client/client.go && go build -o bin/sims ./cmd/sim/server/server.go && chmod +x bin/sims && chmod +x bin/simc
 sim-docker:
-	docker-compose up --build --remove-orphans
+	make build-sim && docker-compose up --build --remove-orphans

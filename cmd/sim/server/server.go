@@ -1,5 +1,3 @@
-//go:build drm || noaudio
-
 package main
 
 import (

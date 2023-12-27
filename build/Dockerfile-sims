@@ -1,9 +1,3 @@
-FROM golang:1.21-alpine as builder
-WORKDIR /home/app
-COPY . .
-RUN go build ./cmd/sim/server/server.go
-
-FROM scratch
-WORKDIR /home/app
-COPY --from=builder /home/app/server /home/app/server
-CMD ["./server"]
+FROM ubuntu:22.04
+COPY ./bin/sims /
+CMD ["/sims"]

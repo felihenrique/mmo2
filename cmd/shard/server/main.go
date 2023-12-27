@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"mmo2/game/ecs"
 	"mmo2/internal/shard-server"
 	"os"
 )
@@ -17,7 +18,7 @@ func main() {
 		fmt.Fscan(os.Stdin, &command)
 		if command == "entities" {
 			print("Entities: {")
-			for _, entity := range server.World().Entites() {
+			for _, entity := range ecs.MainWorld.Entites() {
 				println(entity.String())
 			}
 			print(" } \n")

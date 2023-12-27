@@ -4,21 +4,15 @@ import rl "github.com/gen2brain/raylib-go/raylib"
 
 //go:generate ../../bin/serialize-generator
 
-type Position struct {
-	X int32
-	Y int32
+type Transform struct {
+	X        int32
+	Y        int32
+	Rotation float32
 }
 
-type Rotation struct {
-	Rot float32
-}
-
-type Movable struct {
+type Living struct {
+	Name     string
 	Velocity float32
-}
-
-type Name struct {
-	Value string
 }
 
 type Color struct {
@@ -37,7 +31,12 @@ func ToEcsColor(color rl.Color) *Color {
 	}
 }
 
-type PlayerCircle struct {
+type Circle struct {
 	Radius float32
 	Color  *Color
+}
+
+type MoveTo struct {
+	X int32
+	Y int32
 }

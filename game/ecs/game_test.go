@@ -5,7 +5,7 @@ import (
 )
 
 func TestWorld(t *testing.T) {
-	world := NewWorld()
+	world := newWorld()
 	entity := world.NewEntity()
 	if world.entities[0] == nil {
 		panic("wrong")
@@ -13,21 +13,21 @@ func TestWorld(t *testing.T) {
 	if entity.id != 0 {
 		panic("wrong")
 	}
-	entity.Add(&Position{
+	entity.Add(&Transform{
 		X: 123,
 		Y: 111,
 	})
-	if entity.components[TypePosition] == nil {
+	if entity.components[TypeTransform] == nil {
 		panic("wrong")
 	}
-	if !entity.Has(TypePosition) {
+	if !entity.Has(TypeTransform) {
 		panic("wrong")
 	}
-	entity.Remove(TypePosition)
-	if entity.components[TypePosition] != nil {
+	entity.Remove(TypeTransform)
+	if entity.components[TypeTransform] != nil {
 		panic("wrong")
 	}
-	if entity.Has(TypePosition) {
+	if entity.Has(TypeTransform) {
 		panic("wrong")
 	}
 }

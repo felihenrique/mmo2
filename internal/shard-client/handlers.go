@@ -2,6 +2,7 @@ package shard
 
 import (
 	"fmt"
+	"mmo2/game/ecs"
 	"mmo2/game/packets"
 	"mmo2/pkg/events"
 	"mmo2/pkg/serialization"
@@ -9,12 +10,12 @@ import (
 
 func (c *Client) joinShardResponse(event events.Raw) serialization.ISerializable {
 	join := packets.ParseJoinShardResponse(event)
-	c.world.NewEntityFrom(
+	ecs.MainWorld.NewEntityFrom(
 		join.EntityId,
-		[]serialization.ISerializable{
-			join.Position,
-			join.Movable,
-			join.Name,
+		[]ecs.IComponent{
+			join.Transform,
+			join.Living,
+			join.PlayerCircle,
 		},
 	)
 	return join
@@ -22,12 +23,12 @@ func (c *Client) joinShardResponse(event events.Raw) serialization.ISerializable
 
 func (c *Client) playerJoined(event events.Raw) serialization.ISerializable {
 	data := packets.ParsePlayerJoined(event)
-	c.world.NewEntityFrom(
+	ecs.MainWorld.NewEntityFrom(
 		data.EntityId,
-		[]serialization.ISerializable{
-			data.Position,
-			data.Name,
-			data.Movable,
+		[]ecs.IComponent{
+			data.Transform,
+			data.Living,
+			data.PlayerCircle,
 		},
 	)
 	return data
@@ -35,7 +36,7 @@ func (c *Client) playerJoined(event events.Raw) serialization.ISerializable {
 
 func (c *Client) entityMoved(event events.Raw) serialization.ISerializable {
 	data := packets.ParseEntityMoved(event)
-	entity := c.world.GetEntity(data.EntityId)
+	entity := ecs.MainWorld.GetEntity(data.EntityId)
 	entity.Add(data.NewPosition)
 	return data
 }

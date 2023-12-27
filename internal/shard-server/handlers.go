@@ -18,17 +18,16 @@ próximo do jogador
 */
 func (s *Server) moveRequest(player *Player, event events.Raw) {
 	move := packets.ParseMoveRequest(event)
-	tc, tok := player.entity.Get(ecs.TypePosition)
-	if !tok {
+	if player.entity.Has(ecs.TypeTransform) {
 		log.Printf("wrong: entity %d doesn't have position", player.entity.ID())
 		return
 	}
-	position := tc.(*ecs.Position)
-	position.X += move.Dx
-	position.Y += move.Dy
+	transform := ecs.Get[*ecs.Transform](player.entity, ecs.TypeTransform)
+	transform.X += move.Dx
+	transform.Y += move.Dy
 	player.peer.SendResponse(event, packets.NewAckRequest())
 	s.BroadcastFiltered(
-		packets.NewEntityMoved(player.entity.ID(), position), player.peer,
+		packets.NewEntityMoved(player.entity.ID(), transform), player.peer,
 	)
 }
 
@@ -38,17 +37,16 @@ func (s *Server) joinShardRequest(player *Player, event events.Raw) {
 		return
 	}
 	request := packets.ParseJoinShardRequest(event)
-	entity := s.world.NewEntity()
+	entity := ecs.MainWorld.NewEntity()
 	player.entity = entity
-	position := ecs.NewPosition(0, 0)
-	movable := ecs.NewMovable(10)
-	name := ecs.NewName(request.Name)
-	playerCircle := ecs.NewPlayerCircle(40, request.Color)
-	entity.Add(position, movable, name, playerCircle)
+	position := ecs.NewTransform(0, 0, 0)
+	living := ecs.NewLiving(request.Name, 10)
+	playerCircle := ecs.NewCircle(40, request.Color)
+	entity.Add(position, living, playerCircle)
 	player.peer.SendResponse(event, packets.NewJoinShardResponse(
-		entity.ID(), position, movable, name, playerCircle,
+		entity.ID(), position, living, playerCircle,
 	))
 	s.BroadcastFiltered(packets.NewPlayerJoined(
-		entity.ID(), position, name, movable, playerCircle,
+		entity.ID(), position, living, playerCircle,
 	), player.peer)
 }

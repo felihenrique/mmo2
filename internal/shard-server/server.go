@@ -13,7 +13,6 @@ import (
 type Server struct {
 	gspServer *gsp.TcpServer
 	handlers  map[int16]EventHandler
-	world     *ecs.World
 	players   map[string]*Player
 }
 
@@ -47,7 +46,7 @@ func (s *Server) handleChans() {
 		case peer := <-peerDisChan:
 			player := s.players[peer.Addr()]
 			if player.entity != nil { // Player disconnect before join shard
-				s.world.RemoveEntity(player.entity.ID())
+				ecs.MainWorld.RemoveEntity(player.entity.ID())
 			}
 			delete(s.players, peer.Addr())
 		case peer := <-peerConnChan:
@@ -56,7 +55,8 @@ func (s *Server) handleChans() {
 				peer:   peer,
 			}
 		case newEvent := <-newEventsChan:
-			if events.GetType(newEvent.Event) != packets.TypeJoinShardRequest {
+			player := s.players[newEvent.Peer.Addr()]
+			if player.entity == nil && events.GetType(newEvent.Event) != packets.TypeJoinShardRequest {
 				fmt.Printf("Peer %s cant send events. Need to join shard first \n", newEvent.Peer.Addr())
 				newEvent.Peer.SendResponse(
 					newEvent.Event,
@@ -74,7 +74,6 @@ func (s *Server) handleChans() {
 
 func New() *Server {
 	server := Server{}
-	server.world = ecs.NewWorld()
 	server.gspServer = gsp.NewTcpServer()
 	server.players = make(map[string]*Player)
 	server.handlers = make(map[int16]EventHandler)
@@ -112,8 +111,4 @@ func (s *Server) Start(host string, port int) error {
 	}
 	go s.handleChans()
 	return nil
-}
-
-func (s *Server) World() *ecs.World {
-	return s.world
 }

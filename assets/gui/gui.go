@@ -1,4 +1,4 @@
-package assets
+package assets_gui
 
 import (
 	"mmo2/game/gui"

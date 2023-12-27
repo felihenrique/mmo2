@@ -1,8 +1,9 @@
 package scene
 
-import "mmo2/game/ecs"
+import "mmo2/internal/shard-client"
 
 type IScene interface {
-	Init(world *ecs.World)
-	Update(world *ecs.World, timeStep float32)
+	Init()
+	Finalize()
+	RenderGUI(client *shard.Client)
 }

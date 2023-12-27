@@ -2,36 +2,34 @@ package ecs
 
 import (
 	"fmt"
-	"mmo2/pkg/serialization"
 )
 
 type Entity struct {
-	id         int16
-	components map[int16]serialization.ISerializable
+	id         EntityID
+	components map[ComponentID]IComponent
 }
 
 func (e *Entity) ID() int16 {
 	return e.id
 }
 
-func (e *Entity) Add(components ...serialization.ISerializable) {
+func (e *Entity) Add(components ...IComponent) {
 	for _, c := range components {
 		e.components[c.Type()] = c
 	}
 }
 
-func (e *Entity) Remove(componentId int16) {
-	delete(e.components, componentId)
+func (e *Entity) Remove(id ComponentID) {
+	delete(e.components, id)
 }
 
-func (e *Entity) Has(componentId int16) bool {
-	_, ok := e.components[componentId]
+func (e *Entity) Has(id ComponentID) bool {
+	_, ok := e.components[id]
 	return ok
 }
 
-func (e *Entity) Get(componentId int16) (serialization.ISerializable, bool) {
-	c, ok := e.components[componentId]
-	return c, ok
+func (e *Entity) Get(componentId int16) IComponent {
+	return e.components[componentId]
 }
 
 func (e *Entity) String() string {

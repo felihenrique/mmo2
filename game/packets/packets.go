@@ -26,23 +26,21 @@ type JoinShardRequest struct {
 }
 type JoinShardResponse struct {
 	EntityId     int16
-	Position     *ecs.Position
-	Movable      *ecs.Movable
-	Name         *ecs.Name
-	PlayerCircle *ecs.PlayerCircle
+	Transform    *ecs.Transform
+	Living       *ecs.Living
+	PlayerCircle *ecs.Circle
 }
 
 // EVENTS
 type PlayerJoined struct {
 	EntityId     int16
-	Position     *ecs.Position
-	Name         *ecs.Name
-	Movable      *ecs.Movable
-	PlayerCircle *ecs.PlayerCircle
+	Transform    *ecs.Transform
+	Living       *ecs.Living
+	PlayerCircle *ecs.Circle
 }
 type EntityMoved struct {
 	EntityId    int16
-	NewPosition *ecs.Position
+	NewPosition *ecs.Transform
 }
 type EntityRemoved struct {
 	EntityId int16

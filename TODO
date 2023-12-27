@@ -48,8 +48,6 @@ https://opengameart.org/content/desert-theme-1
 https://opengameart.org/users/projecthelmet
 https://opengameart.org/content/epic-boss-theme
 https://opengameart.org/users/hitctrl
-tipos suportados:
-bool, int8, uint8, int16, uint16, int32, uint32, int64, uint64, float32, float64
 
 Os primeiros minutos de um jogo são os mais importantes. É naquele momento que você irá prender a atenção do jogador e torna-lo interessado em continuar explorando o jogo, ou ele apenas irá fechar o jogo e ver o próximo. 
 Outro aspecto importante dos jogos online é a capacidade de reter jogadores por longos períodos. Para que isso seja possível, primeiramente o jogo deve ser divertido de jogar. Outra maneira é investir bastante no aspecto social do jogo, pois muitos jogadores acabam chamando seus amigos para jogar junto. 
@@ -78,4 +76,8 @@ No read do serialization verificar se a quantidade de bytes é suficiente, caso 
 retornar ErrMalformed. Checar também se o tamanho do packet ultrapassa um tamanho x, caso
 ultrapasse, retornar ErrMaxSize, e descartar os x bytes do buffer.
 
-ONDE PAREI: Estava desenhando os systems para renderizar o PlayerCircle
+https://community.hetzner.com/tutorials/game-server-ddos-protection
+Conf. de segurança
+
+ONDE PAREI: cada scene terá seu world
+ONDE PAREI: separar código da engine do código da implementação

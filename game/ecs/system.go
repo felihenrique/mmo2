@@ -1,16 +1,14 @@
 package ecs
 
-type IProcessor interface {
-	Update(entities map[int16]*Entity)
-}
+type IProcessor = func(timeStep float32, entities map[int16]*Entity)
 
 type System struct {
-	filter    int16
-	entities  map[int16]*Entity
+	filter    []ComponentID
+	entities  map[EntityID]*Entity
 	processor IProcessor
 }
 
-func NewSystem(filter int16, processor IProcessor) *System {
+func NewSystem(filter []ComponentID, processor IProcessor) *System {
 	s := System{}
 	s.filter = filter
 	s.processor = processor
@@ -19,11 +17,19 @@ func NewSystem(filter int16, processor IProcessor) *System {
 }
 
 func (s *System) AddEntity(entity *Entity) {
-	if entity.Has(s.filter) {
-		s.entities[entity.ID()] = entity
+	hasAll := true
+	for _, f := range s.filter {
+		hasAll = entity.Has(f) && hasAll
+	}
+	if hasAll {
+		s.entities[entity.id] = entity
 	}
 }
 
-func (s *System) Update() {
-	s.processor.Update(s.entities)
+func (s *System) RemoveEntity(entity *Entity) {
+	delete(s.entities, entity.id)
+}
+
+func (s *System) Update(timeStep float32) {
+	s.processor(timeStep, s.entities)
 }

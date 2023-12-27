@@ -2,7 +2,6 @@ package shard
 
 import (
 	"fmt"
-	"mmo2/game/ecs"
 	"mmo2/game/packets"
 	"mmo2/pkg/events"
 	"mmo2/pkg/gsp"
@@ -12,17 +11,15 @@ import (
 
 type Client struct {
 	gspClient   *gsp.TcpClient
-	world       *ecs.World
 	handlers    map[int16]EventHandler
 	callbacks   map[int16]ResponseHandler
 	disconnChan chan byte
 	tickChan    chan byte
 }
 
-func NewClient(world *ecs.World) *Client {
+func NewClient() *Client {
 	client := Client{}
 	client.gspClient = gsp.NewTcpClient()
-	client.world = world
 	client.disconnChan = make(chan byte)
 	client.tickChan = make(chan byte)
 	client.handlers = make(map[int16]EventHandler)

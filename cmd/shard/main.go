@@ -18,7 +18,7 @@ func main() {
 		fmt.Fscan(os.Stdin, &command)
 		if command == "entities" {
 			print("Entities: {")
-			for _, entity := range ecs.MainWorld.Entites() {
+			for _, entity := range ecs.MainWorld.Entities() {
 				println(entity.String())
 			}
 			print(" } \n")

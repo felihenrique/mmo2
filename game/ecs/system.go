@@ -16,18 +16,21 @@ func NewSystem(filter []ComponentID, processor IProcessor) *System {
 	return &s
 }
 
-func (s *System) AddEntity(entity *Entity) {
+func (s *System) CheckEntity(entity *Entity) {
+	entityEntry, hasEntity := s.entities[entity.id]
 	hasAll := true
 	for _, f := range s.filter {
 		hasAll = entity.Has(f) && hasAll
 	}
 	if hasAll {
 		s.entities[entity.id] = entity
+	} else if hasEntity {
+		delete(s.entities, entityEntry.id)
 	}
 }
 
-func (s *System) RemoveEntity(entity *Entity) {
-	delete(s.entities, entity.id)
+func (s *System) RemoveEntity(entityId int16) {
+	delete(s.entities, entityId)
 }
 
 func (s *System) Update(timeStep float32) {

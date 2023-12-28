@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"mmo2/game/ecs"
 	"mmo2/game/packets"
 	"mmo2/pkg/events"
 	"mmo2/pkg/gsp"
@@ -25,7 +26,7 @@ func reader(client *gsp.TcpClient) {
 		}
 		event := packets.MoveRequest{}
 		event.FromBytes(eventBytes)
-		if event.Dx != 5 && event.Dy != 2 {
+		if event.Move.QuantityX != 5 && event.Move.QuantityY != 2 {
 			panic("wrong data")
 		}
 		readed.Add(1)
@@ -35,8 +36,7 @@ func reader(client *gsp.TcpClient) {
 func writer(client *gsp.TcpClient) {
 	for writing.Load() {
 		event := packets.MoveRequest{
-			Dx: 5,
-			Dy: 2,
+			Move: ecs.NewMove(5, 2, 0, 0),
 		}
 		client.SendRequest(&event)
 		sent.Add(1)

@@ -28,6 +28,8 @@ func NewClient() *Client {
 	client.handlers[packets.TypeEntityMoved] = client.entityMoved
 	client.handlers[packets.TypeRequestError] = client.requestError
 	client.handlers[packets.TypeAckRequest] = client.ackRequest
+	client.handlers[packets.TypeJoinShardResponse] = client.joinShardResponse
+	client.handlers[packets.TypeEntityRemoved] = client.entityRemoved
 	return &client
 }
 
@@ -63,7 +65,6 @@ func (c *Client) handleEvent(event events.Raw) {
 	}
 	callback := c.callbacks[id]
 	if callback == nil {
-		fmt.Printf("Callback for %d not found", id)
 		return
 	}
 	callback(response)
@@ -85,6 +86,8 @@ main:
 		case <-ticker.C:
 			c.tickChan <- 1
 			<-c.tickChan
+		case event := <-SendEventsChan:
+			c.SendRequest(event, nil)
 		}
 	}
 	c.gspClient.Close()

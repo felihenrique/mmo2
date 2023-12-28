@@ -31,6 +31,7 @@ func (w *World) nextPos() int16 {
 func (w *World) NewEntity() *Entity {
 	entity := Entity{}
 	entity.components = make(map[int16]IComponent)
+	entity.world = w
 	nextPos := w.nextPos()
 	if nextPos == -1 {
 		entity.id = int16(len(w.entities))
@@ -38,23 +39,18 @@ func (w *World) NewEntity() *Entity {
 		entity.id = nextPos
 	}
 	w.entities[entity.id] = &entity
-	for _, system := range w.systems {
-		system.AddEntity(&entity)
-	}
+	w.updateSystems(&entity)
 	return &entity
 }
 
-func (w *World) NewEntityFrom(id EntityID, components []IComponent) *Entity {
+func (w *World) NewEntityFrom(id EntityID, components ...IComponent) *Entity {
 	entity := Entity{}
 	entity.id = id
 	entity.components = make(map[int16]IComponent)
-	for _, c := range components {
-		entity.Add(c)
-	}
+	entity.world = w
+	entity.Add(components...)
 	w.entities[id] = &entity
-	for _, system := range w.systems {
-		system.AddEntity(&entity)
-	}
+	w.updateSystems(&entity)
 	return &entity
 }
 
@@ -65,9 +61,12 @@ func (w *World) GetEntity(id int16) *Entity {
 func (w *World) RemoveEntity(entityId int16) {
 	delete(w.entities, entityId)
 	w.availablePos.Push(entityId)
+	for _, system := range w.systems {
+		system.RemoveEntity(entityId)
+	}
 }
 
-func (w *World) Entites() map[int16]*Entity {
+func (w *World) Entities() map[int16]*Entity {
 	return w.entities
 }
 
@@ -75,12 +74,14 @@ func (s *World) AddSystem(system *System) {
 	s.systems = append(s.systems, system)
 }
 
-func (s *World) ClearSystems() {
-	s.systems = make([]*System, 0)
-}
-
 func (s *World) Update() {
 	for _, s := range s.systems {
 		s.Update(0)
+	}
+}
+
+func (s *World) updateSystems(entity *Entity) {
+	for _, system := range s.systems {
+		system.CheckEntity(entity)
 	}
 }

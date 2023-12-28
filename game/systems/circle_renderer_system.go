@@ -14,7 +14,7 @@ var CircleRenderer = ecs.NewSystem(
 			circle := ecs.Get[*ecs.Circle](entity, ecs.TypeCircle)
 			transform := ecs.Get[*ecs.Transform](entity, ecs.TypeTransform)
 			rl.DrawEllipse(
-				transform.X, transform.Y, circle.Radius,
+				int32(transform.X), int32(transform.Y), circle.Radius,
 				circle.Radius, color.RGBA(*circle.Color),
 			)
 		}

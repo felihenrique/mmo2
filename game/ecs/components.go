@@ -3,9 +3,12 @@ package ecs
 //go:generate ../../bin/serialize-generator
 
 type Transform struct {
-	X        int32
-	Y        int32
+	X        float32
+	Y        float32
 	Rotation float32
+}
+
+type Player struct {
 }
 
 type Living struct {
@@ -25,7 +28,9 @@ type Circle struct {
 	Color  *Color
 }
 
-type MoveTo struct {
-	X int32
-	Y int32
+type Move struct {
+	QuantityX float32
+	QuantityY float32
+	FinalX    float32
+	FinalY    float32
 }

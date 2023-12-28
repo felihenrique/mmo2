@@ -7,6 +7,7 @@ import (
 type Entity struct {
 	id         EntityID
 	components map[ComponentID]IComponent
+	world      *World
 }
 
 func (e *Entity) ID() int16 {
@@ -17,10 +18,12 @@ func (e *Entity) Add(components ...IComponent) {
 	for _, c := range components {
 		e.components[c.Type()] = c
 	}
+	e.world.updateSystems(e)
 }
 
 func (e *Entity) Remove(id ComponentID) {
 	delete(e.components, id)
+	e.world.updateSystems(e)
 }
 
 func (e *Entity) Has(id ComponentID) bool {

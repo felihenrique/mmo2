@@ -1,6 +1,7 @@
 package shard
 
 import (
+	"fmt"
 	"log"
 	"mmo2/game/ecs"
 	"mmo2/game/packets"
@@ -17,17 +18,20 @@ próximo do jogador
 (a tela do jogador 4 x 4 seções)
 */
 func (s *Server) moveRequest(player *Player, event events.Raw) {
-	move := packets.ParseMoveRequest(event)
-	if player.entity.Has(ecs.TypeTransform) {
+	request := packets.ParseMoveRequest(event)
+	if !player.entity.Has(ecs.TypeTransform) {
 		log.Printf("wrong: entity %d doesn't have position", player.entity.ID())
 		return
 	}
 	transform := ecs.Get[*ecs.Transform](player.entity, ecs.TypeTransform)
-	transform.X += move.Dx
-	transform.Y += move.Dy
+	transform.X = request.Move.FinalX
+	transform.Y = request.Move.FinalY
 	player.peer.SendResponse(event, packets.NewAckRequest())
+	fmt.Printf("Move: %f, %f, Final: %f, %f \n",
+		request.Move.QuantityX, request.Move.QuantityY, request.Move.FinalX, request.Move.FinalY)
 	s.BroadcastFiltered(
-		packets.NewEntityMoved(player.entity.ID(), transform), player.peer,
+		packets.NewEntityMoved(player.entity.ID(), request.Move),
+		player.peer,
 	)
 }
 
@@ -39,12 +43,23 @@ func (s *Server) joinShardRequest(player *Player, event events.Raw) {
 	request := packets.ParseJoinShardRequest(event)
 	entity := ecs.MainWorld.NewEntity()
 	player.entity = entity
-	position := ecs.NewTransform(0, 0, 0)
+	transform := ecs.NewTransform(0, 0, 0)
 	living := ecs.NewLiving(request.Name, 10)
 	playerCircle := ecs.NewCircle(40, request.Color)
-	entity.Add(position, living, playerCircle)
-	player.peer.SendResponse(event, packets.NewAckRequest())
-	s.Broadcast(packets.NewPlayerJoined(
-		entity.ID(), position, living, playerCircle,
+	entity.Add(transform, living, playerCircle)
+	player.peer.SendResponse(event, packets.NewJoinShardResponse(
+		entity.ID(), transform, living, playerCircle,
 	))
+	for _, entity := range ecs.MainWorld.Entities() {
+		if entity.ID() == player.entity.ID() {
+			continue
+		}
+		player.peer.SendBytes(packets.NewPlayerJoined(
+			entity.ID(), ecs.Get[*ecs.Transform](entity, ecs.TypeTransform),
+			ecs.Get[*ecs.Living](entity, ecs.TypeLiving), ecs.Get[*ecs.Circle](entity, ecs.TypeCircle),
+		).ToBytes(0))
+	}
+	s.BroadcastFiltered(packets.NewPlayerJoined(
+		entity.ID(), transform, living, playerCircle,
+	), player.peer)
 }

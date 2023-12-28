@@ -3,19 +3,18 @@ package events
 import (
 	"bytes"
 	"errors"
+	"mmo2/game/ecs"
 	"mmo2/game/packets"
 	"testing"
 )
 
 func TestReader(t *testing.T) {
-	ev1 := packets.MoveRequest{
-		Dx: 111,
-		Dy: 244,
-	}
-	ev2 := packets.MoveRequest{
-		Dx: 123,
-		Dy: 656,
-	}
+	ev1 := packets.NewMoveRequest(
+		ecs.NewMove(111, 244, 0, 0),
+	)
+	ev2 := packets.NewMoveRequest(
+		ecs.NewMove(123, 656, 0, 0),
+	)
 	writer := NewWriter()
 	writer.Append(ev1.ToBytes(0))
 	writer.Append(ev2.ToBytes(0))
@@ -35,7 +34,7 @@ func TestReader(t *testing.T) {
 	}
 	readedEvent := packets.MoveRequest{}
 	readedEvent.FromBytes(readedBytes1)
-	if readedEvent.Dx != 111 || readedEvent.Dy != 244 {
+	if readedEvent.Move.QuantityX != 111 || readedEvent.Move.QuantityY != 244 {
 		panic("wrong data")
 	}
 	eventReader.Pop()
@@ -48,7 +47,7 @@ func TestReader(t *testing.T) {
 	}
 	readedEvent2 := packets.MoveRequest{}
 	readedEvent2.FromBytes(readedBytes2)
-	if readedEvent2.Dx != 123 || readedEvent2.Dy != 656 {
+	if readedEvent2.Move.QuantityX != 123 || readedEvent2.Move.QuantityY != 656 {
 		panic("wrong data")
 	}
 	eventReader.Pop()

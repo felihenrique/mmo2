@@ -11,8 +11,8 @@ const (
 	TypeAckRequest
 	TypeRequestError
 	TypeMoveRequest
-	TypeRotateRequest
 	TypeJoinShardRequest
+	TypeJoinShardResponse
 	TypePlayerJoined
 	TypeEntityMoved
 	TypeEntityRemoved
@@ -86,10 +86,9 @@ func (str *RequestError) String() string {
 	return fmt.Sprintf("RequestError: { Message: %v,  }", str.Message)
 }
 
-func NewMoveRequest(Dx int32, Dy int32) *MoveRequest {
+func NewMoveRequest(Move *ecs.Move) *MoveRequest {
 	return &MoveRequest{
-		Dx: Dx,
-		Dy: Dy,
+		Move: Move,
 	}
 }
 
@@ -103,17 +102,15 @@ func (str *MoveRequest) ToBytes(eventId int16) []byte {
 	buffer := make([]byte, 0)
 	buffer = serialization.Append(buffer, TypeMoveRequest)
 	buffer = serialization.Append(buffer, eventId)
-	buffer = serialization.Append(buffer, str.Dx)
-	buffer = serialization.Append(buffer, str.Dy)
+	buffer = serialization.Append(buffer, str.Move)
 
 	return buffer
 }
 
 func (str *MoveRequest) FromBytes(data []byte) int16 {
 	var n int16 = 4
-	n += serialization.Read(data[n:], &str.Dx)
-
-	n += serialization.Read(data[n:], &str.Dy)
+	str.Move = &ecs.Move{}
+	n += serialization.Read(data[n:], str.Move)
 
 	return n
 }
@@ -123,43 +120,7 @@ func (str *MoveRequest) Type() int16 {
 }
 
 func (str *MoveRequest) String() string {
-	return fmt.Sprintf("MoveRequest: { Dx: %v, Dy: %v,  }", str.Dx, str.Dy)
-}
-
-func NewRotateRequest(Quantity float32) *RotateRequest {
-	return &RotateRequest{
-		Quantity: Quantity,
-	}
-}
-
-func ParseRotateRequest(event []byte) *RotateRequest {
-	str := RotateRequest{}
-	str.FromBytes(event)
-	return &str
-}
-
-func (str *RotateRequest) ToBytes(eventId int16) []byte {
-	buffer := make([]byte, 0)
-	buffer = serialization.Append(buffer, TypeRotateRequest)
-	buffer = serialization.Append(buffer, eventId)
-	buffer = serialization.Append(buffer, str.Quantity)
-
-	return buffer
-}
-
-func (str *RotateRequest) FromBytes(data []byte) int16 {
-	var n int16 = 4
-	n += serialization.Read(data[n:], &str.Quantity)
-
-	return n
-}
-
-func (str *RotateRequest) Type() int16 {
-	return TypeRotateRequest
-}
-
-func (str *RotateRequest) String() string {
-	return fmt.Sprintf("RotateRequest: { Quantity: %v,  }", str.Quantity)
+	return fmt.Sprintf("MoveRequest: { Move: %v,  }", str.Move)
 }
 
 func NewJoinShardRequest(Name string, Color *ecs.Color, Portal int8) *JoinShardRequest {
@@ -204,6 +165,55 @@ func (str *JoinShardRequest) Type() int16 {
 
 func (str *JoinShardRequest) String() string {
 	return fmt.Sprintf("JoinShardRequest: { Name: %v, Color: %v, Portal: %v,  }", str.Name, str.Color, str.Portal)
+}
+
+func NewJoinShardResponse(EntityId int16, Transform *ecs.Transform, Living *ecs.Living, PlayerCircle *ecs.Circle) *JoinShardResponse {
+	return &JoinShardResponse{
+		EntityId:     EntityId,
+		Transform:    Transform,
+		Living:       Living,
+		PlayerCircle: PlayerCircle,
+	}
+}
+
+func ParseJoinShardResponse(event []byte) *JoinShardResponse {
+	str := JoinShardResponse{}
+	str.FromBytes(event)
+	return &str
+}
+
+func (str *JoinShardResponse) ToBytes(eventId int16) []byte {
+	buffer := make([]byte, 0)
+	buffer = serialization.Append(buffer, TypeJoinShardResponse)
+	buffer = serialization.Append(buffer, eventId)
+	buffer = serialization.Append(buffer, str.EntityId)
+	buffer = serialization.Append(buffer, str.Transform)
+	buffer = serialization.Append(buffer, str.Living)
+	buffer = serialization.Append(buffer, str.PlayerCircle)
+
+	return buffer
+}
+
+func (str *JoinShardResponse) FromBytes(data []byte) int16 {
+	var n int16 = 4
+	n += serialization.Read(data[n:], &str.EntityId)
+
+	str.Transform = &ecs.Transform{}
+	n += serialization.Read(data[n:], str.Transform)
+	str.Living = &ecs.Living{}
+	n += serialization.Read(data[n:], str.Living)
+	str.PlayerCircle = &ecs.Circle{}
+	n += serialization.Read(data[n:], str.PlayerCircle)
+
+	return n
+}
+
+func (str *JoinShardResponse) Type() int16 {
+	return TypeJoinShardResponse
+}
+
+func (str *JoinShardResponse) String() string {
+	return fmt.Sprintf("JoinShardResponse: { EntityId: %v, Transform: %v, Living: %v, PlayerCircle: %v,  }", str.EntityId, str.Transform, str.Living, str.PlayerCircle)
 }
 
 func NewPlayerJoined(EntityId int16, Transform *ecs.Transform, Living *ecs.Living, PlayerCircle *ecs.Circle) *PlayerJoined {
@@ -255,10 +265,10 @@ func (str *PlayerJoined) String() string {
 	return fmt.Sprintf("PlayerJoined: { EntityId: %v, Transform: %v, Living: %v, PlayerCircle: %v,  }", str.EntityId, str.Transform, str.Living, str.PlayerCircle)
 }
 
-func NewEntityMoved(EntityId int16, NewPosition *ecs.Transform) *EntityMoved {
+func NewEntityMoved(EntityId int16, Move *ecs.Move) *EntityMoved {
 	return &EntityMoved{
-		EntityId:    EntityId,
-		NewPosition: NewPosition,
+		EntityId: EntityId,
+		Move:     Move,
 	}
 }
 
@@ -273,7 +283,7 @@ func (str *EntityMoved) ToBytes(eventId int16) []byte {
 	buffer = serialization.Append(buffer, TypeEntityMoved)
 	buffer = serialization.Append(buffer, eventId)
 	buffer = serialization.Append(buffer, str.EntityId)
-	buffer = serialization.Append(buffer, str.NewPosition)
+	buffer = serialization.Append(buffer, str.Move)
 
 	return buffer
 }
@@ -282,8 +292,8 @@ func (str *EntityMoved) FromBytes(data []byte) int16 {
 	var n int16 = 4
 	n += serialization.Read(data[n:], &str.EntityId)
 
-	str.NewPosition = &ecs.Transform{}
-	n += serialization.Read(data[n:], str.NewPosition)
+	str.Move = &ecs.Move{}
+	n += serialization.Read(data[n:], str.Move)
 
 	return n
 }
@@ -293,7 +303,7 @@ func (str *EntityMoved) Type() int16 {
 }
 
 func (str *EntityMoved) String() string {
-	return fmt.Sprintf("EntityMoved: { EntityId: %v, NewPosition: %v,  }", str.EntityId, str.NewPosition)
+	return fmt.Sprintf("EntityMoved: { EntityId: %v, Move: %v,  }", str.EntityId, str.Move)
 }
 
 func NewEntityRemoved(EntityId int16) *EntityRemoved {

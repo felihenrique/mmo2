@@ -69,7 +69,7 @@ func readEvents(server *gsp.TcpServer, peers *map[string]gsp.IPeer, peersLock *s
 		}
 		event := packets.MoveRequest{}
 		event.FromBytes(rawEvent)
-		if event.Dx != 5 || event.Dy != 2 {
+		if event.Move.QuantityX != 5 || event.Move.QuantityY != 2 {
 			panic("DIVERGENT")
 		}
 		peersLock.Lock()

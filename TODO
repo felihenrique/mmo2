@@ -79,5 +79,8 @@ ultrapasse, retornar ErrMaxSize, e descartar os x bytes do buffer.
 https://community.hetzner.com/tutorials/game-server-ddos-protection
 Conf. de segurança
 
+TODO: implementar a filtragem dos systems com bitmasks
+(ex: mask >> 6 (id do typexxxx). se 1, contem o componente). Dessa maneira a checagem se torna O(n) ao invés de O(n2)
+
 ONDE PAREI: cada scene terá seu world
 ONDE PAREI: separar código da engine do código da implementação

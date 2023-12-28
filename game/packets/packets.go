@@ -11,11 +11,7 @@ type RequestError struct {
 	Message string
 }
 type MoveRequest struct {
-	Dx int32
-	Dy int32
-}
-type RotateRequest struct {
-	Quantity float32
+	Move *ecs.Move
 }
 
 // REQUESTS
@@ -23,6 +19,12 @@ type JoinShardRequest struct {
 	Name   string
 	Color  *ecs.Color
 	Portal int8
+}
+type JoinShardResponse struct {
+	EntityId     int16
+	Transform    *ecs.Transform
+	Living       *ecs.Living
+	PlayerCircle *ecs.Circle
 }
 
 // EVENTS
@@ -33,8 +35,8 @@ type PlayerJoined struct {
 	PlayerCircle *ecs.Circle
 }
 type EntityMoved struct {
-	EntityId    int16
-	NewPosition *ecs.Transform
+	EntityId int16
+	Move     *ecs.Move
 }
 type EntityRemoved struct {
 	EntityId int16

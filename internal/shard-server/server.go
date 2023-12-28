@@ -49,6 +49,7 @@ func (s *Server) handleChans() {
 				ecs.MainWorld.RemoveEntity(player.entity.ID())
 			}
 			delete(s.players, peer.Addr())
+			s.Broadcast(packets.NewEntityRemoved(player.entity.ID()))
 		case peer := <-peerConnChan:
 			s.players[peer.Addr()] = &Player{
 				entity: nil,

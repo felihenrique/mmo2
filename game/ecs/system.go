@@ -17,15 +17,12 @@ func NewSystem(filter []ComponentID, processor IProcessor) *System {
 }
 
 func (s *System) CheckEntity(entity *Entity) {
-	entityEntry, hasEntity := s.entities[entity.id]
 	hasAll := true
 	for _, f := range s.filter {
 		hasAll = entity.Has(f) && hasAll
 	}
 	if hasAll {
 		s.entities[entity.id] = entity
-	} else if hasEntity {
-		delete(s.entities, entityEntry.id)
 	}
 }
 

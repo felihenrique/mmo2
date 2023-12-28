@@ -8,8 +8,9 @@ sims:
 	go run cmd/sim/server/server.go
 test:
 	go test ./...
-builds:
-	go build -o bin/serialize-generator cmd/generator/serialize/main.go
+build-gen:
+	go build -o bin/serialize-generator cmd/generator/serialize/main.go && \
+	go build -o bin/mapper-generator cmd/generator/mapper/main.go
 gen:
 	go generate ./...
 build-sim:

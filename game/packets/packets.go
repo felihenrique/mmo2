@@ -2,7 +2,7 @@ package packets
 
 import "mmo2/game/ecs"
 
-//go:generate ../../bin/serialize-generator
+//go:generate sh ../../bin/gen-all.sh
 
 // INPUTS
 type AckRequest struct {

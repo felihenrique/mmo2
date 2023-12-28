@@ -1,6 +1,6 @@
 package ecs
 
-//go:generate ../../bin/serialize-generator
+//go:generate sh ../../bin/gen-all.sh
 
 type Transform struct {
 	X        float32

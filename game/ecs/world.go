@@ -54,6 +54,16 @@ func (w *World) NewEntityFrom(id EntityID, components ...IComponent) *Entity {
 	return &entity
 }
 
+func (w *World) NewEntityFromBytes(data []byte) *Entity {
+	entity := Entity{}
+	entity.components = make(map[int16]IComponent)
+	entity.world = w
+	entity.FromBytes(data)
+	w.entities[entity.id] = &entity
+	w.updateSystems(&entity)
+	return &entity
+}
+
 func (w *World) GetEntity(id int16) *Entity {
 	return w.entities[id]
 }

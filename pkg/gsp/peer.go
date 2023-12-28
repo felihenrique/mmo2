@@ -1,6 +1,7 @@
 package gsp
 
 import (
+	"mmo2/pkg/event_utils"
 	"mmo2/pkg/events"
 	"mmo2/pkg/serialization"
 	"net"
@@ -8,7 +9,7 @@ import (
 
 type IPeer interface {
 	Close() error
-	SendResponse(event events.Raw, response serialization.ISerializable)
+	SendResponse(event event_utils.Raw, response serialization.ISerializable)
 	SendBytes(data []byte)
 	Addr() string
 }
@@ -33,8 +34,8 @@ func (c *TcpPeer) Close() error {
 	return c.conn.Close()
 }
 
-func (c *TcpPeer) SendResponse(event events.Raw, response serialization.ISerializable) {
-	eventId := events.GetEventId(event)
+func (c *TcpPeer) SendResponse(event event_utils.Raw, response serialization.ISerializable) {
+	eventId := event_utils.GetEventId(event)
 	bytes := response.ToBytes(eventId)
 	c.SendBytes(bytes)
 }

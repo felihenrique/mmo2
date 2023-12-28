@@ -3,6 +3,7 @@ package gsp
 import (
 	"fmt"
 	"mmo2/pkg/errors"
+	"mmo2/pkg/event_utils"
 	"mmo2/pkg/events"
 	"mmo2/pkg/serialization"
 	"net"
@@ -11,7 +12,7 @@ import (
 
 type TcpClient struct {
 	conn             net.Conn
-	eventsChan       chan events.Raw
+	eventsChan       chan event_utils.Raw
 	disconnectedChan chan byte
 	writer           *events.Writer
 	reader           *events.Reader
@@ -27,7 +28,7 @@ func NewTcpClient() *TcpClient {
 	return &client
 }
 
-func (c *TcpClient) EventsChan() <-chan events.Raw {
+func (c *TcpClient) EventsChan() <-chan event_utils.Raw {
 	return c.eventsChan
 }
 
@@ -58,8 +59,8 @@ func (c *TcpClient) SendRequest(event serialization.ISerializable) int16 {
 	return id
 }
 
-func (c *TcpClient) SendResponse(event events.Raw, response serialization.ISerializable) {
-	eventId := events.GetEventId(event)
+func (c *TcpClient) SendResponse(event event_utils.Raw, response serialization.ISerializable) {
+	eventId := event_utils.GetEventId(event)
 	bytes := response.ToBytes(eventId)
 	c.writer.Append(bytes)
 }

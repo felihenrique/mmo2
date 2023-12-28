@@ -3,7 +3,7 @@ package shard
 import (
 	"fmt"
 	"mmo2/game/packets"
-	"mmo2/pkg/events"
+	"mmo2/pkg/event_utils"
 	"mmo2/pkg/gsp"
 	"mmo2/pkg/serialization"
 	"time"
@@ -51,15 +51,15 @@ func (c *Client) SendRequest(event serialization.ISerializable, callback Respons
 	c.callbacks[id] = callback
 }
 
-func (c *Client) handleEvent(event events.Raw) {
-	evType := events.GetType(event)
+func (c *Client) handleEvent(event event_utils.Raw) {
+	evType := event_utils.GetType(event)
 	handler := c.handlers[evType]
 	if handler == nil {
 		fmt.Printf("Handler for %d not found \n", evType)
 		return
 	}
 	response := handler(event)
-	id := events.GetEventId(event)
+	id := event_utils.GetEventId(event)
 	if id == 0 { // SERVER EVENT
 		return
 	}

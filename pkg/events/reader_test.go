@@ -5,6 +5,7 @@ import (
 	"errors"
 	"mmo2/game/ecs"
 	"mmo2/game/packets"
+	"mmo2/pkg/event_utils"
 	"testing"
 )
 
@@ -29,7 +30,7 @@ func TestReader(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if GetType(readedBytes1) != packets.TypeMoveRequest {
+	if event_utils.GetType(readedBytes1) != packets.TypeMoveRequest {
 		panic("wrong type")
 	}
 	readedEvent := packets.MoveRequest{}
@@ -42,7 +43,7 @@ func TestReader(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if GetType(readedBytes2) != packets.TypeMoveRequest {
+	if event_utils.GetType(readedBytes2) != packets.TypeMoveRequest {
 		panic("wrong type")
 	}
 	readedEvent2 := packets.MoveRequest{}

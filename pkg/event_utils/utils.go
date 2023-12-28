@@ -1,4 +1,4 @@
-package events
+package event_utils
 
 import (
 	"mmo2/pkg/serialization"
@@ -18,7 +18,7 @@ func GetEventId(data Raw) int16 {
 	return requestId
 }
 
-func getSize(data Raw) int16 {
+func GetSize(data Raw) int16 {
 	var size int16
 	serialization.ReadInt16(data, &size)
 	return size

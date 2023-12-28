@@ -5,7 +5,7 @@ import (
 	"log"
 	"mmo2/game/ecs"
 	"mmo2/game/packets"
-	"mmo2/pkg/events"
+	"mmo2/pkg/event_utils"
 )
 
 /*
@@ -17,8 +17,8 @@ próximo do jogador
 - Envia o evento EntityMoved para todos os jogadores em um radio de 6 seções
 (a tela do jogador 4 x 4 seções)
 */
-func (s *Server) moveRequest(player *Player, event events.Raw) {
-	request := packets.ParseMoveRequest(event)
+func (s *Server) moveRequest(player *Player, event event_utils.Raw) {
+	request, _ := packets.ParseMoveRequest(event)
 	if !player.entity.Has(ecs.TypeTransform) {
 		log.Printf("wrong: entity %d doesn't have position", player.entity.ID())
 		return
@@ -35,12 +35,12 @@ func (s *Server) moveRequest(player *Player, event events.Raw) {
 	)
 }
 
-func (s *Server) joinShardRequest(player *Player, event events.Raw) {
+func (s *Server) joinShardRequest(player *Player, event event_utils.Raw) {
 	if player.entity != nil {
 		player.peer.SendResponse(event, packets.NewRequestError("You already joined this shard"))
 		return
 	}
-	request := packets.ParseJoinShardRequest(event)
+	request, _ := packets.ParseJoinShardRequest(event)
 	entity := ecs.MainWorld.NewEntity()
 	player.entity = entity
 	transform := ecs.NewTransform(0, 0, 0)

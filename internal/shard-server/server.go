@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"mmo2/game/ecs"
 	"mmo2/game/packets"
-	"mmo2/pkg/events"
+	"mmo2/pkg/event_utils"
 	"mmo2/pkg/gsp"
 	"mmo2/pkg/serialization"
 	"time"
@@ -27,7 +27,7 @@ func (s *Server) handleEvent(pe gsp.PeerEvent) {
 		fmt.Printf("wrong: player %s not found \n", player.peer.Addr())
 		return
 	}
-	evType := events.GetType(pe.Event)
+	evType := event_utils.GetType(pe.Event)
 	handler := s.handlers[evType]
 	if handler == nil {
 		fmt.Printf("Handler for event %d not found \n", evType)
@@ -57,7 +57,7 @@ func (s *Server) handleChans() {
 			}
 		case newEvent := <-newEventsChan:
 			player := s.players[newEvent.Peer.Addr()]
-			if player.entity == nil && events.GetType(newEvent.Event) != packets.TypeJoinShardRequest {
+			if player.entity == nil && event_utils.GetType(newEvent.Event) != packets.TypeJoinShardRequest {
 				fmt.Printf("Peer %s cant send events. Need to join shard first \n", newEvent.Peer.Addr())
 				newEvent.Peer.SendResponse(
 					newEvent.Event,

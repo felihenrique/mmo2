@@ -2,6 +2,8 @@ package ecs
 
 import (
 	"fmt"
+	"mmo2/pkg/event_utils"
+	"mmo2/pkg/serialization"
 )
 
 type Entity struct {
@@ -42,4 +44,26 @@ func (e *Entity) String() string {
 		compsStr = compsStr + component.String()
 	}
 	return fmt.Sprintf(str, e.id, compsStr)
+}
+
+func (e *Entity) ToBytes() []byte {
+	buffer := make([]byte, 0)
+	buffer = serialization.Append(buffer, e.id)
+	buffer = serialization.Append(buffer, int16(len(e.components)))
+	for _, item := range e.components {
+		component := item.(serialization.ISerializable)
+		buffer = append(buffer, component.ToBytes(0)...)
+	}
+	return buffer
+}
+
+func (e *Entity) FromBytes(data []byte) {
+	n := serialization.Read(data, &e.id)
+	var numComponents int16
+	n += serialization.Read(data[n:], &numComponents)
+	for i := int16(0); i < numComponents; i++ {
+		component, readed := Mapper[event_utils.GetType(data[n:])](data[n:])
+		n += readed
+		e.Add(component)
+	}
 }

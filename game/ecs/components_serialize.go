@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	TypeNone = int16(iota)
+	TypeNone = int16(iota - 1)
 	TypeTransform
 	TypePlayer
 	TypeLiving
@@ -23,10 +23,10 @@ func NewTransform(X float32, Y float32, Rotation float32) *Transform {
 	}
 }
 
-func ParseTransform(event []byte) *Transform {
+func ParseTransform(event []byte) (*Transform, int16) {
 	str := Transform{}
-	str.FromBytes(event)
-	return &str
+	n := str.FromBytes(event)
+	return &str, n
 }
 
 func (str *Transform) ToBytes(eventId int16) []byte {
@@ -63,10 +63,10 @@ func NewPlayer() *Player {
 	return &Player{}
 }
 
-func ParsePlayer(event []byte) *Player {
+func ParsePlayer(event []byte) (*Player, int16) {
 	str := Player{}
-	str.FromBytes(event)
-	return &str
+	n := str.FromBytes(event)
+	return &str, n
 }
 
 func (str *Player) ToBytes(eventId int16) []byte {
@@ -98,10 +98,10 @@ func NewLiving(Name string, Velocity float32) *Living {
 	}
 }
 
-func ParseLiving(event []byte) *Living {
+func ParseLiving(event []byte) (*Living, int16) {
 	str := Living{}
-	str.FromBytes(event)
-	return &str
+	n := str.FromBytes(event)
+	return &str, n
 }
 
 func (str *Living) ToBytes(eventId int16) []byte {
@@ -140,10 +140,10 @@ func NewColor(R uint8, G uint8, B uint8, A uint8) *Color {
 	}
 }
 
-func ParseColor(event []byte) *Color {
+func ParseColor(event []byte) (*Color, int16) {
 	str := Color{}
-	str.FromBytes(event)
-	return &str
+	n := str.FromBytes(event)
+	return &str, n
 }
 
 func (str *Color) ToBytes(eventId int16) []byte {
@@ -186,10 +186,10 @@ func NewCircle(Radius float32, Color *Color) *Circle {
 	}
 }
 
-func ParseCircle(event []byte) *Circle {
+func ParseCircle(event []byte) (*Circle, int16) {
 	str := Circle{}
-	str.FromBytes(event)
-	return &str
+	n := str.FromBytes(event)
+	return &str, n
 }
 
 func (str *Circle) ToBytes(eventId int16) []byte {
@@ -229,10 +229,10 @@ func NewMove(QuantityX float32, QuantityY float32, FinalX float32, FinalY float3
 	}
 }
 
-func ParseMove(event []byte) *Move {
+func ParseMove(event []byte) (*Move, int16) {
 	str := Move{}
-	str.FromBytes(event)
-	return &str
+	n := str.FromBytes(event)
+	return &str, n
 }
 
 func (str *Move) ToBytes(eventId int16) []byte {

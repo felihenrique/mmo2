@@ -4,7 +4,7 @@ import (
 	"log"
 	"mmo2/game/ecs"
 	"mmo2/game/packets"
-	"mmo2/pkg/events"
+	"mmo2/pkg/event_utils"
 	"mmo2/pkg/gsp"
 	"os"
 	"runtime/pprof"
@@ -20,7 +20,7 @@ var writing atomic.Bool
 func reader(client *gsp.TcpClient) {
 	eventsChan := client.EventsChan()
 	for eventBytes := range eventsChan {
-		evId := events.GetType(eventBytes)
+		evId := event_utils.GetType(eventBytes)
 		if evId != packets.TypeMoveRequest {
 			panic("wrong type!")
 		}

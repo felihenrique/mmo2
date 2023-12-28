@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	TypeNone = int16(iota)
+	TypeNone = int16(iota - 1)
 	TypeAckRequest
 	TypeRequestError
 	TypeMoveRequest
@@ -22,10 +22,10 @@ func NewAckRequest() *AckRequest {
 	return &AckRequest{}
 }
 
-func ParseAckRequest(event []byte) *AckRequest {
+func ParseAckRequest(event []byte) (*AckRequest, int16) {
 	str := AckRequest{}
-	str.FromBytes(event)
-	return &str
+	n := str.FromBytes(event)
+	return &str, n
 }
 
 func (str *AckRequest) ToBytes(eventId int16) []byte {
@@ -56,10 +56,10 @@ func NewRequestError(Message string) *RequestError {
 	}
 }
 
-func ParseRequestError(event []byte) *RequestError {
+func ParseRequestError(event []byte) (*RequestError, int16) {
 	str := RequestError{}
-	str.FromBytes(event)
-	return &str
+	n := str.FromBytes(event)
+	return &str, n
 }
 
 func (str *RequestError) ToBytes(eventId int16) []byte {
@@ -92,10 +92,10 @@ func NewMoveRequest(Move *ecs.Move) *MoveRequest {
 	}
 }
 
-func ParseMoveRequest(event []byte) *MoveRequest {
+func ParseMoveRequest(event []byte) (*MoveRequest, int16) {
 	str := MoveRequest{}
-	str.FromBytes(event)
-	return &str
+	n := str.FromBytes(event)
+	return &str, n
 }
 
 func (str *MoveRequest) ToBytes(eventId int16) []byte {
@@ -131,10 +131,10 @@ func NewJoinShardRequest(Name string, Color *ecs.Color, Portal int8) *JoinShardR
 	}
 }
 
-func ParseJoinShardRequest(event []byte) *JoinShardRequest {
+func ParseJoinShardRequest(event []byte) (*JoinShardRequest, int16) {
 	str := JoinShardRequest{}
-	str.FromBytes(event)
-	return &str
+	n := str.FromBytes(event)
+	return &str, n
 }
 
 func (str *JoinShardRequest) ToBytes(eventId int16) []byte {
@@ -176,10 +176,10 @@ func NewJoinShardResponse(EntityId int16, Transform *ecs.Transform, Living *ecs.
 	}
 }
 
-func ParseJoinShardResponse(event []byte) *JoinShardResponse {
+func ParseJoinShardResponse(event []byte) (*JoinShardResponse, int16) {
 	str := JoinShardResponse{}
-	str.FromBytes(event)
-	return &str
+	n := str.FromBytes(event)
+	return &str, n
 }
 
 func (str *JoinShardResponse) ToBytes(eventId int16) []byte {
@@ -225,10 +225,10 @@ func NewPlayerJoined(EntityId int16, Transform *ecs.Transform, Living *ecs.Livin
 	}
 }
 
-func ParsePlayerJoined(event []byte) *PlayerJoined {
+func ParsePlayerJoined(event []byte) (*PlayerJoined, int16) {
 	str := PlayerJoined{}
-	str.FromBytes(event)
-	return &str
+	n := str.FromBytes(event)
+	return &str, n
 }
 
 func (str *PlayerJoined) ToBytes(eventId int16) []byte {
@@ -272,10 +272,10 @@ func NewEntityMoved(EntityId int16, Move *ecs.Move) *EntityMoved {
 	}
 }
 
-func ParseEntityMoved(event []byte) *EntityMoved {
+func ParseEntityMoved(event []byte) (*EntityMoved, int16) {
 	str := EntityMoved{}
-	str.FromBytes(event)
-	return &str
+	n := str.FromBytes(event)
+	return &str, n
 }
 
 func (str *EntityMoved) ToBytes(eventId int16) []byte {
@@ -312,10 +312,10 @@ func NewEntityRemoved(EntityId int16) *EntityRemoved {
 	}
 }
 
-func ParseEntityRemoved(event []byte) *EntityRemoved {
+func ParseEntityRemoved(event []byte) (*EntityRemoved, int16) {
 	str := EntityRemoved{}
-	str.FromBytes(event)
-	return &str
+	n := str.FromBytes(event)
+	return &str, n
 }
 
 func (str *EntityRemoved) ToBytes(eventId int16) []byte {

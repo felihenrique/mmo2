@@ -13,10 +13,10 @@ import (
 	"mmo2/pkg/serialization"
 )
 
-type unmarshal = func(data []byte) serialization.ISerializable
+type unmarshal = func(data []byte) (serialization.ISerializable, int16)
 
 var Mapper = []unmarshal{
-{{ range .Structs }}func(data []byte) serialization.ISerializable {
+{{ range .Structs }}func(data []byte) (serialization.ISerializable, int16) {
 		return Parse{{ .Name }}(data)
 	},
 {{ end }}

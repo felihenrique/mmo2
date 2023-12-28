@@ -3,14 +3,14 @@ package gsp
 import (
 	"fmt"
 	"mmo2/pkg/errors"
-	"mmo2/pkg/events"
+	"mmo2/pkg/event_utils"
 	"net"
 	"time"
 )
 
 type PeerEvent struct {
 	Peer  IPeer
-	Event events.Raw
+	Event event_utils.Raw
 }
 
 type IServer interface {

@@ -3,6 +3,7 @@ package events
 import (
 	"errors"
 	"io"
+	"mmo2/pkg/event_utils"
 )
 
 var ErrNotEnoughBytes = errors.New("not enough bytes in the buffer. please fill it")
@@ -32,7 +33,7 @@ func (r *Reader) Next() ([]byte, error) {
 	if r.length < 5 {
 		return nil, ErrNotEnoughBytes
 	}
-	eventLength := getSize(r.buffer)
+	eventLength := event_utils.GetSize(r.buffer)
 	if r.length < int32(eventLength) {
 		return nil, ErrNotEnoughBytes
 	}
@@ -42,7 +43,7 @@ func (r *Reader) Next() ([]byte, error) {
 }
 
 func (r *Reader) Pop() {
-	eventLength := getSize(r.buffer)
+	eventLength := event_utils.GetSize(r.buffer)
 	nextLength := r.length - int32(eventLength)
 	copy(r.buffer, r.buffer[eventLength:r.length])
 	r.length = nextLength

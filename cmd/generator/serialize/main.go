@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	TypeNone = int16(iota)
+	TypeNone = int16(iota - 1)
 	{{ range .Structs }}Type{{ .Name }}
 	{{ end }}
 )
@@ -28,10 +28,10 @@ func New{{ .Name }}({{ range .Fields }}{{ .Name }} {{ .Type }},{{ end }}) *{{ .N
 	}
 }
 
-func Parse{{ .Name }}(event []byte) *{{ .Name }} {
+func Parse{{ .Name }}(event []byte) (*{{ .Name }}, int16) {
 	str := {{ .Name }}{}
-	str.FromBytes(event)
-	return &str
+	n := str.FromBytes(event)
+	return &str, n
 }
 
 func (str *{{ .Name }}) ToBytes(eventId int16) []byte {

@@ -4,16 +4,17 @@ import (
 	"fmt"
 	"mmo2/game/ecs"
 	"mmo2/game/packets"
-	"mmo2/pkg/events"
+	"mmo2/pkg/event_utils"
 	"mmo2/pkg/serialization"
 )
 
-func (c *Client) ackRequest(event events.Raw) serialization.ISerializable {
-	return packets.ParseAckRequest(event)
+func (c *Client) ackRequest(event event_utils.Raw) serialization.ISerializable {
+	data, _ := packets.ParseAckRequest(event)
+	return data
 }
 
-func (c *Client) playerJoined(event events.Raw) serialization.ISerializable {
-	data := packets.ParsePlayerJoined(event)
+func (c *Client) playerJoined(event event_utils.Raw) serialization.ISerializable {
+	data, _ := packets.ParsePlayerJoined(event)
 	ecs.MainWorld.NewEntityFrom(
 		data.EntityId,
 		data.Transform,
@@ -23,8 +24,8 @@ func (c *Client) playerJoined(event events.Raw) serialization.ISerializable {
 	return data
 }
 
-func (c *Client) entityMoved(event events.Raw) serialization.ISerializable {
-	data := packets.ParseEntityMoved(event)
+func (c *Client) entityMoved(event event_utils.Raw) serialization.ISerializable {
+	data, _ := packets.ParseEntityMoved(event)
 	entity := ecs.MainWorld.GetEntity(data.EntityId)
 	entity.Add(
 		data.Move,
@@ -32,14 +33,14 @@ func (c *Client) entityMoved(event events.Raw) serialization.ISerializable {
 	return data
 }
 
-func (c *Client) requestError(event events.Raw) serialization.ISerializable {
-	data := packets.ParseRequestError(event)
+func (c *Client) requestError(event event_utils.Raw) serialization.ISerializable {
+	data, _ := packets.ParseRequestError(event)
 	fmt.Printf("Request error: %s \n", data.Message)
 	return data
 }
 
-func (c *Client) joinShardResponse(event events.Raw) serialization.ISerializable {
-	data := packets.ParseJoinShardResponse(event)
+func (c *Client) joinShardResponse(event event_utils.Raw) serialization.ISerializable {
+	data, _ := packets.ParseJoinShardResponse(event)
 	ecs.MainWorld.NewEntityFrom(
 		data.EntityId,
 		data.Transform,
@@ -51,9 +52,8 @@ func (c *Client) joinShardResponse(event events.Raw) serialization.ISerializable
 	return data
 }
 
-func (c *Client) entityRemoved(event events.Raw) serialization.ISerializable {
-	println("AHHHHHHHHHHHHHHHHHHHHHHHHH")
-	data := packets.ParseEntityRemoved(event)
+func (c *Client) entityRemoved(event event_utils.Raw) serialization.ISerializable {
+	data, _ := packets.ParseEntityRemoved(event)
 	ecs.MainWorld.RemoveEntity(data.EntityId)
 	return data
 }

@@ -21,18 +21,12 @@ type JoinShardRequest struct {
 	Portal int8
 }
 type JoinShardResponse struct {
-	EntityId     int16
-	Transform    *ecs.Transform
-	Living       *ecs.Living
-	PlayerCircle *ecs.Circle
+	PlayerEntity []byte
 }
 
 // EVENTS
 type PlayerJoined struct {
-	EntityId     int16
-	Transform    *ecs.Transform
-	Living       *ecs.Living
-	PlayerCircle *ecs.Circle
+	Entity []byte
 }
 type EntityMoved struct {
 	EntityId int16

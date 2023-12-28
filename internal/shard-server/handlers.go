@@ -43,23 +43,17 @@ func (s *Server) joinShardRequest(player *Player, event event_utils.Raw) {
 	request, _ := packets.ParseJoinShardRequest(event)
 	entity := ecs.MainWorld.NewEntity()
 	player.entity = entity
-	transform := ecs.NewTransform(0, 0, 0)
-	living := ecs.NewLiving(request.Name, 10)
-	playerCircle := ecs.NewCircle(40, request.Color)
-	entity.Add(transform, living, playerCircle)
-	player.peer.SendResponse(event, packets.NewJoinShardResponse(
-		entity.ID(), transform, living, playerCircle,
-	))
+	entity.Add(
+		ecs.NewTransform(0, 0, 0),
+		ecs.NewLiving(request.Name, 10),
+		ecs.NewCircle(40, request.Color),
+	)
+	player.peer.SendResponse(event, packets.NewJoinShardResponse(entity.ToBytes()))
 	for _, entity := range ecs.MainWorld.Entities() {
 		if entity.ID() == player.entity.ID() {
 			continue
 		}
-		player.peer.SendBytes(packets.NewPlayerJoined(
-			entity.ID(), ecs.Get[*ecs.Transform](entity, ecs.TypeTransform),
-			ecs.Get[*ecs.Living](entity, ecs.TypeLiving), ecs.Get[*ecs.Circle](entity, ecs.TypeCircle),
-		).ToBytes(0))
+		player.peer.SendBytes(entity.ToBytes())
 	}
-	s.BroadcastFiltered(packets.NewPlayerJoined(
-		entity.ID(), transform, living, playerCircle,
-	), player.peer)
+	s.BroadcastFiltered(packets.NewPlayerJoined(entity.ToBytes()), player.peer)
 }

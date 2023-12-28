@@ -15,21 +15,14 @@ func (c *Client) ackRequest(event event_utils.Raw) serialization.ISerializable {
 
 func (c *Client) playerJoined(event event_utils.Raw) serialization.ISerializable {
 	data, _ := packets.ParsePlayerJoined(event)
-	ecs.MainWorld.NewEntityFrom(
-		data.EntityId,
-		data.Transform,
-		data.Living,
-		data.PlayerCircle,
-	)
+	ecs.MainWorld.NewEntityFromBytes(data.Entity)
 	return data
 }
 
 func (c *Client) entityMoved(event event_utils.Raw) serialization.ISerializable {
 	data, _ := packets.ParseEntityMoved(event)
 	entity := ecs.MainWorld.GetEntity(data.EntityId)
-	entity.Add(
-		data.Move,
-	)
+	entity.Add(data.Move)
 	return data
 }
 
@@ -41,14 +34,8 @@ func (c *Client) requestError(event event_utils.Raw) serialization.ISerializable
 
 func (c *Client) joinShardResponse(event event_utils.Raw) serialization.ISerializable {
 	data, _ := packets.ParseJoinShardResponse(event)
-	ecs.MainWorld.NewEntityFrom(
-		data.EntityId,
-		data.Transform,
-		data.Living,
-		data.PlayerCircle,
-		ecs.NewPlayer(),
-	)
-
+	entity := ecs.MainWorld.NewEntityFromBytes(data.PlayerEntity)
+	entity.Add(ecs.NewPlayer())
 	return data
 }
 

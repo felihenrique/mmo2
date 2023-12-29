@@ -90,19 +90,16 @@ func (s *TcpServer) connectionLoop() {
 
 func (s *TcpServer) readEvents(peer *TcpPeer) {
 	defer func() {
-		if r := recover(); r != nil {
-			fmt.Printf("error in peer %s: %s \n", peer.Addr(), r)
-		}
+		s.disconnectedChan <- peer
 		peer.Close()
 	}()
 
-	for s.listening {
+	for s.listening && peer.connected {
 		// READ
 		peer.conn.SetReadDeadline(time.Now().Add(time.Millisecond * 1))
 		err := errors.Handle(peer.reader.FillFrom(peer.conn))
 		if err != nil && !errors.Is(err, errors.ErrTimeout) {
 			println(err.Error())
-			s.disconnectedChan <- peer
 			break
 		}
 		for {
@@ -122,7 +119,6 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 		err = errors.Handle(err)
 		if err != nil && !errors.Is(err, errors.ErrTimeout) {
 			println(err.Error())
-			s.disconnectedChan <- peer
 			break
 		}
 	}

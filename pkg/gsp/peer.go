@@ -15,10 +15,11 @@ type IPeer interface {
 }
 
 type TcpPeer struct {
-	conn   net.Conn
-	writer *events.Writer
-	reader *events.Reader
-	addr   string
+	conn      net.Conn
+	writer    *events.Writer
+	reader    *events.Reader
+	connected bool
+	addr      string
 }
 
 func NewPeer(conn net.Conn) *TcpPeer {
@@ -27,10 +28,12 @@ func NewPeer(conn net.Conn) *TcpPeer {
 	peer.writer = events.NewWriter()
 	peer.reader = events.NewReader()
 	peer.addr = conn.RemoteAddr().String()
+	peer.connected = true
 	return &peer
 }
 
 func (c *TcpPeer) Close() error {
+	c.connected = false
 	return c.conn.Close()
 }
 

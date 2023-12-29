@@ -1,11 +1,10 @@
+CONTROLE ACESSO:
 TODO: lista de espera para acessar mundo, com prioridade 
 TODO: desconectar player por inatividade
-TODO: calcular automaticamente o ping de cada jogador 
+
+SEGURANÇA:
 TODO: add a opção de adicionar um authenticator para as conexões
-TODO: implementar o sistema de permissões baseado em hierarquia. Por exemplo,
-      os jogadores tem permissões x, o community manager tem x + y, o admin x + y + z
-TODO: pesquisar sobre social aspect games. algo que trouxe muitas reclamações no hearthwood
-TODO: ver pq o grid está com espaçamento entre os itens sem eu ter colocado
+TODO: implementar o sistema de permissões baseado em hierarquia. Por exemplo, os jogadores tem permissões x, o community manager tem x + y, o admin x + y + z
 TODO: Trackear quantas mensagens tem no buffer da conexão, e caso seja muito alta (definir)
 desconectar o jogador para evitar consumo exagerado de memória.
 TODO: Implementar rate limit para o cliente. Caso passar o rate limit, desconectar o jogador
@@ -13,4 +12,13 @@ TODO: evitar que um packet mal formado do cliente crashe o servidor (fazer o rec
 No read do serialization verificar se a quantidade de bytes é suficiente, caso não seja,
 retornar ErrMalformed. Checar também se o tamanho do packet ultrapassa um tamanho x, caso
 ultrapasse, retornar ErrMaxSize, e descartar os x bytes do buffer.
+
+UTILIDADES:
+TODO: calcular automaticamente o ping de cada jogador 
+
+GERAL:
+TODO: pesquisar sobre social aspect games. algo que trouxe muitas reclamações no hearthwood
+
+BUGS:
 TODO: quando movimenta e mexe a janela ao mesmo tempo fica se movimentando sem parar
+TODO: ver pq o grid está com espaçamento entre os itens sem eu ter colocado

@@ -46,10 +46,10 @@ func (s *Server) handleChans() {
 		case peer := <-peerDisChan:
 			player := s.players[peer.Addr()]
 			if player.entity != nil { // Player disconnect before join shard
+				s.Broadcast(packets.NewEntityRemoved(player.entity.ID()))
 				ecs.MainWorld.RemoveEntity(player.entity.ID())
 			}
 			delete(s.players, peer.Addr())
-			s.Broadcast(packets.NewEntityRemoved(player.entity.ID()))
 		case peer := <-peerConnChan:
 			s.players[peer.Addr()] = &Player{
 				entity: nil,
@@ -58,7 +58,7 @@ func (s *Server) handleChans() {
 		case newEvent := <-newEventsChan:
 			if event_utils.GetType(newEvent.Event) == packets.TypePing {
 				newEvent.Peer.SendResponse(newEvent.Event, packets.NewAckRequest())
-				return
+				continue
 			}
 			player := s.players[newEvent.Peer.Addr()]
 			if player.entity == nil && event_utils.GetType(newEvent.Event) != packets.TypeJoinShardRequest {

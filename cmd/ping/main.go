@@ -10,15 +10,15 @@ import (
 
 func main() {
 	shardClient := shard.NewClient()
-	shardClient.Connect("159.203.96.193", 5555)
-	resChan := make(chan byte)
+	// shardClient.Connect("159.203.96.193", 5555)
+	shardClient.Connect("", 5555)
 	for {
+		println("sending ping request")
 		now := time.Now()
 		shardClient.SendRequest(packets.NewPing(), func(response serialization.ISerializable) {
 			ping := time.Since(now).Milliseconds()
-			fmt.Printf("Ping: %d", ping)
-			resChan <- 1
+			fmt.Printf("Ping: %d \n", ping)
 		})
-		<-resChan
+		time.Sleep(time.Second)
 	}
 }

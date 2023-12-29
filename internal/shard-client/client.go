@@ -10,11 +10,12 @@ import (
 )
 
 type Client struct {
-	gspClient   *gsp.TcpClient
-	handlers    map[int16]EventHandler
-	callbacks   map[int16]ResponseHandler
-	disconnChan chan byte
-	tickChan    chan byte
+	gspClient       *gsp.TcpClient
+	handlers        map[int16]EventHandler
+	callbacks       map[int16]ResponseHandler
+	disconnChan     chan byte
+	tickChan        chan byte
+	tickChanEnabled bool
 }
 
 func NewClient() *Client {
@@ -31,6 +32,10 @@ func NewClient() *Client {
 	client.handlers[packets.TypeJoinShardResponse] = client.joinShardResponse
 	client.handlers[packets.TypeEntityRemoved] = client.entityRemoved
 	return &client
+}
+
+func (c *Client) EnableTickChan() {
+	c.tickChanEnabled = true
 }
 
 func (c *Client) Connect(host string, port int) error {
@@ -61,6 +66,7 @@ func (c *Client) handleEvent(event event_utils.Raw) {
 	response := handler(event)
 	id := event_utils.GetEventId(event)
 	if id == 0 { // SERVER EVENT
+		println("SERVER")
 		return
 	}
 	callback := c.callbacks[id]
@@ -84,8 +90,9 @@ main:
 			c.disconnChan <- 1
 			break main
 		case <-ticker.C:
-			c.tickChan <- 1
-			<-c.tickChan
+			if c.tickChanEnabled {
+				c.tickChan <- 1
+			}
 		case event := <-SendEventsChan:
 			c.SendRequest(event, nil)
 		}

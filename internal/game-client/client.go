@@ -23,6 +23,7 @@ type Client struct {
 func NewClient(options ClientOptions) *Client {
 	client := Client{}
 	client.shardClient = shard.NewClient()
+	client.shardClient.EnableTickChan()
 	client.options = options
 	return &client
 }
@@ -49,6 +50,5 @@ func (c *Client) mainLoop() {
 		ecs.MainWorld.Update()
 		scene.RenderGUI(c.shardClient)
 		rl.EndDrawing()
-		tickChan <- 1
 	}
 }

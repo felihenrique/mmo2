@@ -1,0 +1,40 @@
+scheduler:
+- responsável por criar novas salas de jogo
+- cada sala será um container docker
+- players numa mesma party só podem entrar na mesma sala
+- para salas do tipo shard (mapas do jogo), há um limite de jogadores (inicialmente 50)
+- quando um jogador tenta entrar no shard e ele atingiu o limite de jogadores, um novo shard
+é criado e o jogador é autorizado a entrar nesse
+
+shard: 
+- Haverá um novo serviço chamado scheduler
+- Ele será responsável pela troca de players entre regiões
+- O jogador pedirá entrar na região x
+- O scheduler verificará o tamanho da party. Caso a capacidade atual 
+
+MUSICA TITLE SCREEN: https://opengameart.org/content/grassy-world-overture-8bitorchestral
+CIDADE DESERTO: https://opengameart.org/content/fantasy-music-the-eternal-sands
+https://opengameart.org/content/desert-theme-1
+https://opengameart.org/users/projecthelmet
+https://opengameart.org/content/epic-boss-theme
+https://opengameart.org/users/hitctrl
+
+Os primeiros minutos de um jogo são os mais importantes. É naquele momento que você irá prender a atenção do jogador e torna-lo interessado em continuar explorando o jogo, ou ele apenas irá fechar o jogo e ver o próximo. 
+Outro aspecto importante dos jogos online é a capacidade de reter jogadores por longos períodos. Para que isso seja possível, primeiramente o jogo deve ser divertido de jogar. Outra maneira é investir bastante no aspecto social do jogo, pois muitos jogadores acabam chamando seus amigos para jogar junto. 
+Uma boa maneira de icentivar a interação entre jogadores são dungeons que precisam ser feitas em grupo. Podem ser adicionadas dungeons que podem ser feitas diariamente que dão recompensas essenciais para o progresso no jogo.
+
+A ideia do mundo é que seja o mais vivo possível:
+- NPCs se movimentando e parecendo que estão cuidando dos próprios negócios.
+- Animais se movimentando e interagindo com o ambiente
+- Rios em movimento
+- Cachoeiras
+- Arvores / grama se mexendo com o vento
+- Sons ambiente de passaros para a floresta, grilos para a noite.
+- Ciclo dia / noite, com cidades acendendo a iluminação durante a noite e com os spawns dos
+montros mudando fora da cidade.
+- Eventos que mudam como o mundo funciona (por exemplo invasões de monstros)
+- World bosses que aparecem de maneira recorrente
+- Players/animais que deixam seus corpos no chão ao morrerem (estilo tibia)
+
+https://community.hetzner.com/tutorials/game-server-ddos-protection
+Conf. de segurança

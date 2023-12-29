@@ -50,9 +50,9 @@ func handleChans(server *gsp.TcpServer, peers *map[string]gsp.IPeer, peersLock *
 	for {
 		select {
 		case peer := <-peerConnected:
-			peersLock.Lock()
+			// peersLock.Lock()
 			(*peers)[peer.Addr()] = peer
-			peersLock.Unlock()
+			// peersLock.Unlock()
 		case peer := <-peerDisconnected:
 			delete(*peers, peer.Addr())
 		}
@@ -64,7 +64,7 @@ func readEvents(server *gsp.TcpServer, peers *map[string]gsp.IPeer, peersLock *s
 	for peerEvent := range newEvents {
 		readed.Add(1)
 		rawEvent := peerEvent.Event
-		if len(rawEvent) != 14 {
+		if len(rawEvent) != 22 {
 			panic("WRONG")
 		}
 		event := packets.MoveRequest{}
@@ -72,11 +72,11 @@ func readEvents(server *gsp.TcpServer, peers *map[string]gsp.IPeer, peersLock *s
 		if event.Dx != 5 || event.Dy != 2 {
 			panic("DIVERGENT")
 		}
-		peersLock.Lock()
+		// peersLock.Lock()
 		for _, peer := range *peers {
 			sent.Add(1)
 			peer.SendBytes(rawEvent)
 		}
-		peersLock.Unlock()
+		// peersLock.Unlock()
 	}
 }

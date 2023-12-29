@@ -86,3 +86,5 @@ ONDE PAREI:
   - O segundo cliente crasha quando o outro se movimenta
   - Quando receber a resposta do servidor sobre o movimento, corrigir o moveTo
     do cliente com os valores calculados pelo servidor
+  - Implementar queue de movimentos (com ao menos 2 comandos armazenados) para
+    melhorar a movimentação nos outros clientes

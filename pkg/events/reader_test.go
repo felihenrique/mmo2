@@ -20,7 +20,7 @@ func TestReader(t *testing.T) {
 	writer.Append(ev2.ToBytes(0))
 	buffer := bytes.Buffer{}
 	writer.Send(&buffer)
-	if buffer.Len() != 52 {
+	if buffer.Len() != 44 {
 		panic("wrong")
 	}
 	eventReader := NewReader()

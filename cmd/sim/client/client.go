@@ -39,7 +39,7 @@ func writer(client *gsp.TcpClient) {
 		}
 		client.SendRequest(&event)
 		sent.Add(1)
-		time.Sleep(time.Millisecond * 100)
+		time.Sleep(time.Nanosecond)
 	}
 }
 
@@ -56,7 +56,7 @@ func main() {
 
 	writing.Store(true)
 	var client *gsp.TcpClient
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 1; i++ {
 		client = gsp.NewTcpClient()
 		err := client.Connect("", 5555)
 		if err != nil {

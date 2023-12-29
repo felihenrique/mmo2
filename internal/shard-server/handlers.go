@@ -42,7 +42,7 @@ func (s *Server) joinShardRequest(player *Player, event event_utils.Raw) {
 	player.entity = entity
 	entity.Add(
 		ecs.NewTransform(32, 32, 0),
-		ecs.NewLiving(request.Name, 128),
+		ecs.NewLiving(request.Name, 90),
 		ecs.NewCircle(32, request.Color),
 	)
 	player.peer.SendResponse(event, packets.NewJoinShardResponse(entity.ToBytes()))

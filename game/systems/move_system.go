@@ -1,7 +1,6 @@
 package systems
 
 import (
-	"fmt"
 	"math"
 	"mmo2/game/ecs"
 	"mmo2/pkg/ds"
@@ -23,7 +22,7 @@ var MoveSystem = ecs.NewSystem(
 				stepX = distanceX
 				stepY = distanceY
 			}
-			fmt.Printf("Step: %f, %f \n", stepX, stepY)
+			// fmt.Printf("Step: %f, %f \n", stepX, stepY)
 			transform.X += stepX
 			transform.Y += stepY
 			if ds.Distance(transform.X, transform.Y, moveTo.X, moveTo.Y) == 0 {

@@ -47,7 +47,7 @@ var InputSystem = ecs.NewSystem(
 		}
 		transform := ecs.Get[*ecs.Transform](player, ecs.TypeTransform)
 		moveX, moveY := axisX*16, axisY*16
-		fmt.Printf("added move to: %f, %f \n", transform.X+moveX, transform.Y+moveY)
+		fmt.Printf("[%d] added move to: %f, %f \n", time.Now().UnixMilli(), transform.X+moveX, transform.Y+moveY)
 		passed += time.Since(lastAdded)
 		lastAdded = time.Now()
 		numPerSec += 1

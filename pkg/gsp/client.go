@@ -88,7 +88,7 @@ func (c *TcpClient) readEvents() {
 
 	for c.connected {
 		// READ
-		c.conn.SetReadDeadline(time.Now().Add(time.Millisecond * 200))
+		c.conn.SetReadDeadline(time.Now().Add(time.Millisecond * 1))
 		err := errors.Handle(c.reader.FillFrom(c.conn))
 		if err != nil && !errors.Is(err, errors.ErrTimeout) {
 			c.handleDisconn(err)
@@ -103,7 +103,7 @@ func (c *TcpClient) readEvents() {
 			c.reader.Pop()
 		}
 		// WRITE
-		c.conn.SetWriteDeadline(time.Now().Add(time.Millisecond * 200))
+		c.conn.SetWriteDeadline(time.Now().Add(time.Millisecond * 1))
 		_, err = c.writer.Send(c.conn)
 		err = errors.Handle(err)
 		if err != nil && !errors.Is(err, errors.ErrTimeout) {

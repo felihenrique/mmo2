@@ -5,6 +5,8 @@ import "mmo2/game/ecs"
 //go:generate sh ../../bin/gen-all.sh
 
 // INPUTS
+type Ping struct {
+}
 type AckRequest struct {
 }
 type RequestError struct {

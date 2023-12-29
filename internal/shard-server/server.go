@@ -56,6 +56,10 @@ func (s *Server) handleChans() {
 				peer:   peer,
 			}
 		case newEvent := <-newEventsChan:
+			if event_utils.GetType(newEvent.Event) == packets.TypePing {
+				newEvent.Peer.SendResponse(newEvent.Event, packets.NewAckRequest())
+				return
+			}
 			player := s.players[newEvent.Peer.Addr()]
 			if player.entity == nil && event_utils.GetType(newEvent.Event) != packets.TypeJoinShardRequest {
 				fmt.Printf("Peer %s cant send events. Need to join shard first \n", newEvent.Peer.Addr())

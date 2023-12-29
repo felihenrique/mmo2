@@ -8,6 +8,7 @@ import (
 
 const (
 	TypeNone = int16(iota - 1)
+	TypePing
 	TypeAckRequest
 	TypeRequestError
 	TypeMoveRequest
@@ -17,6 +18,38 @@ const (
 	TypeEntityMoved
 	TypeEntityRemoved
 )
+
+func NewPing() *Ping {
+	return &Ping{}
+}
+
+func ParsePing(event []byte) (*Ping, int16) {
+	str := Ping{}
+	n := str.FromBytes(event)
+	return &str, n
+}
+
+func (str *Ping) ToBytes(eventId int16) []byte {
+	buffer := make([]byte, 0)
+	buffer = serialization.Append(buffer, TypePing)
+	buffer = serialization.Append(buffer, eventId)
+
+	return buffer
+}
+
+func (str *Ping) FromBytes(data []byte) int16 {
+	var n int16 = 4
+
+	return n
+}
+
+func (str *Ping) Type() int16 {
+	return TypePing
+}
+
+func (str *Ping) String() string {
+	return fmt.Sprintf("Ping: {  }")
+}
 
 func NewAckRequest() *AckRequest {
 	return &AckRequest{}

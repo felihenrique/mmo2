@@ -43,7 +43,7 @@ TODO: decidir o que fazer quando o packet tem outra struct dentro
   - 
 
 MUSICA TITLE SCREEN: https://opengameart.org/content/grassy-world-overture-8bitorchestral
-CIDADE DESERTO: https://opengameart.org/content/fantasy-music-the-eternal-sand
+CIDADE DESERTO: https://opengameart.org/content/fantasy-music-the-eternal-sands
 https://opengameart.org/content/desert-theme-1
 https://opengameart.org/users/projecthelmet
 https://opengameart.org/content/epic-boss-theme
@@ -82,6 +82,3 @@ Conf. de segurança
 TODO: implementar a filtragem dos systems com bitmasks
 (ex: mask >> 6 (id do typexxxx). se 1, contem o componente). Dessa maneira a checagem se torna O(n) ao invés de O(n2)
 TODO: quando movimenta e mexe a janela ao mesmo tempo fica se movimentando sem parar
-ONDE PAREI:
-  - Entidades não estão sendo enviadas ao se conectar
-  - O segundo cliente crasha quando o outro se movimenta

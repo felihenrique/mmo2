@@ -8,6 +8,9 @@ type unmarshal = func(data []byte) (serialization.ISerializable, int16)
 
 var Mapper = []unmarshal{
 	func(data []byte) (serialization.ISerializable, int16) {
+		return ParsePing(data)
+	},
+	func(data []byte) (serialization.ISerializable, int16) {
 		return ParseAckRequest(data)
 	},
 	func(data []byte) (serialization.ISerializable, int16) {

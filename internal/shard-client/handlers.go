@@ -6,7 +6,6 @@ import (
 	"mmo2/game/packets"
 	"mmo2/pkg/event_utils"
 	"mmo2/pkg/serialization"
-	"time"
 )
 
 func (c *Client) ackRequest(event event_utils.Raw) serialization.ISerializable {
@@ -24,7 +23,6 @@ func (c *Client) entityMoved(event event_utils.Raw) serialization.ISerializable 
 	data, _ := packets.ParseEntityMoved(event)
 	entity := ecs.MainWorld.GetEntity(data.EntityId)
 	entity.Add(data.Move)
-	fmt.Printf("[%d] Received move", time.Now().UnixMilli())
 	return data
 }
 

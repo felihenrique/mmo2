@@ -46,11 +46,14 @@ func (s *Server) joinShardRequest(player *Player, event event_utils.Raw) {
 		ecs.NewCircle(32, request.Color),
 	)
 	player.peer.SendResponse(event, packets.NewJoinShardResponse(entity.ToBytes()))
-	for _, entity := range ecs.MainWorld.Entities() {
-		if entity.ID() == player.entity.ID() {
+
+	for _, newEntity := range ecs.MainWorld.Entities() {
+		if newEntity.ID() == player.entity.ID() {
 			continue
 		}
-		player.peer.SendBytes(entity.ToBytes())
+		player.peer.SendBytes(
+			packets.NewPlayerJoined(newEntity.ToBytes()).ToBytes(0),
+		)
 	}
 	s.BroadcastFiltered(packets.NewPlayerJoined(entity.ToBytes()), player.peer)
 }

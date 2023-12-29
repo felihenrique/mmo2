@@ -5,7 +5,6 @@ import (
 	"mmo2/pkg/errors"
 	"mmo2/pkg/event_utils"
 	"net"
-	"time"
 )
 
 type PeerEvent struct {
@@ -89,36 +88,33 @@ func (s *TcpServer) connectionLoop() {
 }
 
 func (s *TcpServer) readEvents(peer *TcpPeer) {
-	defer func() {
+	handleDisconnect := func(err error) bool {
+		err = errors.Handle(err)
+		if err == nil || errors.Is(err, errors.ErrTimeout) {
+			return false
+		}
+		println(err.Error())
 		s.disconnectedChan <- peer
 		peer.Close()
-	}()
+		return true
+	}
 
 	for s.listening && peer.connected {
-		// READ
-		peer.conn.SetReadDeadline(time.Now().Add(time.Millisecond * 1))
-		err := errors.Handle(peer.reader.FillFrom(peer.conn))
-		if err != nil && !errors.Is(err, errors.ErrTimeout) {
-			println(err.Error())
+		if handleDisconnect(peer.readEvents()) {
 			break
 		}
 		for {
-			rawEvent, err := peer.reader.Next()
+			event, err := peer.reader.Next()
 			if err != nil {
 				break
 			}
 			s.eventsChan <- PeerEvent{
 				Peer:  peer,
-				Event: rawEvent,
+				Event: event,
 			}
 			peer.reader.Pop()
 		}
-		// WRITE
-		peer.conn.SetWriteDeadline(time.Now().Add(time.Millisecond * 1))
-		_, err = peer.writer.Send(peer.conn)
-		err = errors.Handle(err)
-		if err != nil && !errors.Is(err, errors.ErrTimeout) {
-			println(err.Error())
+		if handleDisconnect(peer.writeEvents()) {
 			break
 		}
 	}

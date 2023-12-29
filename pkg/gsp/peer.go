@@ -5,6 +5,7 @@ import (
 	"mmo2/pkg/events"
 	"mmo2/pkg/serialization"
 	"net"
+	"time"
 )
 
 type IPeer interface {
@@ -19,6 +20,7 @@ type TcpPeer struct {
 	writer    *events.Writer
 	reader    *events.Reader
 	connected bool
+	rateLimit int
 	addr      string
 }
 
@@ -28,8 +30,24 @@ func NewPeer(conn net.Conn) *TcpPeer {
 	peer.writer = events.NewWriter()
 	peer.reader = events.NewReader()
 	peer.addr = conn.RemoteAddr().String()
+	peer.rateLimit = 15
 	peer.connected = true
 	return &peer
+}
+
+func (c *TcpPeer) readEvents() error {
+	c.conn.SetReadDeadline(time.Now().Add(time.Millisecond * 10))
+	return c.reader.FillFrom(c.conn)
+}
+
+func (c *TcpPeer) writeEvents() error {
+	c.conn.SetWriteDeadline(time.Now().Add(time.Millisecond * 10))
+	_, err := c.writer.Send(c.conn)
+	return err
+}
+
+func (c *TcpPeer) SetRateLimit(limit int) {
+	c.rateLimit = limit
 }
 
 func (c *TcpPeer) Close() error {

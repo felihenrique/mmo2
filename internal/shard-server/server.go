@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mmo2/game/ecs"
 	"mmo2/game/packets"
+	"mmo2/game/systems"
 	"mmo2/pkg/event_utils"
 	"mmo2/pkg/gsp"
 	"mmo2/pkg/serialization"
@@ -71,7 +72,7 @@ func (s *Server) handleChans() {
 			}
 			s.handleEvent(newEvent)
 		case <-ticker.C:
-			// DO TICK
+			ecs.MainWorld.Update()
 		}
 	}
 	ticker.Stop()
@@ -82,6 +83,7 @@ func New() *Server {
 	server.gspServer = gsp.NewTcpServer()
 	server.players = make(map[string]*Player)
 	server.handlers = make(map[int16]EventHandler)
+	ecs.MainWorld.AddSystem(systems.MoveSystem)
 
 	server.handlers[packets.TypeJoinShardRequest] = server.joinShardRequest
 	server.handlers[packets.TypeMoveRequest] = server.moveRequest

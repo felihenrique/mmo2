@@ -12,7 +12,7 @@ import (
 
 var basicTypes = []string{
 	"byte", "string", "bool", "int8", "uint8", "int16", "int32",
-	"float32", "[]byte", "[]bool", "[]int8", "[]int16",
+	"float32", "float64", "[]byte", "[]bool", "[]int8", "[]int16",
 	"[]int32", "[]float32",
 }
 

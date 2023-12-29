@@ -1,11 +1,7 @@
 package data
 
-import "mmo2/pkg/ds"
-
 type Portal struct {
-	Id          int
-	Position    ds.Vec2
-	Destination ds.Vec2
+	Id int
 }
 
 type Skill struct {

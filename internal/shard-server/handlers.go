@@ -1,7 +1,6 @@
 package shard
 
 import (
-	"fmt"
 	"log"
 	"mmo2/game/ecs"
 	"mmo2/game/packets"
@@ -24,13 +23,11 @@ func (s *Server) moveRequest(player *Player, event event_utils.Raw) {
 		return
 	}
 	transform := ecs.Get[*ecs.Transform](player.entity, ecs.TypeTransform)
-	transform.X = request.Move.FinalX
-	transform.Y = request.Move.FinalY
+	transform.X += request.Dx
+	transform.Y += request.Dy
 	player.peer.SendResponse(event, packets.NewAckRequest())
-	fmt.Printf("Move: %f, %f, Final: %f, %f \n",
-		request.Move.QuantityX, request.Move.QuantityY, request.Move.FinalX, request.Move.FinalY)
 	s.BroadcastFiltered(
-		packets.NewEntityMoved(player.entity.ID(), request.Move),
+		packets.NewEntityMoved(player.entity.ID(), ecs.NewMoveTo(transform.X, transform.Y)),
 		player.peer,
 	)
 }
@@ -44,9 +41,9 @@ func (s *Server) joinShardRequest(player *Player, event event_utils.Raw) {
 	entity := ecs.MainWorld.NewEntity()
 	player.entity = entity
 	entity.Add(
-		ecs.NewTransform(0, 0, 0),
-		ecs.NewLiving(request.Name, 10),
-		ecs.NewCircle(40, request.Color),
+		ecs.NewTransform(32, 32, 0),
+		ecs.NewLiving(request.Name, 128),
+		ecs.NewCircle(32, request.Color),
 	)
 	player.peer.SendResponse(event, packets.NewJoinShardResponse(entity.ToBytes()))
 	for _, entity := range ecs.MainWorld.Entities() {

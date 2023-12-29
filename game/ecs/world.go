@@ -2,6 +2,7 @@ package ecs
 
 import (
 	"mmo2/pkg/ds"
+	"time"
 )
 
 type World struct {
@@ -9,12 +10,14 @@ type World struct {
 	currentPos   EntityID
 	availablePos ds.Queue[EntityID]
 	systems      []*System
+	lastUpdate   time.Time
 }
 
 func newWorld() *World {
 	w := World{}
 	w.systems = make([]*System, 0)
 	w.entities = make(map[int16]*Entity)
+	w.lastUpdate = time.Now()
 	w.currentPos = 0
 	return &w
 }
@@ -85,8 +88,10 @@ func (s *World) AddSystem(system *System) {
 }
 
 func (s *World) Update() {
+	deltaTime := time.Since(s.lastUpdate)
+	s.lastUpdate = time.Now()
 	for _, s := range s.systems {
-		s.Update(0)
+		s.Update(deltaTime)
 	}
 }
 

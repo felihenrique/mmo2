@@ -1,6 +1,8 @@
 package ecs
 
-type IProcessor = func(timeStep float32, entities map[int16]*Entity)
+import "time"
+
+type IProcessor = func(deltaTime time.Duration, entities map[int16]*Entity)
 
 type System struct {
 	filter    []ComponentID
@@ -23,6 +25,8 @@ func (s *System) CheckEntity(entity *Entity) {
 	}
 	if hasAll {
 		s.entities[entity.id] = entity
+	} else {
+		delete(s.entities, entity.id)
 	}
 }
 
@@ -30,6 +34,6 @@ func (s *System) RemoveEntity(entityId int16) {
 	delete(s.entities, entityId)
 }
 
-func (s *System) Update(timeStep float32) {
-	s.processor(timeStep, s.entities)
+func (s *System) Update(deltaTime time.Duration) {
+	s.processor(deltaTime, s.entities)
 }

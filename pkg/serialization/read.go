@@ -41,6 +41,11 @@ func ReadFloat32(buffer []byte, data *float32) int16 {
 	return 4
 }
 
+func ReadFloat64(buffer []byte, data *float64) int16 {
+	*data = math.Float64frombits(binary.BigEndian.Uint64(buffer))
+	return 8
+}
+
 func ReadBoolSlice(buffer []byte, data *[]bool) int16 {
 	size := int16(binary.BigEndian.Uint16(buffer))
 	tempData := make([]bool, size)
@@ -56,6 +61,16 @@ func ReadInt8Slice(buffer []byte, data *[]int8) int16 {
 	tempData := make([]int8, size)
 	for i := int16(0); i < size; i++ {
 		tempData[i] = int8(buffer[i+2])
+	}
+	*data = tempData
+	return 2 + int16(len(tempData))
+}
+
+func ReadByteSlice(buffer []byte, data *[]byte) int16 {
+	size := int16(binary.BigEndian.Uint16(buffer))
+	tempData := make([]byte, size)
+	for i := int16(0); i < size; i++ {
+		tempData[i] = byte(buffer[i+2])
 	}
 	*data = tempData
 	return 2 + int16(len(tempData))

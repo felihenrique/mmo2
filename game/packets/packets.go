@@ -11,7 +11,8 @@ type RequestError struct {
 	Message string
 }
 type MoveRequest struct {
-	Move *ecs.Move
+	Dx float64
+	Dy float64
 }
 
 // REQUESTS
@@ -30,7 +31,7 @@ type PlayerJoined struct {
 }
 type EntityMoved struct {
 	EntityId int16
-	Move     *ecs.Move
+	Move     *ecs.MoveTo
 }
 type EntityRemoved struct {
 	EntityId int16

@@ -86,9 +86,10 @@ func (str *RequestError) String() string {
 	return fmt.Sprintf("RequestError: { Message: %v,  }", str.Message)
 }
 
-func NewMoveRequest(Move *ecs.Move) *MoveRequest {
+func NewMoveRequest(Dx float64, Dy float64) *MoveRequest {
 	return &MoveRequest{
-		Move: Move,
+		Dx: Dx,
+		Dy: Dy,
 	}
 }
 
@@ -102,15 +103,17 @@ func (str *MoveRequest) ToBytes(eventId int16) []byte {
 	buffer := make([]byte, 0)
 	buffer = serialization.Append(buffer, TypeMoveRequest)
 	buffer = serialization.Append(buffer, eventId)
-	buffer = serialization.Append(buffer, str.Move)
+	buffer = serialization.Append(buffer, str.Dx)
+	buffer = serialization.Append(buffer, str.Dy)
 
 	return buffer
 }
 
 func (str *MoveRequest) FromBytes(data []byte) int16 {
 	var n int16 = 4
-	str.Move = &ecs.Move{}
-	n += serialization.Read(data[n:], str.Move)
+	n += serialization.Read(data[n:], &str.Dx)
+
+	n += serialization.Read(data[n:], &str.Dy)
 
 	return n
 }
@@ -120,7 +123,7 @@ func (str *MoveRequest) Type() int16 {
 }
 
 func (str *MoveRequest) String() string {
-	return fmt.Sprintf("MoveRequest: { Move: %v,  }", str.Move)
+	return fmt.Sprintf("MoveRequest: { Dx: %v, Dy: %v,  }", str.Dx, str.Dy)
 }
 
 func NewJoinShardRequest(Name string, Color *ecs.Color, Portal int8) *JoinShardRequest {
@@ -239,7 +242,7 @@ func (str *PlayerJoined) String() string {
 	return fmt.Sprintf("PlayerJoined: { Entity: %v,  }", str.Entity)
 }
 
-func NewEntityMoved(EntityId int16, Move *ecs.Move) *EntityMoved {
+func NewEntityMoved(EntityId int16, Move *ecs.MoveTo) *EntityMoved {
 	return &EntityMoved{
 		EntityId: EntityId,
 		Move:     Move,
@@ -266,7 +269,7 @@ func (str *EntityMoved) FromBytes(data []byte) int16 {
 	var n int16 = 4
 	n += serialization.Read(data[n:], &str.EntityId)
 
-	str.Move = &ecs.Move{}
+	str.Move = &ecs.MoveTo{}
 	n += serialization.Read(data[n:], str.Move)
 
 	return n

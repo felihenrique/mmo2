@@ -1,25 +1,31 @@
 package systems
 
 import (
-	"fmt"
 	"math"
 	"mmo2/game/ecs"
+	"mmo2/pkg/ds"
+	"time"
 )
 
 var MoveSystem = ecs.NewSystem(
-	[]ecs.ComponentID{ecs.TypeMove, ecs.TypeTransform},
-	func(timeStep float32, entities map[int16]*ecs.Entity) {
+	[]ecs.ComponentID{ecs.TypeMoveTo, ecs.TypeTransform, ecs.TypeLiving},
+	func(deltaTime time.Duration, entities map[int16]*ecs.Entity) {
 		for _, entity := range entities {
-			move := ecs.Get[*ecs.Move](entity, ecs.TypeMove)
-			stepX := move.QuantityX / 15
-			stepY := move.QuantityY / 15
-			fmt.Printf("Step: %f, %f. Final: %f, %f \n", stepX, stepY, move.FinalX, move.FinalY)
+			moveTo := ecs.Get[*ecs.MoveTo](entity, ecs.TypeMoveTo)
+			living := ecs.Get[*ecs.Living](entity, ecs.TypeLiving)
 			transform := ecs.Get[*ecs.Transform](entity, ecs.TypeTransform)
+			distanceX, distanceY := moveTo.X-transform.X, moveTo.Y-transform.Y
+			normalizedX, normalizedY := ds.NormalizeVec(distanceX, distanceY)
+			stepX := living.Velocity * deltaTime.Seconds() * normalizedX
+			stepY := living.Velocity * deltaTime.Seconds() * normalizedY
+			if math.Abs(stepX) > math.Abs(distanceX) || math.Abs(stepY) > math.Abs(distanceY) {
+				stepX = distanceX
+				stepY = distanceY
+			}
 			transform.X += stepX
 			transform.Y += stepY
-
-			if math.Abs(float64(transform.X-move.FinalX)) <= 0.01 && math.Abs(float64(transform.Y-move.FinalY)) <= 0.01 {
-				entity.Remove(ecs.TypeMove)
+			if ds.Distance(transform.X, transform.Y, moveTo.X, moveTo.Y) <= 1 {
+				entity.Remove(ecs.TypeMoveTo)
 			}
 		}
 	},

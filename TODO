@@ -81,6 +81,8 @@ Conf. de segurança
 
 TODO: implementar a filtragem dos systems com bitmasks
 (ex: mask >> 6 (id do typexxxx). se 1, contem o componente). Dessa maneira a checagem se torna O(n) ao invés de O(n2)
-
-ONDE PAREI: implementar a parte de mandar uma entidade inteira
-ao inves de ficar colocando os componentes um por um no packet.
+ONDE PAREI:
+  - Entidades não estão sendo enviadas ao se conectar
+  - O segundo cliente crasha quando o outro se movimenta
+  - Quando receber a resposta do servidor sobre o movimento, corrigir o moveTo
+    do cliente com os valores calculados pelo servidor

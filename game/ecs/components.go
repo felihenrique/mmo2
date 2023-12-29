@@ -3,9 +3,9 @@ package ecs
 //go:generate sh ../../bin/gen-all.sh
 
 type Transform struct {
-	X        float32
-	Y        float32
-	Rotation float32
+	X        float64
+	Y        float64
+	Rotation float64
 }
 
 type Player struct {
@@ -13,7 +13,7 @@ type Player struct {
 
 type Living struct {
 	Name     string
-	Velocity float32
+	Velocity float64
 }
 
 type Color struct {
@@ -24,13 +24,11 @@ type Color struct {
 }
 
 type Circle struct {
-	Radius float32
+	Radius float64
 	Color  *Color
 }
 
-type Move struct {
-	QuantityX float32
-	QuantityY float32
-	FinalX    float32
-	FinalY    float32
+type MoveTo struct {
+	X float64
+	Y float64
 }

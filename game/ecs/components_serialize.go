@@ -12,10 +12,10 @@ const (
 	TypeLiving
 	TypeColor
 	TypeCircle
-	TypeMove
+	TypeMoveTo
 )
 
-func NewTransform(X float32, Y float32, Rotation float32) *Transform {
+func NewTransform(X float64, Y float64, Rotation float64) *Transform {
 	return &Transform{
 		X:        X,
 		Y:        Y,
@@ -91,7 +91,7 @@ func (str *Player) String() string {
 	return fmt.Sprintf("Player: {  }")
 }
 
-func NewLiving(Name string, Velocity float32) *Living {
+func NewLiving(Name string, Velocity float64) *Living {
 	return &Living{
 		Name:     Name,
 		Velocity: Velocity,
@@ -179,7 +179,7 @@ func (str *Color) String() string {
 	return fmt.Sprintf("Color: { R: %v, G: %v, B: %v, A: %v,  }", str.R, str.G, str.B, str.A)
 }
 
-func NewCircle(Radius float32, Color *Color) *Circle {
+func NewCircle(Radius float64, Color *Color) *Circle {
 	return &Circle{
 		Radius: Radius,
 		Color:  Color,
@@ -220,50 +220,42 @@ func (str *Circle) String() string {
 	return fmt.Sprintf("Circle: { Radius: %v, Color: %v,  }", str.Radius, str.Color)
 }
 
-func NewMove(QuantityX float32, QuantityY float32, FinalX float32, FinalY float32) *Move {
-	return &Move{
-		QuantityX: QuantityX,
-		QuantityY: QuantityY,
-		FinalX:    FinalX,
-		FinalY:    FinalY,
+func NewMoveTo(X float64, Y float64) *MoveTo {
+	return &MoveTo{
+		X: X,
+		Y: Y,
 	}
 }
 
-func ParseMove(event []byte) (*Move, int16) {
-	str := Move{}
+func ParseMoveTo(event []byte) (*MoveTo, int16) {
+	str := MoveTo{}
 	n := str.FromBytes(event)
 	return &str, n
 }
 
-func (str *Move) ToBytes(eventId int16) []byte {
+func (str *MoveTo) ToBytes(eventId int16) []byte {
 	buffer := make([]byte, 0)
-	buffer = serialization.Append(buffer, TypeMove)
+	buffer = serialization.Append(buffer, TypeMoveTo)
 	buffer = serialization.Append(buffer, eventId)
-	buffer = serialization.Append(buffer, str.QuantityX)
-	buffer = serialization.Append(buffer, str.QuantityY)
-	buffer = serialization.Append(buffer, str.FinalX)
-	buffer = serialization.Append(buffer, str.FinalY)
+	buffer = serialization.Append(buffer, str.X)
+	buffer = serialization.Append(buffer, str.Y)
 
 	return buffer
 }
 
-func (str *Move) FromBytes(data []byte) int16 {
+func (str *MoveTo) FromBytes(data []byte) int16 {
 	var n int16 = 4
-	n += serialization.Read(data[n:], &str.QuantityX)
+	n += serialization.Read(data[n:], &str.X)
 
-	n += serialization.Read(data[n:], &str.QuantityY)
-
-	n += serialization.Read(data[n:], &str.FinalX)
-
-	n += serialization.Read(data[n:], &str.FinalY)
+	n += serialization.Read(data[n:], &str.Y)
 
 	return n
 }
 
-func (str *Move) Type() int16 {
-	return TypeMove
+func (str *MoveTo) Type() int16 {
+	return TypeMoveTo
 }
 
-func (str *Move) String() string {
-	return fmt.Sprintf("Move: { QuantityX: %v, QuantityY: %v, FinalX: %v, FinalY: %v,  }", str.QuantityX, str.QuantityY, str.FinalX, str.FinalY)
+func (str *MoveTo) String() string {
+	return fmt.Sprintf("MoveTo: { X: %v, Y: %v,  }", str.X, str.Y)
 }

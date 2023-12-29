@@ -23,6 +23,6 @@ var Mapper = []unmarshal{
 		return ParseCircle(data)
 	},
 	func(data []byte) (serialization.ISerializable, int16) {
-		return ParseMove(data)
+		return ParseMoveTo(data)
 	},
 }

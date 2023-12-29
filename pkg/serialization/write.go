@@ -37,6 +37,10 @@ func AppendFloat32(buffer []byte, data float32) []byte {
 	return binary.BigEndian.AppendUint32(buffer, math.Float32bits(data))
 }
 
+func AppendFloat64(buffer []byte, data float64) []byte {
+	return binary.BigEndian.AppendUint64(buffer, math.Float64bits(data))
+}
+
 func AppendBoolSlice(buffer []byte, data []bool) []byte {
 	buffer = binary.BigEndian.AppendUint16(buffer, uint16(len(data)))
 	for _, x := range data {
@@ -55,6 +59,11 @@ func AppendInt8Slice(buffer []byte, data []int8) []byte {
 		buffer = append(buffer, byte(x))
 	}
 	return buffer
+}
+
+func AppendByteSlice(buffer []byte, data []byte) []byte {
+	buffer = binary.BigEndian.AppendUint16(buffer, uint16(len(data)))
+	return append(buffer, data...)
 }
 
 func AppendInt16Slice(buffer []byte, data []int16) []byte {

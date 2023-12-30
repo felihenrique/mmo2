@@ -23,4 +23,4 @@ BUGS:
 TODO: quando movimenta e mexe a janela ao mesmo tempo fica se movimentando sem parar
 TODO: ver pq o grid está com espaçamento entre os itens sem eu ter colocado
 
-ONDE PAREI: 
+ONDE PAREI: Adicionar o MoveTo no servidor ao inves de apenas adicionar no transform.

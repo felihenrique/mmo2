@@ -18,7 +18,7 @@ func NewSystem(filter []ComponentID, processor IProcessor) *System {
 	return &s
 }
 
-func (s *System) CheckEntity(entity *Entity) {
+func (s *System) checkEntity(entity *Entity) {
 	hasAll := true
 	for _, f := range s.filter {
 		hasAll = entity.Has(f) && hasAll
@@ -30,10 +30,10 @@ func (s *System) CheckEntity(entity *Entity) {
 	}
 }
 
-func (s *System) RemoveEntity(entityId int16) {
+func (s *System) removeEntity(entityId int16) {
 	delete(s.entities, entityId)
 }
 
-func (s *System) Update(deltaTime time.Duration) {
+func (s *System) update(deltaTime time.Duration) {
 	s.processor(deltaTime, s.entities)
 }

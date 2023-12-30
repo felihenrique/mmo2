@@ -75,7 +75,7 @@ func (w *World) RemoveEntity(entityId int16) {
 	delete(w.entities, entityId)
 	w.availablePos.Push(entityId)
 	for _, system := range w.systems {
-		system.RemoveEntity(entityId)
+		system.removeEntity(entityId)
 	}
 }
 
@@ -83,20 +83,20 @@ func (w *World) Entities() map[int16]*Entity {
 	return w.entities
 }
 
-func (s *World) AddSystem(system *System) {
-	s.systems = append(s.systems, system)
+func (w *World) AddSystem(system *System) {
+	w.systems = append(w.systems, system)
 }
 
-func (s *World) Update() {
-	deltaTime := time.Since(s.lastUpdate)
-	s.lastUpdate = time.Now()
-	for _, s := range s.systems {
-		s.Update(deltaTime)
+func (w *World) Update() {
+	deltaTime := time.Since(w.lastUpdate)
+	w.lastUpdate = time.Now()
+	for _, s := range w.systems {
+		s.update(deltaTime)
 	}
 }
 
 func (s *World) updateSystems(entity *Entity) {
 	for _, system := range s.systems {
-		system.CheckEntity(entity)
+		system.checkEntity(entity)
 	}
 }

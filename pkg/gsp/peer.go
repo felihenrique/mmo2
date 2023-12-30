@@ -1,6 +1,7 @@
 package gsp
 
 import (
+	"fmt"
 	"mmo2/pkg/event_utils"
 	"mmo2/pkg/events"
 	"mmo2/pkg/serialization"
@@ -16,12 +17,14 @@ type IPeer interface {
 }
 
 type TcpPeer struct {
-	conn      net.Conn
-	writer    *events.Writer
-	reader    *events.Reader
-	connected bool
-	rateLimit int
-	addr      string
+	conn              net.Conn
+	writer            *events.Writer
+	reader            *events.Reader
+	connected         bool
+	rateLimit         int
+	lastCheck         time.Time
+	lastSecondPackets int
+	addr              string
 }
 
 func NewPeer(conn net.Conn) *TcpPeer {
@@ -30,9 +33,24 @@ func NewPeer(conn net.Conn) *TcpPeer {
 	peer.writer = events.NewWriter()
 	peer.reader = events.NewReader()
 	peer.addr = conn.RemoteAddr().String()
-	peer.rateLimit = 15
+	peer.rateLimit = 30
+	peer.lastCheck = time.Now()
+	peer.lastSecondPackets = 0
 	peer.connected = true
 	return &peer
+}
+
+func (c *TcpPeer) updateRateLimit() {
+	c.lastSecondPackets += 1
+	if time.Since(c.lastCheck).Seconds() >= 1 {
+		fmt.Printf("Peer %s current rate: %d \n", c.addr, c.lastSecondPackets)
+		if c.lastSecondPackets >= c.rateLimit {
+			fmt.Printf("Rate limit for %s reached. Closing connection \n", c.addr)
+			c.connected = false
+		}
+		c.lastCheck = time.Now()
+		c.lastSecondPackets = 0
+	}
 }
 
 func (c *TcpPeer) readEvents() error {

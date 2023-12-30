@@ -1,7 +1,6 @@
 package systems
 
 import (
-	"fmt"
 	"mmo2/game/ecs"
 	"mmo2/game/packets"
 	"mmo2/internal/shard-client"
@@ -9,10 +8,6 @@ import (
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
-
-var lastAdded time.Time
-var passed time.Duration
-var numPerSec int
 
 var InputSystem = ecs.NewSystem(
 	[]ecs.ComponentID{ecs.TypePlayer, ecs.TypeTransform},
@@ -46,16 +41,7 @@ var InputSystem = ecs.NewSystem(
 			return
 		}
 		transform := ecs.Get[*ecs.Transform](player, ecs.TypeTransform)
-		moveX, moveY := axisX*16, axisY*16
-		fmt.Printf("[%d] added move to: %f, %f \n", time.Now().UnixMilli(), transform.X+moveX, transform.Y+moveY)
-		passed += time.Since(lastAdded)
-		lastAdded = time.Now()
-		numPerSec += 1
-		if passed.Seconds() >= 1 {
-			println("num per sec: ", numPerSec)
-			numPerSec = 0
-			passed = 0
-		}
+		moveX, moveY := axisX*4, axisY*4
 		move := ecs.NewMoveTo(transform.X+moveX, transform.Y+moveY)
 		shard.SendEventsChan <- packets.NewMoveRequest(moveX, moveY)
 		player.Add(move)

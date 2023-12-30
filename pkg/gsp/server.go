@@ -88,14 +88,17 @@ func (s *TcpServer) connectionLoop() {
 }
 
 func (s *TcpServer) readEvents(peer *TcpPeer) {
+	defer func() {
+		s.disconnectedChan <- peer
+		peer.Close()
+	}()
+
 	handleDisconnect := func(err error) bool {
 		err = errors.Handle(err)
 		if err == nil || errors.Is(err, errors.ErrTimeout) {
 			return false
 		}
 		println(err.Error())
-		s.disconnectedChan <- peer
-		peer.Close()
 		return true
 	}
 
@@ -113,6 +116,7 @@ func (s *TcpServer) readEvents(peer *TcpPeer) {
 				Event: event,
 			}
 			peer.reader.Pop()
+			peer.updateRateLimit()
 		}
 		if handleDisconnect(peer.writeEvents()) {
 			break

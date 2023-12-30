@@ -9,13 +9,6 @@ import (
 	"time"
 )
 
-type IPeer interface {
-	Close() error
-	SendResponse(event event_utils.Raw, response serialization.ISerializable)
-	SendBytes(data []byte)
-	Addr() string
-}
-
 type TcpPeer struct {
 	conn              net.Conn
 	writer            *events.Writer

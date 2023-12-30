@@ -42,7 +42,7 @@ func main() {
 	fmt.Printf("Sent: %d, Readed: %d", sent.Load(), readed.Load())
 }
 
-func handleChans(server *gsp.TcpServer, peers *map[string]gsp.IPeer, peersLock *sync.Mutex) {
+func handleChans(server gsp.IServer, peers *map[string]gsp.IPeer, peersLock *sync.Mutex) {
 	peerConnected := server.NewConnectionChan()
 	peerDisconnected := server.DisconnectedChan()
 	go readEvents(server, peers, peersLock)
@@ -59,7 +59,7 @@ func handleChans(server *gsp.TcpServer, peers *map[string]gsp.IPeer, peersLock *
 	}
 }
 
-func readEvents(server *gsp.TcpServer, peers *map[string]gsp.IPeer, peersLock *sync.Mutex) {
+func readEvents(server gsp.IServer, peers *map[string]gsp.IPeer, peersLock *sync.Mutex) {
 	newEvents := server.EventsChan()
 	for peerEvent := range newEvents {
 		readed.Add(1)

@@ -3,23 +3,8 @@ package gsp
 import (
 	"fmt"
 	"mmo2/pkg/errors"
-	"mmo2/pkg/event_utils"
 	"net"
 )
-
-type PeerEvent struct {
-	Peer  IPeer
-	Event event_utils.Raw
-}
-
-type IServer interface {
-	Listening() bool
-	NewConnectionChan() <-chan IPeer
-	DisconnectedChan() <-chan IPeer
-	EventsChan() <-chan PeerEvent
-	Listen(host string, port int) error
-	Close() error
-}
 
 type TcpServer struct {
 	listener          net.Listener

@@ -66,7 +66,6 @@ func (c *Client) handleEvent(event event_utils.Raw) {
 	response := handler(event)
 	id := event_utils.GetEventId(event)
 	if id == 0 { // SERVER EVENT
-		println("SERVER")
 		return
 	}
 	callback := c.callbacks[id]
@@ -92,6 +91,7 @@ main:
 		case <-ticker.C:
 			if c.tickChanEnabled {
 				c.tickChan <- 1
+				<-c.tickChan
 			}
 		case event := <-SendEventsChan:
 			c.SendRequest(event, nil)

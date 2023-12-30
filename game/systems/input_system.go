@@ -41,7 +41,7 @@ var InputSystem = ecs.NewSystem(
 			return
 		}
 		transform := ecs.Get[*ecs.Transform](player, ecs.TypeTransform)
-		moveX, moveY := axisX*4, axisY*4
+		moveX, moveY := axisX*16, axisY*16
 		move := ecs.NewMoveTo(transform.X+moveX, transform.Y+moveY)
 		shard.SendEventsChan <- packets.NewMoveRequest(moveX, moveY)
 		player.Add(move)

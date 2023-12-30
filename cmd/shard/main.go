@@ -9,7 +9,7 @@ import (
 
 func main() {
 	server := shard.New()
-	err := server.Start("", 5555)
+	err := server.Start("127.0.0.1", 5555)
 	if err != nil {
 		panic(err)
 	}

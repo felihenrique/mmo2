@@ -10,8 +10,8 @@ import (
 
 func main() {
 	shardClient := shard.NewClient()
-	shardClient.Connect("159.203.96.193", 5555)
-	// shardClient.Connect("", 5555)
+	// shardClient.Connect("159.203.96.193", 5555)
+	shardClient.Connect("127.0.0.1", 5555)
 	for {
 		println("sending ping request")
 		now := time.Now()

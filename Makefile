@@ -19,3 +19,7 @@ sim-docker:
 	make build-sim && docker-compose up --build --remove-orphans
 ping:
 	go run cmd/ping/main.go
+delay:
+	sudo tc qdisc add dev lo root netem delay 90ms 30ms loss 2%
+rmdelay:
+	sudo tc qdisc del dev lo root

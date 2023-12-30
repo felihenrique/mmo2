@@ -50,5 +50,6 @@ func (c *Client) mainLoop() {
 		ecs.MainWorld.Update()
 		scene.RenderGUI(c.shardClient)
 		rl.EndDrawing()
+		tickChan <- 1
 	}
 }

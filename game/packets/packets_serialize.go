@@ -14,7 +14,7 @@ const (
 	TypeMoveRequest
 	TypeJoinShardRequest
 	TypeJoinShardResponse
-	TypePlayerJoined
+	TypeEntityCreated
 	TypeEntityMoved
 	TypeEntityRemoved
 )
@@ -239,40 +239,40 @@ func (str *JoinShardResponse) String() string {
 	return fmt.Sprintf("JoinShardResponse: { PlayerEntity: %v,  }", str.PlayerEntity)
 }
 
-func NewPlayerJoined(Entity []byte) *PlayerJoined {
-	return &PlayerJoined{
+func NewEntityCreated(Entity []byte) *EntityCreated {
+	return &EntityCreated{
 		Entity: Entity,
 	}
 }
 
-func ParsePlayerJoined(event []byte) (*PlayerJoined, int16) {
-	str := PlayerJoined{}
+func ParseEntityCreated(event []byte) (*EntityCreated, int16) {
+	str := EntityCreated{}
 	n := str.FromBytes(event)
 	return &str, n
 }
 
-func (str *PlayerJoined) ToBytes(eventId int16) []byte {
+func (str *EntityCreated) ToBytes(eventId int16) []byte {
 	buffer := make([]byte, 0)
-	buffer = serialization.Append(buffer, TypePlayerJoined)
+	buffer = serialization.Append(buffer, TypeEntityCreated)
 	buffer = serialization.Append(buffer, eventId)
 	buffer = serialization.Append(buffer, str.Entity)
 
 	return buffer
 }
 
-func (str *PlayerJoined) FromBytes(data []byte) int16 {
+func (str *EntityCreated) FromBytes(data []byte) int16 {
 	var n int16 = 4
 	n += serialization.Read(data[n:], &str.Entity)
 
 	return n
 }
 
-func (str *PlayerJoined) Type() int16 {
-	return TypePlayerJoined
+func (str *EntityCreated) Type() int16 {
+	return TypeEntityCreated
 }
 
-func (str *PlayerJoined) String() string {
-	return fmt.Sprintf("PlayerJoined: { Entity: %v,  }", str.Entity)
+func (str *EntityCreated) String() string {
+	return fmt.Sprintf("EntityCreated: { Entity: %v,  }", str.Entity)
 }
 
 func NewEntityMoved(EntityId int16, Move *ecs.MoveTo) *EntityMoved {

@@ -10,26 +10,25 @@ import (
 /*
 TODO:
 - Checa se a posição de destino da entidade contem: outra entidade, colisor do mapa
-- Caso não tenha adiciona dx, dy à posição do jogador
-- Caso tenha se movido, lê o spatial map para detectar as outras entidades do tipo player
-próximo do jogador
-- Envia o evento EntityMoved para todos os jogadores em um radio de 6 seções
-(a tela do jogador 4 x 4 seções)
 */
 func (s *Server) moveRequest(player *Player, event event_utils.Raw) {
 	request, _ := packets.ParseMoveRequest(event)
 	if !player.entity.Has(ecs.TypeTransform) {
-		log.Printf("wrong: entity %d doesn't have position", player.entity.ID())
+		log.Printf("wrong: entity %d doesn't have transform", player.entity.ID())
 		return
 	}
 	transform := ecs.Get[*ecs.Transform](player.entity, ecs.TypeTransform)
-	transform.X += request.Dx
-	transform.Y += request.Dy
+	var moveTo *ecs.MoveTo
+	if player.entity.Has(ecs.TypeMoveTo) {
+		moveTo = ecs.Get[*ecs.MoveTo](player.entity, ecs.TypeMoveTo)
+	} else {
+		moveTo = ecs.NewMoveTo(transform.X, transform.Y)
+	}
+	moveTo.X += request.Dx
+	moveTo.Y += request.Dy
+	player.entity.Add(moveTo)
 	player.peer.SendResponse(event, packets.NewAckRequest())
-	s.BroadcastFiltered(
-		packets.NewEntityMoved(player.entity.ID(), ecs.NewMoveTo(transform.X, transform.Y)),
-		player.peer,
-	)
+	s.BroadcastFiltered(packets.NewEntityMoved(player.entity.ID(), moveTo), player.peer)
 }
 
 func (s *Server) joinShardRequest(player *Player, event event_utils.Raw) {
@@ -38,22 +37,22 @@ func (s *Server) joinShardRequest(player *Player, event event_utils.Raw) {
 		return
 	}
 	request, _ := packets.ParseJoinShardRequest(event)
-	entity := ecs.MainWorld.NewEntity()
-	player.entity = entity
-	entity.Add(
+	playerEntity := ecs.MainWorld.NewEntity()
+	player.entity = playerEntity
+	playerEntity.Add(
 		ecs.NewTransform(32, 32, 0),
 		ecs.NewLiving(request.Name, 90),
 		ecs.NewCircle(32, request.Color),
 	)
-	player.peer.SendResponse(event, packets.NewJoinShardResponse(entity.ToBytes()))
+	player.peer.SendResponse(event, packets.NewJoinShardResponse(playerEntity.ToBytes()))
 
-	for _, newEntity := range ecs.MainWorld.Entities() {
-		if newEntity.ID() == player.entity.ID() {
+	for _, entity := range ecs.MainWorld.Entities() {
+		if entity.ID() == player.entity.ID() {
 			continue
 		}
 		player.peer.SendBytes(
-			packets.NewPlayerJoined(newEntity.ToBytes()).ToBytes(0),
+			packets.NewEntityCreated(entity.ToBytes()).ToBytes(0),
 		)
 	}
-	s.BroadcastFiltered(packets.NewPlayerJoined(entity.ToBytes()), player.peer)
+	s.BroadcastFiltered(packets.NewEntityCreated(playerEntity.ToBytes()), player.peer)
 }

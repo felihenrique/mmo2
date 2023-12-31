@@ -13,8 +13,8 @@ func (c *Client) ackRequest(event event_utils.Raw) serialization.ISerializable {
 	return data
 }
 
-func (c *Client) playerJoined(event event_utils.Raw) serialization.ISerializable {
-	data, _ := packets.ParsePlayerJoined(event)
+func (c *Client) entityCreated(event event_utils.Raw) serialization.ISerializable {
+	data, _ := packets.ParseEntityCreated(event)
 	ecs.MainWorld.NewEntityFromBytes(data.Entity)
 	return data
 }

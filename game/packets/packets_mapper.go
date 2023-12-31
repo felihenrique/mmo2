@@ -26,7 +26,7 @@ var Mapper = []unmarshal{
 		return ParseJoinShardResponse(data)
 	},
 	func(data []byte) (serialization.ISerializable, int16) {
-		return ParsePlayerJoined(data)
+		return ParseEntityCreated(data)
 	},
 	func(data []byte) (serialization.ISerializable, int16) {
 		return ParseEntityMoved(data)

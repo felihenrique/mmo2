@@ -25,7 +25,7 @@ func NewClient() *Client {
 	client.tickChan = make(chan byte)
 	client.handlers = make(map[int16]EventHandler)
 	client.callbacks = make(map[int16]ResponseHandler)
-	client.handlers[packets.TypePlayerJoined] = client.playerJoined
+	client.handlers[packets.TypeEntityCreated] = client.entityCreated
 	client.handlers[packets.TypeEntityMoved] = client.entityMoved
 	client.handlers[packets.TypeRequestError] = client.requestError
 	client.handlers[packets.TypeAckRequest] = client.ackRequest

@@ -38,7 +38,7 @@ func (s *Server) handleEvent(pe gsp.PeerEvent) {
 }
 
 func (s *Server) handleChans() {
-	ticker := time.NewTicker(time.Millisecond * 100)
+	ticker := time.NewTicker(time.Millisecond * 50)
 	peerConnChan := s.gspServer.NewConnectionChan()
 	peerDisChan := s.gspServer.DisconnectedChan()
 	newEventsChan := s.gspServer.EventsChan()

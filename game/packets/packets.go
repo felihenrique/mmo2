@@ -28,7 +28,7 @@ type JoinShardResponse struct {
 }
 
 // EVENTS
-type PlayerJoined struct {
+type EntityCreated struct {
 	Entity []byte
 }
 type EntityMoved struct {

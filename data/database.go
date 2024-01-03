@@ -1,40 +1,47 @@
 package data
 
 type Attribute struct {
-	Current int
-	Max     int
+	Current float64
+	Max     float64
 }
 
 type User struct {
-	Id       int
+	Id       int32
 	Email    string
 	Password string
 }
 
 type UserCharacter struct {
-	UserId      int
-	CharacterId int
+	UserId      int32
+	CharacterId int32
 }
 
 type CharacterSkill struct {
-	SkillId         int
-	CurrentLevel    int
-	TotalExperience int
+	SkillId         int32
+	CurrentLevel    int32
+	TotalExperience int32
 }
 
 type ItemStack struct {
-	ItemId   int
-	Quantity int
+	ItemId   int32
+	Quantity int32
 }
 
 type Character struct {
-	Id          int
+	Id          int32
 	Name        string
-	UserId      int
+	UserId      int32
 	Inventory   []ItemStack
 	Health      Attribute
 	Mana        Attribute
 	RunStamina  Attribute
 	Woodcutting CharacterSkill
 	Miner       CharacterSkill
+}
+
+type Monster struct {
+	Id             int32
+	Name           string
+	Health         float64
+	AttackInterval float64
 }

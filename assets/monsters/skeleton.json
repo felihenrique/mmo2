@@ -1,0 +1,8 @@
+[
+  {
+    "Id": 1,
+    "Name": "Skeleton",
+    "Health": 100,
+    "AttackInterval": 1.5
+  }
+]

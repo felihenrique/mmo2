@@ -39,7 +39,7 @@ func (c *Client) Start() error {
 
 func (c *Client) mainLoop() {
 	defer rl.CloseWindow()
-	rl.InitWindow(800, 600, c.options.Title)
+	rl.InitWindow(0, 0, c.options.Title)
 	rl.InitAudioDevice()
 	scene.ChangeTo(assets_scene.MainMenu)
 	tickChan := c.shardClient.TickChan()

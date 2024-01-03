@@ -20,6 +20,10 @@ sim-docker:
 ping:
 	go run cmd/ping/main.go
 delay:
-	sudo tc qdisc add dev lo root netem delay 90ms 30ms loss 2%
+	sudo tc qdisc add dev lo root netem delay 90ms 30ms
 rmdelay:
 	sudo tc qdisc del dev lo root
+tile:
+	go run cmd/tile-editor/main.go
+tiled:
+	./bin/tiled

@@ -38,12 +38,12 @@ func (s *Server) joinShardRequest(player *Player, event event_utils.Raw) {
 	}
 	request, _ := packets.ParseJoinShardRequest(event)
 	playerEntity := ecs.MainWorld.NewEntity()
-	player.entity = playerEntity
 	playerEntity.Add(
 		ecs.NewTransform(32, 32, 0),
 		ecs.NewLiving(request.Name, 90),
 		ecs.NewCircle(32, request.Color),
 	)
+	player.entity = playerEntity
 	player.peer.SendResponse(event, packets.NewJoinShardResponse(playerEntity.ToBytes()))
 
 	for _, entity := range ecs.MainWorld.Entities() {

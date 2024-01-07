@@ -1,7 +1,6 @@
 package systems
 
 import (
-	"math"
 	"mmo2/game/ecs"
 	"mmo2/pkg/ds"
 	"time"
@@ -14,20 +13,17 @@ var MoveSystem = ecs.NewSystem(
 			moveTo := ecs.Get[*ecs.MoveTo](entity, ecs.TypeMoveTo)
 			living := ecs.Get[*ecs.Living](entity, ecs.TypeLiving)
 			transform := ecs.Get[*ecs.Transform](entity, ecs.TypeTransform)
-			distanceX, distanceY := moveTo.X-transform.X, moveTo.Y-transform.Y
-			normalizedX, normalizedY := ds.NormalizeVec(distanceX, distanceY)
-			stepX := living.Velocity * deltaTime.Seconds() * normalizedX
-			stepY := living.Velocity * deltaTime.Seconds() * normalizedY
-			if math.Abs(stepX) > math.Abs(distanceX) || math.Abs(stepY) > math.Abs(distanceY) {
-				stepX = distanceX
-				stepY = distanceY
-			}
-			// fmt.Printf("Step: %f, %f \n", stepX, stepY)
-			transform.X += stepX
-			transform.Y += stepY
-			if ds.Distance(transform.X, transform.Y, moveTo.X, moveTo.Y) == 0 {
+			if ds.SquaredDistance(transform.X, transform.Y, moveTo.X, moveTo.Y) == 0 {
 				entity.Remove(ecs.TypeMoveTo)
+				return
 			}
+			distanceX, distanceY := moveTo.X-transform.X, moveTo.Y-transform.Y
+			normalizedX, normalizedY := ds.Normalize(distanceX, distanceY)
+			stepX, stepY := ds.Scale(normalizedX, normalizedY, living.Velocity*deltaTime.Seconds())
+			if ds.SquaredLength(stepX, stepY) > ds.SquaredLength(distanceX, distanceY) {
+				stepX, stepY = distanceX, distanceY
+			}
+			transform.Move(stepX, stepY)
 		}
 	},
 )

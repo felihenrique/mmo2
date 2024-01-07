@@ -8,6 +8,11 @@ type Transform struct {
 	Rotation float64
 }
 
+func (t *Transform) Move(x float64, y float64) {
+	t.X += x
+	t.Y += y
+}
+
 type Player struct {
 }
 
@@ -31,4 +36,9 @@ type Circle struct {
 type MoveTo struct {
 	X float64
 	Y float64
+}
+
+func (m *MoveTo) Add(x float64, y float64) {
+	m.X += x
+	m.Y += y
 }

@@ -28,7 +28,19 @@ func (s *Server) handleEvent(pe gsp.PeerEvent) {
 		fmt.Printf("wrong: player %s not found \n", player.peer.Addr())
 		return
 	}
+	if event_utils.GetType(pe.Event) == packets.TypePing {
+		pe.Peer.SendResponse(pe.Event, packets.NewAckRequest())
+		return
+	}
 	evType := event_utils.GetType(pe.Event)
+	if player.entity == nil && evType != packets.TypeJoinShardRequest {
+		fmt.Printf("Peer %s cant send events. Need to join shard first \n", pe.Peer.Addr())
+		pe.Peer.SendResponse(
+			pe.Event,
+			packets.NewRequestError("Can't send requests. Should join the shard first"),
+		)
+		return
+	}
 	handler := s.handlers[evType]
 	if handler == nil {
 		fmt.Printf("Handler for event %d not found \n", evType)
@@ -57,19 +69,6 @@ func (s *Server) handleChans() {
 				peer:   peer,
 			}
 		case newEvent := <-newEventsChan:
-			if event_utils.GetType(newEvent.Event) == packets.TypePing {
-				newEvent.Peer.SendResponse(newEvent.Event, packets.NewAckRequest())
-				continue
-			}
-			player := s.players[newEvent.Peer.Addr()]
-			if player.entity == nil && event_utils.GetType(newEvent.Event) != packets.TypeJoinShardRequest {
-				fmt.Printf("Peer %s cant send events. Need to join shard first \n", newEvent.Peer.Addr())
-				newEvent.Peer.SendResponse(
-					newEvent.Event,
-					packets.NewRequestError("Can't send requests. Should join the shard first"),
-				)
-				continue
-			}
 			s.handleEvent(newEvent)
 		case <-ticker.C:
 			ecs.MainWorld.Update()

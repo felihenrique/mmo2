@@ -24,8 +24,7 @@ func (s *Server) moveRequest(player *Player, event event_utils.Raw) {
 	} else {
 		moveTo = ecs.NewMoveTo(transform.X, transform.Y)
 	}
-	moveTo.X += request.Dx
-	moveTo.Y += request.Dy
+	moveTo.Add(request.Dx, request.Dy)
 	player.entity.Add(moveTo)
 	player.peer.SendResponse(event, packets.NewAckRequest())
 	s.BroadcastFiltered(packets.NewEntityMoved(player.entity.ID(), moveTo), player.peer)

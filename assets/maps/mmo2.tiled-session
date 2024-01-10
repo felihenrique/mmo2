@@ -1,0 +1,41 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "main.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "/home/philipe/projects/mmo2/assets/tilesets/gruta.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1.5
+        },
+        ":/automap-tiles.tsx": {
+            "scaleInDock": 1
+        },
+        "main.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1710.6666666666665,
+                "y": 5958
+            }
+        }
+    },
+    "last.imagePath": "/home/philipe/projects/mmo2/assets/tilesets",
+    "map.height": 100,
+    "map.lastUsedFormat": "tmx",
+    "map.width": 100,
+    "openFiles": [
+        "/home/philipe/projects/mmo2/assets/tilesets/gruta.tsx",
+        "main.tmx"
+    ],
+    "project": "mmo2.tiled-project",
+    "recentFiles": [
+        "/home/philipe/projects/mmo2/assets/tilesets/gruta.tsx",
+        "main.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx"
+}

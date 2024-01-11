@@ -1,8 +1,8 @@
 package data
 
 type Attribute struct {
-	Current float64
-	Max     float64
+	Current int32
+	Max     int32
 }
 
 type User struct {
@@ -36,7 +36,7 @@ type Character struct {
 	Mana        Attribute
 	RunStamina  Attribute
 	Woodcutting CharacterSkill
-	Miner       CharacterSkill
+	Mining      CharacterSkill
 }
 
 type Monster struct {

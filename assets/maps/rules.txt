@@ -1,0 +1,2 @@
+./rules/cave_walls.tmx
+./rules/cave_wall_borders.tmx

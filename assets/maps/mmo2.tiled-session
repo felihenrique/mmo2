@@ -3,11 +3,20 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "main.tmx",
+    "activeFile": "rules/cave_walls.tmx",
     "expandedProjectPaths": [
-        "."
+        ".",
+        "rules"
     ],
     "fileStates": {
+        "/home/philipe/projects/mmo2/assets/tilesets/cave_rules.tmx": {
+            "scale": 2,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 194,
+                "y": 112.25
+            }
+        },
         "/home/philipe/projects/mmo2/assets/tilesets/gruta.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1.5
@@ -15,27 +24,63 @@
         ":/automap-tiles.tsx": {
             "scaleInDock": 1
         },
-        "main.tmx": {
+        "cave_rules.tmx": {
             "scale": 0.75,
-            "selectedLayer": 0,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 1710.6666666666665,
-                "y": 5958
+                "x": 800,
+                "y": 799.3333333333333
             }
+        },
+        "gruta.tsx": {
+            "scaleInDock": 1
+        },
+        "main.tmx": {
+            "scale": 0.2239,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 1902.6351049575705,
+                "y": 2302.3671281822244
+            }
+        },
+        "rules/cave_wall_borders.tmx": {
+            "scale": 0.857,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 448.0746791131856,
+                "y": 288.79813302217036
+            }
+        },
+        "rules/cave_walls.tmx": {
+            "scale": 0.8199,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 457.37285034760345,
+                "y": 267.71557507013057
+            }
+        },
+        "tilesets/gruta.tsx": {
+            "scaleInDock": 1
         }
     },
+    "last.externalTilesetPath": "/home/philipe/projects/mmo2/assets/tilesets",
     "last.imagePath": "/home/philipe/projects/mmo2/assets/tilesets",
-    "map.height": 100,
+    "map.height": 50,
     "map.lastUsedFormat": "tmx",
-    "map.width": 100,
+    "map.width": 50,
     "openFiles": [
-        "/home/philipe/projects/mmo2/assets/tilesets/gruta.tsx",
+        "rules/cave_walls.tmx",
+        "rules/cave_wall_borders.tmx",
         "main.tmx"
     ],
     "project": "mmo2.tiled-project",
     "recentFiles": [
+        "main.tmx",
+        "rules/cave_wall_borders.tmx",
+        "rules/cave_walls.tmx",
         "/home/philipe/projects/mmo2/assets/tilesets/gruta.tsx",
-        "main.tmx"
+        "cave_rules.tmx",
+        "/home/philipe/projects/mmo2/assets/tilesets/cave_rules.tmx"
     ],
     "tileset.lastUsedFormat": "tsx"
 }
